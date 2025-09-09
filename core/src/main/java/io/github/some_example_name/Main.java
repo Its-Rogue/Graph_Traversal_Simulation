@@ -71,9 +71,9 @@ public class Main extends ApplicationAdapter {
         Inputs.all();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-        for(Edge edge : edges){
-            edge.render(sr);
-        }
+            for(Edge edge : edges){
+                edge.render(sr);
+            }
         sr.end();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
@@ -82,15 +82,17 @@ public class Main extends ApplicationAdapter {
             }
         sr.end();
 
-
-
-        Gdx.input.setInputProcessor(menu);
-        menu.act(delta);
-        menu.draw();
+        draw_menu();
     }
 
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime();
+    }
+
+    public void draw_menu(){
+        Gdx.input.setInputProcessor(menu);
+        menu.act(delta);
+        menu.draw();
     }
 
     @Override
