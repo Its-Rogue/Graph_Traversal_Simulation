@@ -1,4 +1,5 @@
 package io.github.some_example_name;
+
 import java.util.*;
 
 public class Graph {

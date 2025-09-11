@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-
 import java.util.ArrayList;
 
 public class Main extends ApplicationAdapter {
@@ -19,7 +18,15 @@ public class Main extends ApplicationAdapter {
     Stage menu;
     Graph graph;
 
+    Table table;
+    Skin skin;
+    TextButton quit_button;
+    TextButton add_node_test;
+    TextButton remove_node_test;
+
     int node_radius = 30;
+    int mouse_x_pos;
+    int mouse_y_pos;
     float delta;
 
     Node n0,n1,n2;
@@ -40,12 +47,12 @@ public class Main extends ApplicationAdapter {
 
     public void create_menu() {
         menu = new Stage();
-        Table table = new Table();
+        table = new Table();
         table.setFillParent(true);
-        Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        TextButton quit_button = new TextButton("Quit", skin);
-        TextButton add_node_test = new TextButton("TEST_ADD_NODE_N2", skin);
-        TextButton remove_node_test = new TextButton("TEST_REMOVE_NODE_N2", skin);
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        quit_button = new TextButton("Quit", skin);
+        add_node_test = new TextButton("TEST_ADD_NODE_N2", skin);
+        remove_node_test = new TextButton("TEST_REMOVE_NODE_N2", skin);
         quit_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -101,7 +108,6 @@ public class Main extends ApplicationAdapter {
                 node.render(sr);
             }
         sr.end();
-
         draw_menu();
     }
 
@@ -113,6 +119,8 @@ public class Main extends ApplicationAdapter {
 
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime();
+        mouse_x_pos = Gdx.input.getX();
+        mouse_y_pos = Gdx.input.getY();
     }
 
     @Override
