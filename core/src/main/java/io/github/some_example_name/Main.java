@@ -13,36 +13,29 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Main extends ApplicationAdapter {
     ShapeRenderer sr;
     Stage menu;
-
-    List<Node> nodes;
-    List<Edge> edges;
+    Graph graph;
 
     int node_radius = 30;
     float delta;
 
+    Node n0,n1,n2;
+
     @Override
     public void create() {
         sr = new ShapeRenderer();
+
+        graph = new Graph();
+        n0 = new Node(node_radius, 0, 400,400, new ArrayList<>());
+        n1 = new Node(node_radius, 1, 600,600, new ArrayList<>());
+        graph.add_node(n0);
+        graph.add_node(n1);
+        graph.add_edge(n0, n1, 5);
+
         create_menu();
-
-        nodes = new ArrayList<Node>();
-        edges = new ArrayList<Edge>();
-
-        nodes.add(new Node(node_radius, 0,400,400, edges));
-        nodes.add(new Node(node_radius, 1,500,200, edges));
-        nodes.add(new Node(node_radius, 2,300,400, edges));
-        nodes.add(new Node(node_radius, 3,600,800, edges));
-        nodes.add(new Node(node_radius, 4,800,400, edges));
-        edges.add(new Edge(nodes.get(0), nodes.get(1), 0));
-        edges.add(new Edge(nodes.get(1), nodes.get(2), 0));
-        edges.add(new Edge(nodes.get(2), nodes.get(3), 0));
-        edges.add(new Edge(nodes.get(0), nodes.get(3), 0));
-        edges.add(new Edge(nodes.get(3), nodes.get(4), 0));
     }
 
     public void create_menu() {
@@ -51,6 +44,8 @@ public class Main extends ApplicationAdapter {
         table.setFillParent(true);
         Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
         TextButton quit_button = new TextButton("Quit", skin);
+        TextButton add_node_test = new TextButton("TEST_ADD_NODE_N2", skin);
+        TextButton remove_node_test = new TextButton("TEST_REMOVE_NODE_N2", skin);
         quit_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -58,8 +53,32 @@ public class Main extends ApplicationAdapter {
                 System.exit(0);
             }
         });
+        add_node_test.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if(n2 == null){
+                    n2 = new Node(node_radius, 2, 800, 500,  new ArrayList<>());
+                    graph.add_node(n2);
+                    graph.add_edge(n1, n2, 5);
+                    graph.add_edge(n0, n2, 5);
+                }
+            }
+        });
+        remove_node_test.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (n2 != null) {
+                    graph.remove_edge(n1, n2);
+                    graph.remove_node(n2);
+                    n2  = null;
+                }
+            }
+        });
         table.add(quit_button).pad(5).row();
+        table.add(add_node_test).pad(5).row();
+        table.add(remove_node_test).pad(5).row();
         table.align(Align.topLeft);
+        table.setPosition(25,0);
         menu.addActor(table);
     }
 
@@ -71,13 +90,14 @@ public class Main extends ApplicationAdapter {
         Inputs.all();
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            for(Edge edge : edges){
-                edge.render(sr);
+            for(Node node: graph.get_nodes()){
+                for(Edge edge: graph.get_edges(node)){
+                    if(edge.getSource().getId() < edge.getTarget().getId()){
+                        edge.render(sr);
+                    }
+                }
             }
-        sr.end();
-
-        sr.begin(ShapeRenderer.ShapeType.Filled);
-            for(Node node : nodes){
+            for(Node node: graph.get_nodes()){
                 node.render(sr);
             }
         sr.end();
@@ -85,14 +105,14 @@ public class Main extends ApplicationAdapter {
         draw_menu();
     }
 
-    public void calculations(){
-        delta = Gdx.graphics.getDeltaTime();
-    }
-
-    public void draw_menu(){
+    public void draw_menu() {
         Gdx.input.setInputProcessor(menu);
         menu.act(delta);
         menu.draw();
+    }
+
+    public void calculations(){
+        delta = Gdx.graphics.getDeltaTime();
     }
 
     @Override
