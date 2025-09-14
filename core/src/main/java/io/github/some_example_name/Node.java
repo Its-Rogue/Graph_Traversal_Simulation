@@ -9,6 +9,7 @@ public class Node {
     List<Edge> edges;
     Color colour = Color.WHITE;
 
+    // Constructor for the nodes
     public Node(int radius, int id, int pos_x, int pos_y, List<Edge> edges) {
         this.radius = radius;
         this.id = id;
@@ -17,6 +18,7 @@ public class Node {
         this.edges = edges;
     }
 
+    // Getters and setters for the nodes
     public int getRadius() {
         return radius;
     }
@@ -65,6 +67,7 @@ public class Node {
         this.colour = color;
     }
 
+    // Render code for each node within the adj array in the graph
     public void render(ShapeRenderer sr){
         sr.setColor(colour);
         sr.circle(pos_x, pos_y, radius);

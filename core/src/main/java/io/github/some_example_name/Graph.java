@@ -3,38 +3,82 @@ package io.github.some_example_name;
 import java.util.*;
 
 public class Graph {
-    public Map<Node, List<Edge>> adj_list;
+    private Map<Node, List<Edge>> adj_list;
+    private int next_node_ID = 0;
+    private PriorityQueue<Integer> free_IDs;
 
     public Graph() {
         adj_list = new HashMap<>();
+        free_IDs = new PriorityQueue<>();
     }
 
-    public void add_node(Node node){
-        adj_list.putIfAbsent(node, new ArrayList<>());
+    // Finds the lowest available ID from the priority queue, then creates a node with
+    // that ID at the specified coords with the specified radius, then adds it to the
+    // adj list
+    public void add_node(int node_radius, int x_pos, int y_pos) {
+        int id;
+        if (!free_IDs.isEmpty()) {
+            id = free_IDs.poll();
+        } else {
+            id = next_node_ID++;
+        }
+
+        Node node = new Node(node_radius, id, x_pos, y_pos, new ArrayList<>());
+        adj_list.put(node, new ArrayList<>());
     }
 
-    public void add_edge(Node source, Node target, int weight){
-        Edge edge = new Edge(source, target, weight);
-        adj_list.get(source).add(edge);
-        Edge reversed_edge = new Edge(target, source, weight);
-        adj_list.get(target).add(reversed_edge);
+    // Gets the ID of the target and source node, checks they exist, then adds a forward
+    // and reverse edge between them
+    public void add_edge(int source_id, int target_id, int weight) {
+        Node source = get_node_id(source_id);
+        Node target = get_node_id(target_id);
+        if (source == null || target == null) return;
+
+        adj_list.get(source).add(new Edge(source, target, weight));
+        adj_list.get(target).add(new Edge(target, source, weight));
     }
 
-    public void remove_node(Node node){
-        adj_list.values().forEach(edges -> edges.removeIf(e -> e.getTarget().equals(node)));
+    // Gets the node from the ID, checks if it exists, then removes every edge it has
+    // before remove the node itself and adding its ID back to the list of available IDs
+    public void remove_node(int node_id) {
+        Node node = get_node_id(node_id);
+        if (node == null) return;
+        for (List<Edge> edges : adj_list.values()) {
+            edges.removeIf(edge -> edge.getTarget().getId() == node_id);
+        }
+
         adj_list.remove(node);
+        free_IDs.add(node_id);
     }
 
-    public void remove_edge(Node source, Node target){
-        adj_list.get(source).removeIf(e -> e.getTarget().equals(target));
-        adj_list.get(target).removeIf(e -> e.getSource().equals(source));
+    // Get IDs for the source and target edge, checks if they exist and then removes
+    // the forward and reverse edges for the pair
+    public void remove_edge(int source_id, int target_id) {
+        Node source = get_node_id(source_id);
+        Node target = get_node_id(target_id);
+        if (source == null || target == null) return;
+
+        adj_list.get(source).removeIf(e -> e.getTarget().getId() == target_id);
+        adj_list.get(target).removeIf(e -> e.getTarget().getId() == source_id);
     }
 
+    // Checks the adj list and returns the node from its ID
+    public Node get_node_id(int node_id) {
+        for (Node node : adj_list.keySet()) {
+            if (node.getId() == node_id) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    // Returns all nodes in the adj list
     public Set<Node> get_nodes() {
         return adj_list.keySet();
     }
 
-    public List<Edge> get_edges(Node node){
-        return adj_list.get(node);
+    // Returns all the edges for a specific node in the graph
+    public List<Edge> get_edges(Node node) {
+        return adj_list.getOrDefault(node, Collections.emptyList());
     }
 }
