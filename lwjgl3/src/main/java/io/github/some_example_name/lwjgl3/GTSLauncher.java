@@ -19,7 +19,7 @@ public class GTSLauncher {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         Graphics.DisplayMode primary_mode = Lwjgl3ApplicationConfiguration.getDisplayMode();
         configuration.setTitle("Graph Traversal Simulation");
-        configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate + 1);
+        configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate);
         configuration.useVsync(false);
         configuration.setWindowedMode(2560, 1440);
         configuration.setFullscreenMode(primary_mode);

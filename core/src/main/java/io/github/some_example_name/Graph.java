@@ -81,4 +81,13 @@ public class Graph {
     public List<Edge> get_edges(Node node) {
         return adj_list.getOrDefault(node, Collections.emptyList());
     }
+
+    // Returns the total number of edges in the graph
+    public int get_total_edges() {
+        int count = 0;
+        for (List<Edge> edges : adj_list.values()) {
+            count += edges.size();
+        }
+        return count / 2; // Divide by 2 to discount reverse direction edges
+    }
 }

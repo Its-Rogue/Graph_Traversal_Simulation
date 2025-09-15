@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -22,6 +23,9 @@ public class Main extends ApplicationAdapter {
     TextButton quit_button;
     TextButton add_node_test;
     TextButton remove_node_test;
+    Label fps_counter;
+    Label node_counter;
+    Label edge_counter;
 
     final int node_radius = 30;
     float delta;
@@ -45,6 +49,9 @@ public class Main extends ApplicationAdapter {
         // Create all the different elements for the UI
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         quit_button = new TextButton("Quit", skin);
+        fps_counter = new Label("FPS: ", skin);
+        node_counter = new Label("Nodes: ", skin);
+        edge_counter = new Label("Edges: ", skin);
 
         // TEST BUTTONS
         add_node_test = new TextButton("TEST_ADD_NODE_N2", skin);
@@ -74,8 +81,15 @@ public class Main extends ApplicationAdapter {
         });
 
         // Add the buttons to the table
-        table.add(quit_button).pad(5).row();
-        table.add(add_node_test).pad(5).row();
+        table.add(quit_button).row();
+
+        // Add the information labels to the table
+        table.add(fps_counter).pad(5).row();
+        table.add(node_counter).pad(5).row();
+        table.add(edge_counter).pad(5).row();
+
+        // Add the test elements to the table
+        table.add(add_node_test).pad(20).row();
         table.add(remove_node_test).pad(5).row();
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
@@ -94,7 +108,7 @@ public class Main extends ApplicationAdapter {
         Inputs.all(graph, node_radius); // Perform all keyboard input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            sr.rect(250,0,10,1440);
+            sr.rect(250,0,10,1440); // Padding for UI
             for(Node node: graph.get_nodes()){ // Loop over each node in the graph
                 for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
                     if(edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one in the target node
@@ -108,6 +122,9 @@ public class Main extends ApplicationAdapter {
     }
 
     public void draw_menu() {
+        fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
+        node_counter.setText("Nodes: " + graph.get_nodes().size());
+        edge_counter.setText("Edges: " + graph.get_total_edges());
         Gdx.input.setInputProcessor(menu); // Set the input processor to the menu, to check for mouse clicks on the buttons
         menu.act(delta); // Pass delta through to ensure all the actors animate in a synchronised matter
         menu.draw(); // Actually draw the menu
