@@ -1,33 +1,30 @@
 # Graph Traversal Simulation
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+This is a Graph Traversal Simulator, that uses LibGDX as a framework for visualising the graph.
 
-This project was generated with a template including simple application launchers and an `ApplicationAdapter` extension that draws libGDX logo.
+The simulator allows for the creation of a custom graph with weighted edges, and a series of different traversal algorithms. These include: 
+- Depth First
+- Breadth First
+- Dijkstra's
+- A*
+- Minimum Spanning Tree
 
-## Platforms
+## UI
 
-- `core`: Main module with the application logic shared by all platforms.
-- `lwjgl3`: Primary desktop platform using LWJGL3; was called 'desktop' in older docs.
+On the left hand side of the screen, using Scene2D, there is a variety of elements. There are buttons to control the simulation in the following ways:
+- Clear the graph
+- Choose the type of graph traversal
+- Choose the start and end node for finding the shortest path
+- Quit the program
 
-## Gradle
+Additionally, at the top of the UI, there are some statistics about the scene, such as node count and FPS.
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
-The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
-Useful Gradle tasks and flags:
+##  Controls
 
-- `--continue`: when using this flag, errors will not stop the tasks from running.
-- `--daemon`: thanks to this flag, Gradle daemon will be used to run chosen tasks.
-- `--offline`: when using this flag, cached dependency archives will be used.
-- `--refresh-dependencies`: this flag forces validation of all dependencies. Useful for snapshot versions.
-- `build`: builds sources and archives of every project.
-- `cleanEclipse`: removes Eclipse project data.
-- `cleanIdea`: removes IntelliJ project data.
-- `clean`: removes `build` folders, which store compiled classes and built archives.
-- `eclipse`: generates Eclipse project data.
-- `idea`: generates IntelliJ project data.
-- `lwjgl3:jar`: builds application's runnable jar, which can be found at `lwjgl3/build/libs`.
-- `lwjgl3:run`: starts the application.
-- `test`: runs unit tests (if any).
+`Left Click` to create a node
 
-Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
-For example, `core:clean` removes `build` folder only from the `core` project.
+`Right Click` to delete a node
+
+`Middle Click` to select 2 different nodes and create an edge between them
+
+`ESCAPE` to quit the program
