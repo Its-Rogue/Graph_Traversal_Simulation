@@ -24,8 +24,6 @@ public class Main extends ApplicationAdapter {
     TextButton remove_node_test;
 
     final int node_radius = 30;
-    int mouse_x_pos;
-    int mouse_y_pos;
     float delta;
 
     @Override
@@ -34,7 +32,7 @@ public class Main extends ApplicationAdapter {
         sr = new ShapeRenderer();
         graph = new Graph();
 
-        testing_functions.create(graph, node_radius); // Call out to create testing elements
+        Testing_Functions.create(graph, node_radius); // Call out to testing function to create testing elements
 
         create_menu();
     }
@@ -65,13 +63,13 @@ public class Main extends ApplicationAdapter {
         add_node_test.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                testing_functions.create_button(graph, node_radius);
+                Testing_Functions.create_button(graph, node_radius);
             }
         });
         remove_node_test.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                testing_functions.remove_button(graph);
+                Testing_Functions.remove_button(graph);
             }
         });
 
@@ -96,6 +94,7 @@ public class Main extends ApplicationAdapter {
         Inputs.all(graph, node_radius); // Perform all keyboard input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
+            sr.rect(250,0,10,1440);
             for(Node node: graph.get_nodes()){ // Loop over each node in the graph
                 for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
                     if(edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one in the target node
@@ -116,8 +115,6 @@ public class Main extends ApplicationAdapter {
 
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
-        mouse_x_pos = Gdx.input.getX(); // Get the mouses x coordinate on the screen
-        mouse_y_pos = Gdx.input.getY(); // Get the mouses y coordinate on the screen
     }
 
     @Override

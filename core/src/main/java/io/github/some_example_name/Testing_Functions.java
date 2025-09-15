@@ -3,7 +3,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
-public class testing_functions {
+public class Testing_Functions {
     public static void create(Graph graph, int node_radius) {
         // Create 2 nodes and add an edge with weight 5 between them
         graph.add_node(node_radius, 400, 400);
@@ -37,11 +37,11 @@ public class testing_functions {
     public static void menu_inputs(Graph graph, int node_radius) {
         // Hotkeys for activating the code for adding and removing the test nodes
         if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
-            testing_functions.create_button(graph, node_radius);
+            Testing_Functions.create_button(graph, node_radius);
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
-            testing_functions.remove_button(graph);
+            Testing_Functions.remove_button(graph);
         }
     }
 }
