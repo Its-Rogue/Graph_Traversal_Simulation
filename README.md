@@ -23,8 +23,10 @@ Additionally, at the top of the UI, there are some statistics about the scene, s
 
 `Left Click` to create a node
 
-`Right Click` to delete a node
+`Middle Click` to delete a node
 
-`Middle Click` to select 2 different nodes and create an edge between them
+`Right Click` to select 2 different nodes and create an edge between them
+
+`Right Click` then `Middle Click` to delete an edge
 
 `ESCAPE` to quit the program
