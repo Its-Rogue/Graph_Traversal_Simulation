@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,8 +22,7 @@ public class Main extends ApplicationAdapter {
     Table table;
     Skin skin;
     TextButton quit_button;
-    TextButton add_node_test;
-    TextButton remove_node_test;
+    TextButton reset_button;
     Label fps_counter;
     Label node_counter;
     Label edge_counter;
@@ -36,7 +36,7 @@ public class Main extends ApplicationAdapter {
         sr = new ShapeRenderer();
         graph = new Graph();
 
-        Testing_Functions.create(graph, node_radius); // Call out to testing function to create testing elements
+        Testing_Functions.create(graph, node_radius); // Call out to testing function to create test nodes and edge
 
         create_menu();
     }
@@ -49,13 +49,10 @@ public class Main extends ApplicationAdapter {
         // Create all the different elements for the UI
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         quit_button = new TextButton("Quit", skin);
+        reset_button = new TextButton("Reset Graph", skin);
         fps_counter = new Label("FPS: ", skin);
         node_counter = new Label("Nodes: ", skin);
         edge_counter = new Label("Edges: ", skin);
-
-        // TEST BUTTONS
-        add_node_test = new TextButton("TEST_ADD_NODE_N2", skin);
-        remove_node_test = new TextButton("TEST_REMOVE_NODE_N2", skin);
 
         // Create the listeners for the UI button presses
         quit_button.addListener(new ChangeListener() {
@@ -66,17 +63,10 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        // TEST BUTTONS
-        add_node_test.addListener(new ChangeListener() {
+        reset_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Testing_Functions.create_button(graph, node_radius);
-            }
-        });
-        remove_node_test.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Testing_Functions.remove_button(graph);
+                graph.clear();
             }
         });
 
@@ -87,10 +77,7 @@ public class Main extends ApplicationAdapter {
         table.add(fps_counter).pad(5).row();
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
-
-        // Add the test elements to the table
-        table.add(add_node_test).pad(20).row();
-        table.add(remove_node_test).pad(5).row();
+        table.add(reset_button).pad(10).row();
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
@@ -108,23 +95,35 @@ public class Main extends ApplicationAdapter {
         Inputs.all(graph, node_radius); // Perform all keyboard input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            sr.rect(250,0,10,1440); // Padding for UI
-            for(Node node: graph.get_nodes()){ // Loop over each node in the graph
-                for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
-                    if(edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one in the target node
-                        edge.render(sr); // Draw the edge
-                    }
-                }
-                node.render(sr); // Draw each node after all its edges have been drawn
-            }
+            sr.setColor(Color.WHITE);
+            sr.rect(250,0,10,1440); // Margin for UI
+            edge_render();
+            node_render(); // Render after so they are placed on top of the edge lines
         sr.end();
+
         draw_menu(); // Draw the components of the menu
     }
 
+    public void edge_render(){
+        for(Node node: graph.get_nodes()){ // Loop over each node in the graph
+            for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
+                if(edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one in the target node
+                    edge.render(sr); // Draw the edge
+                }
+            }
+        }
+    }
+
+    public void node_render(){
+        for(Node node: graph.get_nodes()){ // Loop over each node in the graph
+            node.render(sr); // Draw each node after all its edges have been drawn
+        }
+    }
+
     public void draw_menu() {
-        fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond());
-        node_counter.setText("Nodes: " + graph.get_nodes().size());
-        edge_counter.setText("Edges: " + graph.get_total_edges());
+        fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond()); // FPS counter
+        node_counter.setText("Nodes: " + graph.get_nodes().size()); // Number of nodes in scene
+        edge_counter.setText("Edges: " + graph.get_total_edges()); // Number of edges in scene
         Gdx.input.setInputProcessor(menu); // Set the input processor to the menu, to check for mouse clicks on the buttons
         menu.act(delta); // Pass delta through to ensure all the actors animate in a synchronised matter
         menu.draw(); // Actually draw the menu

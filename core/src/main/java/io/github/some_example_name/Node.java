@@ -10,12 +10,13 @@ public class Node {
     Color colour = Color.WHITE;
 
     // Constructor for the nodes
-    public Node(int radius, int id, int pos_x, int pos_y, List<Edge> edges) {
+    public Node(int radius, int id, int pos_x, int pos_y, List<Edge> edges, Color colour) {
         this.radius = radius;
         this.id = id;
         this.pos_x = pos_x;
         this.pos_y = pos_y;
         this.edges = edges;
+        this.colour = colour;
     }
 
     // Getters and setters for the nodes

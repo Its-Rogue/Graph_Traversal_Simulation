@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 
 public class Inputs {
     static Node first_node_selected = null;
@@ -17,9 +18,6 @@ public class Inputs {
             Gdx.app.exit();
             System.exit(0);
         }
-
-        // TEST HOTKEYS
-        Testing_Functions.menu_inputs(graph, node_radius);
     }
 
 
@@ -29,7 +27,7 @@ public class Inputs {
         int mouse_x = Gdx.input.getX();
         int mouse_y = Gdx.graphics.getHeight() - Gdx.input.getY(); // GetY() is based on the top left corner, thus needs offsetting
 
-        // Left click detection
+        // Left click detection and code
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             // Ensure the pointer is within the screen bounds
             if(mouse_x >= Gdx.graphics.getWidth() - node_radius) {
@@ -38,7 +36,7 @@ public class Inputs {
                 if (mouse_x <= menu_padding) {
                     return; // If clicked within the menu area, do not create a node
                 }
-                mouse_x = node_radius + menu_padding;
+                mouse_x = node_radius + menu_padding + 10;
             }
             if (mouse_y >= Gdx.graphics.getHeight() - node_radius) {
                 mouse_y = Gdx.graphics.getHeight() - node_radius;
@@ -51,48 +49,66 @@ public class Inputs {
                 float dy = mouse_y - node.getPos_y();
                 float distance =  (float) Math.sqrt(dx * dx + dy * dy);
                 if (distance < 4 * node_radius) {
-                    return;
+                    return; // Do not allow the new node to be placed too close to an already existing node
                 }
             }
 
-            graph.add_node(node_radius, mouse_x, mouse_y); // Add a node at the coordinates clicked at
+            graph.add_node(node_radius, mouse_x, mouse_y); // Add a new node at the coordinates clicked at
         }
 
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE)){
+        // Right click detection and code
+        if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if (mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
                     if (mouse_x <= node.getPos_x() + node_radius) { // See if mouse_x is within the right bound of the current node
                         if (mouse_y >= node.getPos_y() - node_radius) { // See if mouse_y is within the lower bound of the current node
                             if (mouse_y <= node.getPos_y() + node_radius) { // See if mouse_y is within the upper bound of the current node
-                                if(first_node_selected == null){
-                                    first_node_selected = node;
-                                    System.out.println("first_node_selected");
+                                if(first_node_selected == null){ // Checks if a node has already been selected
+                                    first_node_selected = node; // Assigns the clicked node to the first one selected
+                                    node.setColor(Color.GREEN);
                                 } else if (first_node_selected != node) {
-                                    graph.add_edge(first_node_selected.getId(), node.getId(), 5);
-                                    first_node_selected = null;
-                                    System.out.println("second_node_selected");
+                                    graph.add_edge(first_node_selected.getId(), node.getId(), 5); // Creates the edge between the nodes
+                                    first_node_selected.setColor(Color.WHITE);
+                                    first_node_selected = null; // Clears the first node to be used again
                                 }
-                                break;
+                                return;
                             }
                         }
                     }
                 }
             }
+            if(first_node_selected != null){
+                first_node_selected.setColor(Color.WHITE);
+                first_node_selected = null; // Set to null if not middle-clicked on a node
+            }
         }
 
-        // Right click detection and code
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+        // Middle click detection and code
+        if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if(mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
                     if(mouse_x <= node.getPos_x() + node_radius) { // See if mouse_x is within the right bound of the current node
                         if(mouse_y >= node.getPos_y() - node_radius) { // See if mouse_y is within the lower bound of the current node
                             if(mouse_y <= node.getPos_y() + node_radius) { // See if mouse_y is within the upper bound of the current node
-                                graph.remove_node(node.getId()); // Remove the node based on its ID
-                                break; // Only remove one node per right click
+                                if(first_node_selected != null) {
+                                    if(first_node_selected != node) {
+                                        graph.remove_edge(first_node_selected.getId(), node.getId());
+                                    }
+                                    first_node_selected.setColor(Color.WHITE);
+                                    first_node_selected = null;
+                                    return;
+                                } else {
+                                    graph.remove_node(node.getId());
+                                    return;
+                                }
                             }
                         }
                     }
                 }
+            }
+            if(first_node_selected != null){
+                first_node_selected.setColor(Color.WHITE);
+                first_node_selected = null;
             }
         }
     }

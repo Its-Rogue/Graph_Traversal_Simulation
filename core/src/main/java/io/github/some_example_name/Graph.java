@@ -1,11 +1,13 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Color;
+
 import java.util.*;
 
 public class Graph {
-    private Map<Node, List<Edge>> adj_list;
-    private int next_node_ID = 0;
-    private PriorityQueue<Integer> free_IDs;
+    private static Map<Node, List<Edge>> adj_list;
+    private static int next_node_ID = 0;
+    private static PriorityQueue<Integer> free_IDs;
 
     public Graph() {
         adj_list = new HashMap<>();
@@ -23,8 +25,10 @@ public class Graph {
             id = next_node_ID++;
         }
 
-        Node node = new Node(node_radius, id, x_pos, y_pos, new ArrayList<>());
-        adj_list.put(node, new ArrayList<>());
+        if(adj_list.size() < 100){
+            Node node = new Node(node_radius, id, x_pos, y_pos, new ArrayList<>(), Color.WHITE);
+            adj_list.put(node, new ArrayList<>());
+        }
     }
 
     // Gets the ID of the target and source node, checks they exist, then adds a forward
@@ -33,6 +37,12 @@ public class Graph {
         Node source = get_node_id(source_id);
         Node target = get_node_id(target_id);
         if (source == null || target == null) return;
+
+        for(Edge edge: adj_list.get(source)) {
+            if(edge.getTarget().getId() == target.getId()) {
+                return;
+            }
+        }
 
         adj_list.get(source).add(new Edge(source, target, weight));
         adj_list.get(target).add(new Edge(target, source, weight));
@@ -89,5 +99,11 @@ public class Graph {
             count += edges.size();
         }
         return count / 2; // Divide by 2 to discount reverse direction edges
+    }
+
+    public static void clear(){
+        adj_list.clear();
+        free_IDs.clear();
+        next_node_ID = 0;
     }
 }
