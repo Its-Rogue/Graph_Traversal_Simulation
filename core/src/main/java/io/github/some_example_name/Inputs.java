@@ -84,7 +84,7 @@ public class Inputs {
         }
 
         // Middle click detection and code
-        if (Gdx.input.isButtonPressed(Input.Buttons.MIDDLE)) {
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if(mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
                     if(mouse_x <= node.getPos_x() + node_radius) { // See if mouse_x is within the right bound of the current node
@@ -95,7 +95,9 @@ public class Inputs {
                                         graph.remove_edge(first_node_selected.getId(), node.getId());
                                     }
                                     first_node_selected.setColor(Color.WHITE);
-                                    first_node_selected = null;
+                                    if(first_node_selected == node) {
+                                        graph.remove_node(node.getId());
+                                    }
                                     return;
                                 } else {
                                     graph.remove_node(node.getId());
@@ -110,6 +112,23 @@ public class Inputs {
                 first_node_selected.setColor(Color.WHITE);
                 first_node_selected = null;
             }
+        }
+    }
+
+    // TODO: Actually implement
+    public static void start_traversal(String selected_traversal, float traversal_speed) {
+        switch (selected_traversal) {
+            case "Breadth-First Search":
+                break;
+            case "Depth-First Search":
+                break;
+            case "Dijkstra's":
+                break;
+            case "A*":
+                break;
+            case "Minimum Spanning Tree":
+                break;
+
         }
     }
 }
