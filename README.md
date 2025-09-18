@@ -27,6 +27,6 @@ Additionally, at the top of the UI, there are some statistics about the scene, s
 
 `Right Click` to select 2 different nodes and create an edge between them
 
-`Right Click` then `Middle Click` to delete an edge
+`Right Click` then `Middle Click` or press `Space` to delete an edge
 
 `ESCAPE` to quit the program
