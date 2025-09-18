@@ -3,6 +3,8 @@ package io.github.some_example_name;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,12 +17,15 @@ public class Main extends ApplicationAdapter {
     ShapeRenderer sr;
     Stage menu;
     Graph graph;
+    BitmapFont font;
+    SpriteBatch batch;
 
     Table table;
     Skin skin;
     TextButton quit_button;
     TextButton reset_button;
     TextButton start_traversal_button;
+    TextButton recreate_test_elements_button;
     TextField traversal_speed_input;
     SelectBox<String> traversal_options;
     Label fps_counter;
@@ -38,8 +43,8 @@ public class Main extends ApplicationAdapter {
         // Initialise shape renderer and graph
         sr = new ShapeRenderer();
         graph = new Graph();
-
-        Testing_Functions.create(graph, node_radius); // Call out to testing function to create test elements
+        font  = new BitmapFont();
+        batch = new SpriteBatch();
 
         create_menu();
     }
@@ -55,6 +60,7 @@ public class Main extends ApplicationAdapter {
         quit_button = new TextButton("Quit", skin);
         reset_button = new TextButton("Reset Graph", skin);
         start_traversal_button = new TextButton("Start Traversal", skin);
+        recreate_test_elements_button = new TextButton("Recreate Test Elements", skin);
         traversal_speed_input = new TextField("", skin);
         traversal_speed_input.setMessageText("Enter a speed (float)");
         traversal_speed_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
@@ -82,6 +88,20 @@ public class Main extends ApplicationAdapter {
             }
         });
 
+        start_traversal_button.addListener(new ChangeListener() { // Start the chosen traversal algorithm
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Inputs.start_traversal(selected_traversal, traversal_speed);
+            }
+        });
+
+        recreate_test_elements_button.addListener(new ChangeListener() { // Create testing grid of nodes and edges
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Testing_Functions.create(graph, node_radius);
+            }
+        });
+
         traversal_speed_input.addListener(new ChangeListener() { // Get traversal speed from text input field
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -97,13 +117,6 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        start_traversal_button.addListener(new ChangeListener() { // Start the chosen traversal algorithm
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Inputs.start_traversal(selected_traversal, traversal_speed);
-            }
-        });
-
         // Add the buttons to the table
         table.add(quit_button).row();
 
@@ -115,6 +128,7 @@ public class Main extends ApplicationAdapter {
         table.add(traversal_speed_input).pad(5).row();
         table.add(traversal_options).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
+        table.add(recreate_test_elements_button).pad(5).row();
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
@@ -128,8 +142,8 @@ public class Main extends ApplicationAdapter {
     public void render() {
         Gdx.input.setInputProcessor(null); // Change the input processor back to the main simulation
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 1.0f); // Set the background colour to #000000
-        calculations(); // Perform necessary but ungroupable calculations each frame, such as delta and mouse position
-        Inputs.all(graph, node_radius); // Perform all keyboard input processing
+        calculations(); // Perform necessary but ungroupable calculations each frame, such as delta time
+        Inputs.all(graph, node_radius); // Perform all keyboard and mouse input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
             sr.setColor(Color.WHITE);
@@ -137,6 +151,10 @@ public class Main extends ApplicationAdapter {
             edge_render();
             node_render(); // Render after so they are placed on top of the edge lines
         sr.end();
+
+        batch.begin();
+            render_text(); // Render text after node and edges so it is drawn on top of these elements
+        batch.end();
 
         draw_menu(); // Draw the components of the menu
     }
@@ -166,6 +184,13 @@ public class Main extends ApplicationAdapter {
         menu.draw(); // Actually draw the menu
     }
 
+    public void render_text(){
+        for(Node node: graph.get_nodes()){
+            font.setColor(Color.RED); // Increase legibility
+            font.draw(batch, Integer.toString(node.getId()),node.getPos_x() - 5, node.getPos_y() + 5); // Draw at center of node
+        }
+    }
+
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
     }
@@ -174,5 +199,7 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         sr.dispose(); // Dispose of the shape renderer to free up resources
         menu.dispose(); // Dispose of the menu stage to free up resources
+        font.dispose(); // Dispose of the font to free up resources
+        batch.dispose(); // Dispose of the batch to free up resources
     }
 }

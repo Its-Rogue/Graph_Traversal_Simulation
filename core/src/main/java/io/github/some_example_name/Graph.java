@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import java.util.*;
 
@@ -101,6 +102,7 @@ public class Graph {
         return count / 2; // Divide by 2 to discount reverse direction edges
     }
 
+    // Clear the adj list and reset next node id and free ids to start over
     public static void clear(){
         adj_list.clear();
         free_IDs.clear();

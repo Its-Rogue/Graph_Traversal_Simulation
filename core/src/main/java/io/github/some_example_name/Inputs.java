@@ -29,6 +29,7 @@ public class Inputs {
 
         // Left click detection and code
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+
             // Ensure the pointer is within the screen bounds
             if(mouse_x >= Gdx.graphics.getWidth() - node_radius) {
                 mouse_x = Gdx.graphics.getWidth() - node_radius;
@@ -53,7 +54,7 @@ public class Inputs {
                 }
             }
 
-            graph.add_node(node_radius, mouse_x, mouse_y); // Add a new node at the coordinates clicked at
+            graph.add_node(node_radius, mouse_x, mouse_y); // Add a new node at the coordinates clicked at if in a valid location
         }
 
         // Right click detection and code
@@ -71,7 +72,7 @@ public class Inputs {
                                     first_node_selected.setColor(Color.WHITE);
                                     first_node_selected = null; // Clears the first node to be used again
                                 }
-                                return;
+                                return; // Return so the loop is not run all the way through if the desired node is already found
                             }
                         }
                     }
@@ -79,12 +80,12 @@ public class Inputs {
             }
             if(first_node_selected != null){
                 first_node_selected.setColor(Color.WHITE);
-                first_node_selected = null; // Set to null if not middle-clicked on a node
+                first_node_selected = null; // Set to null if not right-clicked on a node
             }
         }
 
-        // Middle click detection and code
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE)) {
+        // Middle click / Space key (for when the mouse does not have a middle click, such as on a laptop touchpad) detection and code
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if(mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
                     if(mouse_x <= node.getPos_x() + node_radius) { // See if mouse_x is within the right bound of the current node
@@ -97,10 +98,12 @@ public class Inputs {
                                     first_node_selected.setColor(Color.WHITE);
                                     if(first_node_selected == node) {
                                         graph.remove_node(node.getId());
+                                        first_node_selected = null;
                                     }
                                     return;
                                 } else {
                                     graph.remove_node(node.getId());
+                                    first_node_selected = null;
                                     return;
                                 }
                             }
