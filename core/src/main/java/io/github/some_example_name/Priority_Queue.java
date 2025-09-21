@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 public class Priority_Queue {
-    private ArrayList<Integer> heap;
+    private final ArrayList<Integer> heap;
 
     public Priority_Queue(){
         heap = new ArrayList<>();
@@ -54,7 +54,6 @@ public class Priority_Queue {
             return;
         }
         swap(index, parent);
-        index = parent;
     }
 
     public void bubble_down(int index){

@@ -23,6 +23,7 @@ public class Main extends ApplicationAdapter {
     GlyphLayout layout;
 
     Table table;
+    Table popup;
     Skin skin;
     TextButton quit_button;
     TextButton reset_button;
@@ -35,8 +36,11 @@ public class Main extends ApplicationAdapter {
     Label fps_counter;
     Label node_counter;
     Label edge_counter;
+    Label popup_label;
 
     final int node_radius = 30;
+    int start_node = 0;
+    int end_node = 0;
     float traversal_speed;
     float delta;
 
@@ -57,7 +61,10 @@ public class Main extends ApplicationAdapter {
     public void create_menu() {
         menu = new Stage();
         table = new Table();
+        popup = new Table();
         table.setFillParent(true);
+        popup.setFillParent(true);
+        popup.setVisible(false);
 
         // Create all the different elements for the UI
         skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -69,8 +76,8 @@ public class Main extends ApplicationAdapter {
         start_node_input = new TextField("", skin);
         end_node_input = new TextField("", skin);
         traversal_speed_input = new TextField("", skin);
-        start_node_input.setMessageText("Enter the start node (int)");
-        end_node_input.setMessageText("Enter the end node (int)");
+        start_node_input.setMessageText("Enter the start node");
+        end_node_input.setMessageText("Enter the end node");
         traversal_speed_input.setMessageText("Enter a speed (float)");
         start_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         end_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
@@ -79,6 +86,7 @@ public class Main extends ApplicationAdapter {
         fps_counter = new Label("FPS: ", skin);
         node_counter = new Label("Nodes: ", skin);
         edge_counter = new Label("Edges: ", skin);
+        popup_label = new Label("", skin);
 
         traversal_options = new SelectBox<>(skin);
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
@@ -117,7 +125,54 @@ public class Main extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 traversal_speed = Float.parseFloat(traversal_speed_input.getText());
-                System.out.println(traversal_speed);
+            }
+        });
+
+        start_node_input.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                popup.setVisible(true);
+                try {
+                    int value = Integer.parseInt(start_node_input.getText());
+
+                    if (value == end_node) {
+                        popup_label.setText("Start node cannot be the same \nas the end node");
+                        return;
+                    }
+                    if (graph.get_node_id(value) == null) {
+                        popup_label.setText("Node does not exist");
+                        return;
+                    }
+
+                    start_node = value;
+                    popup_label.setText(""); // clear errors if valid
+                } catch (NumberFormatException e) {
+                    popup_label.setText("Invalid input: must be a number");
+                }
+            }
+        });
+
+        end_node_input.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                popup.setVisible(true);
+                try {
+                    int value = Integer.parseInt(end_node_input.getText());
+
+                    if (value == start_node) {
+                        popup_label.setText("End node cannot be the same \nas the start node");
+                        return;
+                    }
+                    if (graph.get_node_id(value) == null) {
+                        popup_label.setText("Node does not exist");
+                        return;
+                    }
+
+                    end_node = value;
+                    popup_label.setText(""); // clear errors if valid
+                } catch (NumberFormatException e) {
+                    popup_label.setText("Invalid input: must be a number");
+                }
             }
         });
 
@@ -128,25 +183,30 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        // Add the buttons to the table
+        // Add the various actors to the tables
         table.add(quit_button).row();
-
-        // Add the various actors to the table
         table.add(fps_counter).pad(5).row();
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
         table.add(reset_button).pad(5).row();
         table.add(traversal_speed_input).pad(5).row();
         table.add(traversal_options).pad(5).row();
+        table.add(start_node_input).pad(5).row();
+        table.add(end_node_input).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
         table.add(recreate_test_elements_button).pad(5).row();
 
+        popup.add(popup_label);
+
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
+        popup.align(Align.left);
         table.setPosition(25,0);
+        popup.setPosition(25,0);
 
         // Add the table, and subsequent buttons, to the menu stage
         menu.addActor(table);
+        menu.addActor(popup);
     }
 
     @Override
