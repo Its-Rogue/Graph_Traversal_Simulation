@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -19,6 +20,7 @@ public class Main extends ApplicationAdapter {
     Graph graph;
     BitmapFont font;
     SpriteBatch batch;
+    GlyphLayout layout;
 
     Table table;
     Skin skin;
@@ -27,6 +29,8 @@ public class Main extends ApplicationAdapter {
     TextButton start_traversal_button;
     TextButton recreate_test_elements_button;
     TextField traversal_speed_input;
+    TextField start_node_input;
+    TextField end_node_input;
     SelectBox<String> traversal_options;
     Label fps_counter;
     Label node_counter;
@@ -40,11 +44,12 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
-        // Initialise shape renderer and graph
+        // Initialise elements
         sr = new ShapeRenderer();
         graph = new Graph();
         font  = new BitmapFont();
         batch = new SpriteBatch();
+        layout = new GlyphLayout();
 
         create_menu();
     }
@@ -61,8 +66,14 @@ public class Main extends ApplicationAdapter {
         reset_button = new TextButton("Reset Graph", skin);
         start_traversal_button = new TextButton("Start Traversal", skin);
         recreate_test_elements_button = new TextButton("Recreate Test Elements", skin);
+        start_node_input = new TextField("", skin);
+        end_node_input = new TextField("", skin);
         traversal_speed_input = new TextField("", skin);
+        start_node_input.setMessageText("Enter the start node (int)");
+        end_node_input.setMessageText("Enter the end node (int)");
         traversal_speed_input.setMessageText("Enter a speed (float)");
+        start_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
+        end_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         traversal_speed_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
 
         fps_counter = new Label("FPS: ", skin);
@@ -120,7 +131,7 @@ public class Main extends ApplicationAdapter {
         // Add the buttons to the table
         table.add(quit_button).row();
 
-        // Add the information labels to the table
+        // Add the various actors to the table
         table.add(fps_counter).pad(5).row();
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
@@ -186,8 +197,19 @@ public class Main extends ApplicationAdapter {
 
     public void render_text(){
         for(Node node: graph.get_nodes()){
-            font.setColor(Color.RED); // Increase legibility
-            font.draw(batch, Integer.toString(node.getId()),node.getPos_x() - 5, node.getPos_y() + 5); // Draw at center of node
+            font.setColor(Color.BLACK);
+            String text = Integer.toString(node.getId());
+            layout.setText(font, text);
+            font.draw(batch, text, node.getPos_x() - layout.width / 2, node.getPos_y() + layout.height / 2);
+
+            // Draw edge weights centered on edges
+            for(Edge edge: graph.get_edges(node)){
+                font.setColor(Color.BLACK);
+                float midpoint_x = (edge.getSource().getPos_x() + edge.getTarget().getPos_x()) / 2f;
+                float midpoint_y = (edge.getSource().getPos_y() + edge.getTarget().getPos_y()) / 2f;
+                font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2
+                );
+            }
         }
     }
 
