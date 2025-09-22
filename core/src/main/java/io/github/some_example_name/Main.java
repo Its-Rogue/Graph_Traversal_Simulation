@@ -37,14 +37,15 @@ public class Main extends ApplicationAdapter {
     Label node_counter;
     Label edge_counter;
     Label popup_label;
+    Label test_popup_label;
 
     final int node_radius = 30;
-    int start_node = 0;
-    int end_node = 0;
+    int start_node;
+    int end_node;
     float traversal_speed;
     float delta;
 
-    String selected_traversal;
+    String selected_traversal = "Breadth-First Search";
 
     @Override
     public void create() {
@@ -62,6 +63,7 @@ public class Main extends ApplicationAdapter {
         menu = new Stage();
         table = new Table();
         popup = new Table();
+
         table.setFillParent(true);
         popup.setFillParent(true);
         popup.setVisible(false);
@@ -73,6 +75,7 @@ public class Main extends ApplicationAdapter {
         reset_button = new TextButton("Reset Graph", skin);
         start_traversal_button = new TextButton("Start Traversal", skin);
         recreate_test_elements_button = new TextButton("Recreate Test Elements", skin);
+
         start_node_input = new TextField("", skin);
         end_node_input = new TextField("", skin);
         traversal_speed_input = new TextField("", skin);
@@ -87,6 +90,8 @@ public class Main extends ApplicationAdapter {
         node_counter = new Label("Nodes: ", skin);
         edge_counter = new Label("Edges: ", skin);
         popup_label = new Label("", skin);
+        popup_label.setColor(1,0,0,1);
+        test_popup_label = new Label("", skin);
 
         traversal_options = new SelectBox<>(skin);
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
@@ -104,6 +109,8 @@ public class Main extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Graph.clear();
+                start_node = 0;
+                end_node = 0;
             }
         });
 
@@ -133,21 +140,22 @@ public class Main extends ApplicationAdapter {
             public void changed(ChangeEvent event, Actor actor) {
                 popup.setVisible(true);
                 try {
-                    int value = Integer.parseInt(start_node_input.getText());
+                    int user_start_node = Integer.parseInt(start_node_input.getText());
 
-                    if (value == end_node) {
+                    if (user_start_node == end_node) {
                         popup_label.setText("Start node cannot be the same \nas the end node");
                         return;
                     }
-                    if (graph.get_node_id(value) == null) {
-                        popup_label.setText("Node does not exist");
+                    if (graph.get_node_id(user_start_node) == null) {
+                        popup_label.setText("Desired start node does not exist");
                         return;
                     }
 
-                    start_node = value;
+                    start_node = user_start_node;
                     popup_label.setText(""); // clear errors if valid
+                    test_popup_label.setText("Start node: " + start_node + " End node: " + end_node);
                 } catch (NumberFormatException e) {
-                    popup_label.setText("Invalid input: must be a number");
+                    popup_label.setText("Invalid start node input:\ninput must be a integer");
                 }
             }
         });
@@ -157,21 +165,22 @@ public class Main extends ApplicationAdapter {
             public void changed(ChangeEvent event, Actor actor) {
                 popup.setVisible(true);
                 try {
-                    int value = Integer.parseInt(end_node_input.getText());
+                    int user_end_node = Integer.parseInt(end_node_input.getText());
 
-                    if (value == start_node) {
+                    if (user_end_node == start_node) {
                         popup_label.setText("End node cannot be the same \nas the start node");
                         return;
                     }
-                    if (graph.get_node_id(value) == null) {
-                        popup_label.setText("Node does not exist");
+                    if (graph.get_node_id(user_end_node) == null) {
+                        popup_label.setText("Desired end node does not exist");
                         return;
                     }
 
-                    end_node = value;
+                    end_node = user_end_node;
                     popup_label.setText(""); // clear errors if valid
+                    test_popup_label.setText("Start node: " + start_node + " End node: " + end_node);
                 } catch (NumberFormatException e) {
-                    popup_label.setText("Invalid input: must be a number");
+                    popup_label.setText("Invalid end node input:\ninput must be a integer");
                 }
             }
         });
@@ -194,15 +203,18 @@ public class Main extends ApplicationAdapter {
         table.add(start_node_input).pad(5).row();
         table.add(end_node_input).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
+
+        // Testing elements
         table.add(recreate_test_elements_button).pad(5).row();
+        table.add(test_popup_label).pad(5).row();
 
         popup.add(popup_label);
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
-        popup.align(Align.left);
-        table.setPosition(25,0);
-        popup.setPosition(25,0);
+        popup.align(Align.topLeft);
+        table.setPosition(15,0);
+        popup.setPosition(15,-400);
 
         // Add the table, and subsequent buttons, to the menu stage
         menu.addActor(table);
@@ -264,11 +276,10 @@ public class Main extends ApplicationAdapter {
 
             // Draw edge weights centered on edges
             for(Edge edge: graph.get_edges(node)){
-                font.setColor(Color.BLACK);
+                font.setColor(Color.WHITE);
                 float midpoint_x = (edge.getSource().getPos_x() + edge.getTarget().getPos_x()) / 2f;
                 float midpoint_y = (edge.getSource().getPos_y() + edge.getTarget().getPos_y()) / 2f;
-                font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2
-                );
+                font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
             }
         }
     }

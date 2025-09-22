@@ -44,6 +44,6 @@ public class Edge {
     // Render code for each edge of a node in the graph, with width 10
     public void render(ShapeRenderer sr) {
         sr.setColor(colour);
-        sr.rectLine(source.getPos_x(), source.getPos_y(), target.getPos_x(), target.getPos_y(), 15);
+        sr.rectLine(source.getPos_x(), source.getPos_y(), target.getPos_x(), target.getPos_y(), 2);
     }
 }

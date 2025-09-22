@@ -7,16 +7,11 @@ import java.util.*;
 public class Graph {
     private static Map<Node, List<Edge>> adj_list;
     private static int next_node_ID = 0;
-    private static Priority_Queue free_IDs;
+    private static PriorityQueue<Integer> free_IDs;
 
     public Graph() {
         adj_list = new HashMap<>();
-        free_IDs = new Priority_Queue();
-    }
-
-    // Return the list of free IDs for getting the start and end node
-    public static Priority_Queue getfree_IDs() {
-        return free_IDs;
+        free_IDs = new PriorityQueue<Integer>();
     }
 
     // Finds the lowest available ID from the priority queue, then creates a node with

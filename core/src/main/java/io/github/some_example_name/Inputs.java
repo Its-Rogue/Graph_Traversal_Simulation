@@ -122,14 +122,18 @@ public class Inputs {
     public static void start_traversal(String selected_traversal, float traversal_speed) {
         switch (selected_traversal) {
             case "Breadth-First Search":
+                System.out.println("Breadth-First Search");
                 break;
             case "Depth-First Search":
+                System.out.println("Depth-First Search");
                 break;
             case "Dijkstra's":
+                System.out.println("Dijkstra's");
                 break;
             case "A*":
                 break;
             case "Minimum Spanning Tree":
+                System.out.println("Minimum Spanning Tree");
                 break;
 
         }
