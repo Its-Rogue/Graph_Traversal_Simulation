@@ -68,7 +68,7 @@ public class Inputs {
                                     first_node_selected = node; // Assigns the clicked node to the first one selected
                                     node.setColor(Color.GREEN);
                                 } else if (first_node_selected != node) {
-                                    graph.add_edge(first_node_selected.getId(), node.getId(), 5); // Creates the edge between the nodes
+                                    graph.add_edge(first_node_selected.getId(), node.getId(), 1); // Creates the edge between the nodes
                                     first_node_selected.setColor(Color.WHITE);
                                     first_node_selected = null; // Clears the first node to be used again
                                 }
@@ -118,7 +118,7 @@ public class Inputs {
         }
     }
 
-    // TODO: Actually implement
+    // TODO: Actually implement traversals
     public static void start_traversal(String selected_traversal, float traversal_speed) {
         switch (selected_traversal) {
             case "Breadth-First Search":
@@ -131,6 +131,7 @@ public class Inputs {
                 System.out.println("Dijkstra's");
                 break;
             case "A*":
+                System.out.println("A*");
                 break;
             case "Minimum Spanning Tree":
                 System.out.println("Minimum Spanning Tree");
