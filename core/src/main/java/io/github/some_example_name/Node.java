@@ -7,15 +7,17 @@ import java.util.List;
 public class Node {
     int radius, id, pos_x, pos_y;
     List<Edge> edges;
+    List<Node> neighbours;
     Color colour = Color.WHITE;
 
     // Constructor for the nodes
-    public Node(int radius, int id, int pos_x, int pos_y, List<Edge> edges, Color colour) {
+    public Node(int radius, int id, int pos_x, int pos_y, List<Edge> edges, List<Node> neighbours, Color colour) {
         this.radius = radius;
         this.id = id;
         this.pos_x = pos_x;
         this.pos_y = pos_y;
         this.edges = edges;
+        this.neighbours = neighbours;
         this.colour = colour;
     }
 
@@ -60,6 +62,14 @@ public class Node {
         this.edges = edges;
     }
 
+    public List<Node> getNeighbours() {
+        return neighbours;
+    }
+
+    public void setNeighbours(List<Node> neighbours) {
+        this.neighbours = neighbours;
+    }
+
     public Color getColor() {
         return colour;
     }
@@ -68,7 +78,7 @@ public class Node {
         this.colour = color;
     }
 
-    // Render code for each node within the adj array in the graph
+    // Render code for each node within the adj list in the graph
     public void render(ShapeRenderer sr){
         sr.setColor(colour);
         sr.circle(pos_x, pos_y, radius);

@@ -26,7 +26,7 @@ public class Graph {
         }
 
         if(adj_list.size() < 100){
-            Node node = new Node(node_radius, id, x_pos, y_pos, new ArrayList<>(), Color.WHITE);
+            Node node = new Node(node_radius, id, x_pos, y_pos, new ArrayList<>(), new ArrayList<>(), Color.WHITE);
             adj_list.put(node, new ArrayList<>());
         }
     }
@@ -46,6 +46,8 @@ public class Graph {
 
         adj_list.get(source).add(new Edge(source, target, weight));
         adj_list.get(target).add(new Edge(target, source, weight));
+        source.neighbours.add(target);
+        target.neighbours.add(source);
     }
 
     // Gets the node from the ID, checks if it exists, then removes every edge it has
@@ -55,6 +57,10 @@ public class Graph {
         if (node == null) return;
         for (List<Edge> edges : adj_list.values()) {
             edges.removeIf(edge -> edge.getTarget().getId() == node_id);
+        }
+
+        for (Node n: node.getNeighbours()) {
+            n.getNeighbours().remove(node_id);
         }
 
         adj_list.remove(node);
@@ -70,6 +76,8 @@ public class Graph {
 
         adj_list.get(source).removeIf(e -> e.getTarget().getId() == target_id);
         adj_list.get(target).removeIf(e -> e.getTarget().getId() == source_id);
+        source.neighbours.remove(target);
+        target.neighbours.remove(source);
     }
 
     // Checks the adj list and returns the node from its ID
@@ -90,6 +98,10 @@ public class Graph {
     // Returns all the edges for a specific node in the graph
     public List<Edge> get_edges(Node node) {
         return adj_list.getOrDefault(node, Collections.emptyList());
+    }
+
+    public List<Node> get_neighbours(Node node) {
+        return node.getNeighbours();
     }
 
     // Returns the total number of edges in the graph

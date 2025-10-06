@@ -117,7 +117,11 @@ public class Main extends ApplicationAdapter {
         start_traversal_button.addListener(new ChangeListener() { // Start the chosen traversal algorithm
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Inputs.start_traversal(selected_traversal, traversal_speed);
+                if(start_node == end_node){
+                    popup_label.setText("Start node cannot be the same \nas the end node");
+                    return;
+                }
+                Inputs.start_traversal(graph, selected_traversal, traversal_speed, start_node, end_node);
             }
         });
 
@@ -286,6 +290,15 @@ public class Main extends ApplicationAdapter {
 
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
+        /*System.out.println(); // Check the neighbours of every node each frame, TESTING ELEMENT TODO: REMOVE
+        for (Node n: graph.get_nodes()) {
+            if(n != null){
+                System.out.print(n.getId() + ": ");
+                for(Node n2: n.getNeighbours()){
+                    System.out.print(n2.getId() + " ");
+                } System.out.println();
+            }
+        }*/
     }
 
     @Override

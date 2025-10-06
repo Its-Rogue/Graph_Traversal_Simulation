@@ -41,7 +41,7 @@ public class Edge {
         this.weight = weight;
     }
 
-    // Render code for each edge of a node in the graph, with width 10
+    // Render code for each edge of a node in the graph, with width 2
     public void render(ShapeRenderer sr) {
         sr.setColor(colour);
         sr.rectLine(source.getPos_x(), source.getPos_y(), target.getPos_x(), target.getPos_y(), 2);

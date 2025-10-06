@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 
+import java.util.ArrayList;
+
 public class Inputs {
     static Node first_node_selected = null;
-    // Simple loop for all variants of input
+    // Simple method for all variants of input
     public static void all(Graph graph, int node_radius) {
         menu(graph, node_radius);
         mouse_click(graph, node_radius);
@@ -15,8 +17,8 @@ public class Inputs {
     // Code specifically related to menu hotkeys
     public static void menu(Graph graph, int node_radius) {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            Gdx.app.exit();
-            System.exit(0);
+            Gdx.app.exit(); // Exit the gdx app
+            System.exit(0); // Exit the java program
         }
     }
 
@@ -40,9 +42,9 @@ public class Inputs {
                 mouse_x = node_radius + menu_padding + 10;
             }
             if (mouse_y >= Gdx.graphics.getHeight() - node_radius) {
-                mouse_y = Gdx.graphics.getHeight() - node_radius;
+                mouse_y = Gdx.graphics.getHeight() - node_radius; // Place node fully on screen if clicked in a position where it would be obscured
             } else if (mouse_y <= node_radius) {
-                mouse_y = node_radius;
+                mouse_y = node_radius; // Place node fully on screen if clicked in a position where it would be obscured
             }
 
             for (Node node: graph.get_nodes()){
@@ -57,7 +59,7 @@ public class Inputs {
             graph.add_node(node_radius, mouse_x, mouse_y); // Add a new node at the coordinates clicked at if in a valid location
         }
 
-        // Right click detection and code
+        // Right click detection and code for edge creation
         if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if (mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
@@ -84,7 +86,7 @@ public class Inputs {
             }
         }
 
-        // Middle click / Space key (for when the mouse does not have a middle click, such as on a laptop touchpad) detection and code
+        // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if(mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
@@ -111,32 +113,75 @@ public class Inputs {
                     }
                 }
             }
-            if(first_node_selected != null){
+            if(first_node_selected != null){ // Reset fns if node selected then user clicks again not on a different node
                 first_node_selected.setColor(Color.WHITE);
                 first_node_selected = null;
             }
         }
     }
 
-    // TODO: Actually implement traversals
-    public static void start_traversal(String selected_traversal, float traversal_speed) {
+    // Switch case the chosen traversal option
+    public static void start_traversal(Graph graph, String selected_traversal, float traversal_speed, int start_node, int end_node) {
         switch (selected_traversal) {
             case "Breadth-First Search":
-                System.out.println("Breadth-First Search");
+                bfs(graph, traversal_speed, start_node, end_node);
                 break;
             case "Depth-First Search":
-                System.out.println("Depth-First Search");
+                dfs(graph, traversal_speed, start_node, end_node);
                 break;
             case "Dijkstra's":
-                System.out.println("Dijkstra's");
+                dijkstra(graph, traversal_speed, start_node, end_node);
                 break;
             case "A*":
-                System.out.println("A*");
+                A_star(graph, traversal_speed, start_node, end_node);
                 break;
             case "Minimum Spanning Tree":
-                System.out.println("Minimum Spanning Tree");
+                minimum_spanning_tree(graph, traversal_speed, start_node, end_node);
                 break;
 
         }
+    }
+
+    public static void bfs(Graph graph, float traversal_speed, int start_node, int end_node) {
+        System.out.println("Breadth-First Search");
+        ArrayList<Node> queue = new ArrayList<>();
+        queue.add(graph.get_node_id(start_node));
+        ArrayList<Node> discovered = new ArrayList<>();
+        discovered.add(graph.get_node_id(start_node));
+        ArrayList<Node> neighbours = new ArrayList<>();
+        boolean found = false;
+
+        while (!queue.isEmpty() && !found){
+            Node current_node = queue.get(0);
+            queue.remove(current_node);
+            neighbours.addAll(current_node.getNeighbours());
+            for (Node node: neighbours) {
+                if(!discovered.contains(node.getId())){
+                    if(node == graph.get_node_id(end_node)){
+                        found = true;
+                    }
+                    else{
+                        queue.add(node);
+                        discovered.add(node);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void dfs(Graph graph, float traversal_speed, int start_node, int end_node) {
+        System.out.println("Depth-First Search");
+    }
+
+    public static void dijkstra(Graph graph, float traversal_speed, int start_node, int end_node) {
+        System.out.println("Dijkstra's");
+    }
+
+    public static void A_star(Graph graph, float traversal_speed, int start_node, int end_node) {
+        System.out.println("A*");
+    }
+
+    public static void minimum_spanning_tree(Graph graph, float traversal_speed, int start_node, int end_node) {
+        System.out.println("Minimum Spanning Tree");
     }
 }
