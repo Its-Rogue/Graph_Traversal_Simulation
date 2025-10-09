@@ -45,6 +45,7 @@ public class Main extends ApplicationAdapter {
     float traversal_speed;
     float delta;
 
+    boolean valid_setup = false;
     String selected_traversal = "Breadth-First Search";
 
     @Override
@@ -97,7 +98,9 @@ public class Main extends ApplicationAdapter {
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
 
         // Create the listeners for the UI button presses
-        quit_button.addListener(new ChangeListener() { // Exit the program
+
+        // Button to exit the program
+        quit_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.exit(); // Exit the GDX program
@@ -105,7 +108,8 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        reset_button.addListener(new ChangeListener() { // Clear the graph
+        // Button to clear the graph
+        reset_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Graph.clear();
@@ -114,31 +118,55 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        start_traversal_button.addListener(new ChangeListener() { // Start the chosen traversal algorithm
+        // Button to start the chosen traversal algorithm
+        start_traversal_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if(start_node == end_node){
                     popup_label.setText("Start node cannot be the same \nas the end node");
+                    valid_setup = false;
                     return;
                 }
-                Inputs.start_traversal(graph, selected_traversal, traversal_speed, start_node, end_node);
+                if(valid_setup){
+                    Inputs.start_traversal(graph, selected_traversal, traversal_speed, start_node, end_node);
+                }
             }
         });
 
-        recreate_test_elements_button.addListener(new ChangeListener() { // Create testing grid of nodes and edges
+        // Create testing grid of nodes and edges to test rendering
+        recreate_test_elements_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Testing_Functions.create(graph, node_radius);
             }
         });
 
-        traversal_speed_input.addListener(new ChangeListener() { // Get traversal speed from text input field
+        // Get traversal speed from text input field
+        traversal_speed_input.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                traversal_speed = Float.parseFloat(traversal_speed_input.getText());
+                int user_traversal_speed;
+                try{
+                    user_traversal_speed = (int) Float.parseFloat(traversal_speed_input.getText());
+                } catch (Exception e){
+                    return;
+                }
+                if(user_traversal_speed < 0){
+                    popup_label.setText("Traversal Speed must be greater or \nequal to zero");
+                    valid_setup = false;
+                    return;
+                } else if (user_traversal_speed > 1000){
+                    popup_label.setText("Traversal Speed must be less or \nequal to 1000");
+                    valid_setup = false;
+                    return;
+                }
+                popup_label.setText(""); // Clear errors if valid
+                valid_setup = true;
+                traversal_speed = user_traversal_speed;
             }
         });
 
+        // Text field input for the user's desired start node
         start_node_input.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -148,22 +176,27 @@ public class Main extends ApplicationAdapter {
 
                     if (user_start_node == end_node) {
                         popup_label.setText("Start node cannot be the same \nas the end node");
+                        valid_setup = false;
                         return;
                     }
                     if (graph.get_node_id(user_start_node) == null) {
                         popup_label.setText("Desired start node does not exist");
+                        valid_setup = false;
                         return;
                     }
 
                     start_node = user_start_node;
-                    popup_label.setText(""); // clear errors if valid
+                    popup_label.setText(""); // Clear errors if valid
+                    valid_setup = true;
                     test_popup_label.setText("Start node: " + start_node + " End node: " + end_node);
                 } catch (NumberFormatException e) {
                     popup_label.setText("Invalid start node input:\ninput must be a integer");
+                    valid_setup = false;
                 }
             }
         });
 
+        // Text field input for the user's desired end node
         end_node_input.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -173,18 +206,22 @@ public class Main extends ApplicationAdapter {
 
                     if (user_end_node == start_node) {
                         popup_label.setText("End node cannot be the same \nas the start node");
+                        valid_setup = false;
                         return;
                     }
                     if (graph.get_node_id(user_end_node) == null) {
                         popup_label.setText("Desired end node does not exist");
+                        valid_setup = false;
                         return;
                     }
 
                     end_node = user_end_node;
-                    popup_label.setText(""); // clear errors if valid
+                    popup_label.setText(""); // Clear errors if valid
+                    valid_setup = true;
                     test_popup_label.setText("Start node: " + start_node + " End node: " + end_node);
                 } catch (NumberFormatException e) {
                     popup_label.setText("Invalid end node input:\ninput must be a integer");
+                    valid_setup = false;
                 }
             }
         });
@@ -225,6 +262,7 @@ public class Main extends ApplicationAdapter {
         menu.addActor(popup);
     }
 
+    // Render loop
     @Override
     public void render() {
         Gdx.input.setInputProcessor(null); // Change the input processor back to the main simulation
@@ -246,6 +284,7 @@ public class Main extends ApplicationAdapter {
         draw_menu(); // Draw the components of the menu
     }
 
+    // Edge render loop
     public void edge_render(){
         for(Node node: graph.get_nodes()){ // Loop over each node in the graph
             for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
@@ -256,12 +295,14 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    // Node render loop
     public void node_render(){
         for(Node node: graph.get_nodes()){ // Loop over each node in the graph
             node.render(sr); // Draw each node after all its edges have been drawn
         }
     }
 
+    // Menu render
     public void draw_menu() {
         fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond()); // FPS counter
         node_counter.setText("Nodes: " + graph.get_nodes().size()); // Number of nodes in scene
@@ -271,6 +312,7 @@ public class Main extends ApplicationAdapter {
         menu.draw(); // Actually draw the menu
     }
 
+    // Edge weight render loop
     public void render_text(){
         for(Node node: graph.get_nodes()){
             font.setColor(Color.BLACK);
@@ -288,9 +330,10 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    // Other uncategorisable calculations that need to happen every frame
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
-        /*System.out.println(); // Check the neighbours of every node each frame, TESTING ELEMENT TODO: REMOVE
+        /*System.out.println(); // Check the neighbours of every node each frame, TESTING ELEMENT TODO: REMOVE WHEN NECESSARY
         for (Node n: graph.get_nodes()) {
             if(n != null){
                 System.out.print(n.getId() + ": ");
@@ -301,6 +344,7 @@ public class Main extends ApplicationAdapter {
         }*/
     }
 
+    // Dispose of unneeded elements
     @Override
     public void dispose() {
         sr.dispose(); // Dispose of the shape renderer to free up resources
