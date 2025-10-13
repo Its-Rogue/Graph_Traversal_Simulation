@@ -27,6 +27,7 @@ public class Main extends ApplicationAdapter {
     Skin skin;
     TextButton quit_button;
     TextButton reset_button;
+    TextButton reset_traversal_button;
     TextButton start_traversal_button;
     TextButton recreate_test_elements_button;
     TextField traversal_speed_input;
@@ -75,6 +76,7 @@ public class Main extends ApplicationAdapter {
         quit_button = new TextButton("Quit", skin);
         reset_button = new TextButton("Reset Graph", skin);
         start_traversal_button = new TextButton("Start Traversal", skin);
+        reset_traversal_button = new TextButton("Reset Traversal", skin);
         recreate_test_elements_button = new TextButton("Recreate Test Elements", skin);
 
         start_node_input = new TextField("", skin);
@@ -129,6 +131,17 @@ public class Main extends ApplicationAdapter {
                 }
                 if(valid_setup){
                     Inputs.start_traversal(graph, selected_traversal, traversal_speed, start_node, end_node);
+                }
+            }
+        });
+
+        reset_traversal_button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                for (Node node: graph.get_nodes()){
+                    if (node.getColor() != Color.WHITE){
+                        node.setColor(Color.WHITE);
+                    }
                 }
             }
         });
@@ -244,6 +257,7 @@ public class Main extends ApplicationAdapter {
         table.add(start_node_input).pad(5).row();
         table.add(end_node_input).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
+        table.add(reset_traversal_button).pad(5).row();
 
         // Testing elements
         table.add(recreate_test_elements_button).pad(5).row();
@@ -255,7 +269,7 @@ public class Main extends ApplicationAdapter {
         table.align(Align.topLeft);
         popup.align(Align.topLeft);
         table.setPosition(15,0);
-        popup.setPosition(15,-400);
+        popup.setPosition(15,-600);
 
         // Add the table, and subsequent buttons, to the menu stage
         menu.addActor(table);
@@ -315,7 +329,11 @@ public class Main extends ApplicationAdapter {
     // Edge weight render loop
     public void render_text(){
         for(Node node: graph.get_nodes()){
-            font.setColor(Color.BLACK);
+            if(node.getColor() == Color.PURPLE){
+                font.setColor(Color.WHITE);
+            } else {
+                font.setColor(Color.BLACK);
+            }
             String text = Integer.toString(node.getId());
             layout.setText(font, text);
             font.draw(batch, text, node.getPos_x() - layout.width / 2, node.getPos_y() + layout.height / 2);

@@ -151,30 +151,41 @@ public class Inputs {
 
     public static void bfs(Graph graph, float traversal_speed, int start_node, int end_node) {
         System.out.println("Breadth-First Search");
-        ArrayList<Node> queue = new ArrayList<>();
-        queue.add(graph.get_node_id(start_node));
-        ArrayList<Node> discovered = new ArrayList<>();
-        discovered.add(graph.get_node_id(start_node));
-        ArrayList<Node> neighbours = new ArrayList<>();
-        boolean found = false;
+        long operation_speed = (long) (500/traversal_speed);
 
-        while (!queue.isEmpty() && !found){
-            Node current_node = queue.get(0);
-            queue.remove(current_node);
-            neighbours.addAll(current_node.getNeighbours());
-            for (Node node: neighbours) {
-                node.setColor(Color.YELLOW);
-                if(!discovered.contains(node.getId())){
-                    if(node == graph.get_node_id(end_node)){
-                        found = true;
-                    }
-                    else{
-                        queue.add(node);
+        new Thread(() -> {
+            ArrayList<Node> queue = new ArrayList<>();
+            queue.add(graph.get_node_id(start_node));
+            ArrayList<Node> discovered = new ArrayList<>();
+            discovered.add(graph.get_node_id(start_node));
+            ArrayList<Node> neighbours = new ArrayList<>();
+            ArrayList<Node> visited = new ArrayList<>();
+            boolean found = false;
+
+            while (!queue.isEmpty() && !found){
+                Node current_node = queue.get(0);
+                queue.remove(current_node);
+                if (!visited.contains(current_node)) {
+                    visited.add(current_node);
+                    Gdx.app.postRunnable(() -> {current_node.setColor(Color.ORANGE);});
+                }
+                neighbours.addAll(current_node.getNeighbours());
+                for (Node node: neighbours) {
+                    if(!discovered.contains(node.getId())){
                         discovered.add(node);
+                        queue.add(node);
+                        if(node.equals(graph.get_node_id(end_node))){
+                            Gdx.app.postRunnable(() -> {node.setColor(Color.PURPLE);});
+                            found = true;
+                            break;
+                        } else {
+                            Gdx.app.postRunnable(() -> {node.setColor(Color.YELLOW);});
+                        }
                     }
                 }
+                Gdx.app.postRunnable(() -> {current_node.setColor(Color.ORANGE);});
             }
-        }
+        }).start();
     }
 
     public static void dfs(Graph graph, float traversal_speed, int start_node, int end_node) {
@@ -191,5 +202,13 @@ public class Inputs {
 
     public static void minimum_spanning_tree(Graph graph, float traversal_speed, int start_node, int end_node) {
         System.out.println("Minimum Spanning Tree");
+    }
+
+    public static void sleep(long wait_time){
+        try {
+            Thread.sleep(wait_time);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
