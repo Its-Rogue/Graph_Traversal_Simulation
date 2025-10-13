@@ -2,20 +2,22 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.List;
 
 public class Node {
-    int radius, id, pos_x, pos_y;
+    int radius, id;
+    Vector2 position;
     List<Edge> edges;
     List<Node> neighbours;
     Color colour = Color.WHITE;
 
     // Constructor for the nodes
-    public Node(int radius, int id, int pos_x, int pos_y, List<Edge> edges, List<Node> neighbours, Color colour) {
+    public Node(int radius, int id, Vector2 position, List<Edge> edges, List<Node> neighbours, Color colour) {
         this.radius = radius;
         this.id = id;
-        this.pos_x = pos_x;
-        this.pos_y = pos_y;
+        this.position = position;
         this.edges = edges;
         this.neighbours = neighbours;
         this.colour = colour;
@@ -38,20 +40,12 @@ public class Node {
         this.id = id;
     }
 
-    public int getPos_x() {
-        return pos_x;
+    public Vector2 getPosition() {
+        return position;
     }
 
-    public void setPos_x(int pos_x) {
-        this.pos_x = pos_x;
-    }
-
-    public int getPos_y() {
-        return pos_y;
-    }
-
-    public void setPos_y(int pos_y) {
-        this.pos_y = pos_y;
+    public void setPosition(Vector2 position) {
+        this.position = position;
     }
 
     public List<Edge> getEdges() {
@@ -81,6 +75,6 @@ public class Node {
     // Render code for each node within the adj list in the graph
     public void render(ShapeRenderer sr){
         sr.setColor(colour);
-        sr.circle(pos_x, pos_y, radius);
+        sr.circle(position.x, position.y, radius);
     }
 }

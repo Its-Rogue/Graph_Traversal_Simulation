@@ -50,10 +50,10 @@ public class Inputs {
             }
 
             for (Node node: graph.get_nodes()){
-                if (node.getPos_x() > mouse_x + 100 || node.getPos_x() < mouse_x - 100) continue;
-                if (node.getPos_y() > mouse_y + 100 || node.getPos_y() < mouse_y - 100) continue; // Skip checking the node if it is too far away from the clicked position
-                float dx = mouse_x - node.getPos_x();
-                float dy = mouse_y - node.getPos_y();
+                if (node.getPosition().x > mouse_x + 100 || node.getPosition().x < mouse_x - 100) continue;
+                if (node.getPosition().y > mouse_y + 100 || node.getPosition().y < mouse_y - 100) continue; // Skip checking the node if it is too far away from the clicked position
+                float dx = mouse_x - node.getPosition().x;
+                float dy = mouse_y - node.getPosition().y;
                 float distance =  (float) Math.sqrt(dx * dx + dy * dy);
                 if (distance < 4 * node_radius) {
                     return; // Do not allow the new node to be placed too close to an already existing node
@@ -66,12 +66,12 @@ public class Inputs {
         // Right click detection and code for edge creation
         if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: graph.get_nodes()) { // Loop over each node
-                if (node.getPos_x() > mouse_x + 100 || node.getPos_x() < mouse_x - 100) continue;
-                if (node.getPos_y() > mouse_y + 100 || node.getPos_y() < mouse_y - 100) continue;// Skip checking the node if it is too far away from the clicked position
-                if (mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
-                    if (mouse_x <= node.getPos_x() + node_radius) { // See if mouse_x is within the right bound of the current node
-                        if (mouse_y >= node.getPos_y() - node_radius) { // See if mouse_y is within the lower bound of the current node
-                            if (mouse_y <= node.getPos_y() + node_radius) { // See if mouse_y is within the upper bound of the current node
+                if (node.getPosition().x > mouse_x + 100 || node.getPosition().x < mouse_x - 100) continue;
+                if (node.getPosition().y > mouse_y + 100 || node.getPosition().y < mouse_y - 100) continue;// Skip checking the node if it is too far away from the clicked position
+                if (mouse_x >= node.getPosition().x - node_radius) { // See if mouse_x is within the left bound of the current node
+                    if (mouse_x <= node.getPosition().x + node_radius) { // See if mouse_x is within the right bound of the current node
+                        if (mouse_y >= node.getPosition().y - node_radius) { // See if mouse_y is within the lower bound of the current node
+                            if (mouse_y <= node.getPosition().y + node_radius) { // See if mouse_y is within the upper bound of the current node
                                 if(first_node_selected == null){ // Checks if a node has already been selected
                                     first_node_selected = node; // Assigns the clicked node to the first one selected
                                     node.setColor(Color.GREEN);
@@ -95,12 +95,12 @@ public class Inputs {
         // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
-                if (node.getPos_x() > mouse_x + 100 || node.getPos_x() < mouse_x - 100) continue;
-                if (node.getPos_y() > mouse_y + 100 || node.getPos_y() < mouse_y - 100) continue;// Skip checking the node if it is too far away from the clicked position
-                if(mouse_x >= node.getPos_x() - node_radius) { // See if mouse_x is within the left bound of the current node
-                    if(mouse_x <= node.getPos_x() + node_radius) { // See if mouse_x is within the right bound of the current node
-                        if(mouse_y >= node.getPos_y() - node_radius) { // See if mouse_y is within the lower bound of the current node
-                            if(mouse_y <= node.getPos_y() + node_radius) { // See if mouse_y is within the upper bound of the current node
+                if (node.getPosition().x > mouse_x + 100 || node.getPosition().x < mouse_x - 100) continue;
+                if (node.getPosition().y > mouse_y + 100 || node.getPosition().y < mouse_y - 100) continue;// Skip checking the node if it is too far away from the clicked position
+                if(mouse_x >= node.getPosition().x - node_radius) { // See if mouse_x is within the left bound of the current node
+                    if(mouse_x <= node.getPosition().x + node_radius) { // See if mouse_x is within the right bound of the current node
+                        if(mouse_y >= node.getPosition().y - node_radius) { // See if mouse_y is within the lower bound of the current node
+                            if(mouse_y <= node.getPosition().y + node_radius) { // See if mouse_y is within the upper bound of the current node
                                 if(first_node_selected != null) {
                                     if(first_node_selected != node) {
                                         graph.remove_edge(first_node_selected.getId(), node.getId());

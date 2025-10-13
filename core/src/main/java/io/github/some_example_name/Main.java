@@ -336,13 +336,13 @@ public class Main extends ApplicationAdapter {
             }
             String text = Integer.toString(node.getId());
             layout.setText(font, text);
-            font.draw(batch, text, node.getPos_x() - layout.width / 2, node.getPos_y() + layout.height / 2);
+            font.draw(batch, text, node.getPosition().x - layout.width / 2, node.getPosition().y + layout.height / 2);
 
             // Draw edge weights centered on edges
             for(Edge edge: graph.get_edges(node)){
                 font.setColor(Color.WHITE);
-                float midpoint_x = (edge.getSource().getPos_x() + edge.getTarget().getPos_x()) / 2f;
-                float midpoint_y = (edge.getSource().getPos_y() + edge.getTarget().getPos_y()) / 2f;
+                float midpoint_x = (edge.getSource().getPosition().x + edge.getTarget().getPosition().x) / 2f;
+                float midpoint_y = (edge.getSource().getPosition().y + edge.getTarget().getPosition().y) / 2f;
                 font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
             }
         }
