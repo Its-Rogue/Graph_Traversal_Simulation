@@ -6,31 +6,31 @@ import java.util.NoSuchElementException;
 public class Priority_Queue {
     private final ArrayList<Integer> heap;
 
-    public Priority_Queue(){
+    public Priority_Queue() {
         heap = new ArrayList<>();
     }
 
-    // Add an item to the back of the list
     public void add(int value) {
         heap.add(value);
         bubble_up(heap.size() - 1);
     }
 
-    // Get first available item in list
     public int poll() {
         if (heap.isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
         }
+
         int min = heap.get(0);
         int last = heap.remove(heap.size() - 1);
-        if (heap.isEmpty()){
+
+        if (!heap.isEmpty()) { // fix
             heap.set(0, last);
             bubble_down(0);
         }
+
         return min;
     }
 
-    // Get the first item in the heap
     public int peek() {
         if (heap.isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
@@ -38,30 +38,26 @@ public class Priority_Queue {
         return heap.get(0);
     }
 
-    // Check if the list is empty, return true / false
     public boolean isEmpty() {
         return heap.isEmpty();
     }
 
-    // Clear the list when resetting the graph
     public void clear() {
         heap.clear();
     }
 
-    public void bubble_up(int index){
-        int parent = (index - 1) / 2;
-        if (heap.get(index) >= heap.get(parent)) {
-            return;
+    private void bubble_up(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap.get(index) >= heap.get(parent)) break;
+            swap(index, parent);
+            index = parent;
         }
-        swap(index, parent);
     }
 
-    public void bubble_down(int index){
+    private void bubble_down(int index) {
         int size = heap.size();
-        if (index < 0 || index >= size) {
-            return;
-        }
-        while (true){
+        while (true) {
             int left = 2 * index + 1;
             int right = 2 * index + 2;
             int smallest = index;
@@ -80,9 +76,9 @@ public class Priority_Queue {
         }
     }
 
-    public void swap(int index_1, int index_2){
-        int temp = heap.get(index_1);
-        heap.set(index_1, heap.get(index_2));
-        heap.set(index_2, temp);
+    private void swap(int i, int j) {
+        int temp = heap.get(i);
+        heap.set(i, heap.get(j));
+        heap.set(j, temp);
     }
 }

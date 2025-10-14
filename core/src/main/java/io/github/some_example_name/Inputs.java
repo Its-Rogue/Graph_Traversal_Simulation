@@ -5,8 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
 
 public class Inputs {
     static Node first_node_selected = null;
@@ -151,40 +149,67 @@ public class Inputs {
 
     public static void bfs(Graph graph, float traversal_speed, int start_node, int end_node) {
         System.out.println("Breadth-First Search");
-        long operation_speed = (long) (500/traversal_speed);
+        long operation_speed = (long) (250 / traversal_speed);
 
         new Thread(() -> {
             ArrayList<Node> queue = new ArrayList<>();
-            queue.add(graph.get_node_id(start_node));
             ArrayList<Node> discovered = new ArrayList<>();
-            discovered.add(graph.get_node_id(start_node));
-            ArrayList<Node> neighbours = new ArrayList<>();
             ArrayList<Node> visited = new ArrayList<>();
+
+            Node start = graph.get_node_id(start_node);
+            Node end = graph.get_node_id(end_node);
+
+            Gdx.app.postRunnable(() -> {
+                start.setColor(Color.GREEN);
+                end.setColor(Color.RED);
+            });
+
+            queue.add(start);
+            discovered.add(start);
+
             boolean found = false;
 
-            while (!queue.isEmpty() && !found){
-                Node current_node = queue.get(0);
-                queue.remove(current_node);
-                if (!visited.contains(current_node)) {
-                    visited.add(current_node);
-                    Gdx.app.postRunnable(() -> {current_node.setColor(Color.ORANGE);});
+            while (!queue.isEmpty() && !found) {
+                Node current_node = queue.remove(0);
+
+                Gdx.app.postRunnable(() -> {
+                    if (current_node != start && current_node != end) {
+                        current_node.setColor(Color.ORANGE);
+                    }
+                });
+
+                try {
+                    Thread.sleep(operation_speed);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                neighbours.addAll(current_node.getNeighbours());
-                for (Node node: neighbours) {
-                    if(!discovered.contains(node.getId())){
-                        discovered.add(node);
-                        queue.add(node);
-                        if(node.equals(graph.get_node_id(end_node))){
-                            Gdx.app.postRunnable(() -> {node.setColor(Color.PURPLE);});
+
+                for (Node neighbour : current_node.getNeighbours()) {
+                    if (!discovered.contains(neighbour)) {
+                        discovered.add(neighbour);
+                        queue.add(neighbour);
+                        Gdx.app.postRunnable(() -> {
+                            if (neighbour != start && neighbour != end) {
+                                neighbour.setColor(Color.YELLOW);
+                            }
+                        });
+                        if (neighbour.equals(end)) {
                             found = true;
                             break;
-                        } else {
-                            Gdx.app.postRunnable(() -> {node.setColor(Color.YELLOW);});
                         }
                     }
                 }
-                Gdx.app.postRunnable(() -> {current_node.setColor(Color.ORANGE);});
+
+                if (!visited.contains(current_node)) {
+                    visited.add(current_node);
+                    Gdx.app.postRunnable(() -> {
+                        if (current_node != start && current_node != end) {
+                            current_node.setColor(Color.PURPLE);
+                        }
+                    });
+                }
             }
+
         }).start();
     }
 

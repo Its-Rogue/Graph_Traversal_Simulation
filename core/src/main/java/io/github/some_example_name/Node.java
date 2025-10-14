@@ -2,19 +2,18 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
 
 public class Node {
     int radius, id;
-    Vector2 position;
+    vec2 position;
     List<Edge> edges;
     List<Node> neighbours;
     Color colour = Color.WHITE;
 
     // Constructor for the nodes
-    public Node(int radius, int id, Vector2 position, List<Edge> edges, List<Node> neighbours, Color colour) {
+    public Node(int radius, int id, vec2 position, List<Edge> edges, List<Node> neighbours, Color colour) {
         this.radius = radius;
         this.id = id;
         this.position = position;
@@ -40,11 +39,11 @@ public class Node {
         this.id = id;
     }
 
-    public Vector2 getPosition() {
+    public vec2 getPosition() {
         return position;
     }
 
-    public void setPosition(Vector2 position) {
+    public void setPosition(vec2 position) {
         this.position = position;
     }
 

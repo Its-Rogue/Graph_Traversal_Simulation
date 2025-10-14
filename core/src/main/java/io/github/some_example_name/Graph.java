@@ -1,7 +1,6 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.*;
 
@@ -27,7 +26,7 @@ public class Graph {
         }
 
         if(adj_list.size() < 100){
-            Vector2 position  = new Vector2(x_pos, y_pos);
+            vec2 position  = new vec2(x_pos, y_pos);
             Node node = new Node(node_radius, id, position, new ArrayList<>(), new ArrayList<>(), Color.WHITE);
             adj_list.put(node, new ArrayList<>());
         }
