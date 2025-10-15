@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package fundamental_classes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -6,14 +6,15 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Edge {
     Node source;
     Node target;
-    int weight = 0; // Default weight if none is inputted
+    int weight = 1; // Default weight if none is inputted
     Color colour = Color.WHITE;
 
     // Constructors for the edges
-    public Edge(Node source, Node target, int weight) {
+    public Edge(Node source, Node target, int weight, Color colour) {
         this.source = source;
         this.target = target;
         this.weight = weight;
+        this.colour = colour;
     }
 
     // Getters and setters for the edges
@@ -39,6 +40,14 @@ public class Edge {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public Color getColour() {
+        return colour;
+    }
+
+    public void setColour(Color colour) {
+        this.colour = colour;
     }
 
     // Render code for each edge of a node in the graph, with width 2

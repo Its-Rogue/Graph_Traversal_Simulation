@@ -1,4 +1,6 @@
-package io.github.some_example_name;
+package helper_classes;
+
+import fundamental_classes.*;
 
 public class Testing_Functions {
     public static void create(Graph graph, int node_radius) {

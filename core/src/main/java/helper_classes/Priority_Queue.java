@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package helper_classes;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

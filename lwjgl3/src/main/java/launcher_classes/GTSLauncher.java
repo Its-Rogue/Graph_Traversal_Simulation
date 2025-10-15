@@ -1,9 +1,9 @@
-package io.github.some_example_name.lwjgl3;
+package launcher_classes;
 
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import io.github.some_example_name.Main;
+import fundamental_classes.Main;
 
 public class GTSLauncher {
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package io.github.some_example_name;
+package fundamental_classes;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -13,41 +13,42 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import helper_classes.*;
 
 public class Main extends ApplicationAdapter {
     ShapeRenderer sr;
     Stage menu;
-    Graph graph;
+    public Graph graph;
     BitmapFont font;
     SpriteBatch batch;
     GlyphLayout layout;
 
     Table table;
-    Table popup;
+    public Table popup;
     Skin skin;
     TextButton quit_button;
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
     TextButton recreate_test_elements_button;
-    TextField traversal_speed_input;
-    TextField start_node_input;
-    TextField end_node_input;
-    SelectBox<String> traversal_options;
+    public TextField start_node_input;
+    public TextField end_node_input;
+    public Slider traversal_speed_slider;
+    public SelectBox<String> traversal_options;
     Label fps_counter;
     Label node_counter;
     Label edge_counter;
-    Label popup_label;
-    Label test_popup_label;
+    public Label popup_label;
+    public Label traversal_speed_label;
 
-    final int node_radius = 30;
-    int start_node;
-    int end_node;
-    float traversal_speed;
+    public final int node_radius = 30;
+    public int start_node;
+    public int end_node;
+    public float traversal_speed = 1;
     float delta;
 
-    boolean valid_setup = false;
-    String selected_traversal = "Breadth-First Search";
+    public boolean valid_setup = false;
+    public String selected_traversal = "Breadth-First Search";
 
     @Override
     public void create() {
@@ -81,20 +82,18 @@ public class Main extends ApplicationAdapter {
 
         start_node_input = new TextField("", skin);
         end_node_input = new TextField("", skin);
-        traversal_speed_input = new TextField("", skin);
+        traversal_speed_slider = new Slider(1,20,1,false, skin);
         start_node_input.setMessageText("Enter the start node");
         end_node_input.setMessageText("Enter the end node");
-        traversal_speed_input.setMessageText("Enter a speed (float)");
         start_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         end_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
-        traversal_speed_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
 
         fps_counter = new Label("FPS: ", skin);
         node_counter = new Label("Nodes: ", skin);
         edge_counter = new Label("Edges: ", skin);
         popup_label = new Label("", skin);
         popup_label.setColor(1,0,0,1);
-        test_popup_label = new Label("", skin);
+        traversal_speed_label = new Label("Traversal Speed: " + (int) traversal_speed_slider.getValue(), skin);
 
         traversal_options = new SelectBox<>(skin);
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
@@ -105,8 +104,7 @@ public class Main extends ApplicationAdapter {
         quit_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit(); // Exit the GDX program
-                System.exit(0); // Exit the whole Java program
+                UI.quit_button_function();
             }
         });
 
@@ -114,9 +112,7 @@ public class Main extends ApplicationAdapter {
         reset_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Graph.clear();
-                start_node = 0;
-                end_node = 0;
+                UI.reset_button_function(Main.this);
             }
         });
 
@@ -124,25 +120,15 @@ public class Main extends ApplicationAdapter {
         start_traversal_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(start_node == end_node){
-                    popup_label.setText("Start node cannot be the same \nas the end node");
-                    valid_setup = false;
-                    return;
-                }
-                if(valid_setup){
-                    Inputs.start_traversal(graph, selected_traversal, traversal_speed, start_node, end_node);
-                }
+                UI.start_traversal_button_function(Main.this);
             }
         });
 
+        // Reset the colours of the previous traversal
         reset_traversal_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                for (Node node: graph.get_nodes()){
-                    if (node.getColor() != Color.WHITE){
-                        node.setColor(Color.WHITE);
-                    }
-                }
+                UI.reset_traversal_button_function(Main.this);
             }
         });
 
@@ -150,32 +136,15 @@ public class Main extends ApplicationAdapter {
         recreate_test_elements_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Testing_Functions.create(graph, node_radius);
+                UI.recreate_test_elements_button_function(Main.this);
             }
         });
 
         // Get traversal speed from text input field
-        traversal_speed_input.addListener(new ChangeListener() {
+        traversal_speed_slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                int user_traversal_speed;
-                try{
-                    user_traversal_speed = (int) Float.parseFloat(traversal_speed_input.getText());
-                } catch (Exception e){
-                    return;
-                }
-                if(user_traversal_speed < 0){
-                    popup_label.setText("Traversal Speed must be greater or \nequal to zero");
-                    valid_setup = false;
-                    return;
-                } else if (user_traversal_speed > 1000){
-                    popup_label.setText("Traversal Speed must be less or \nequal to 1000");
-                    valid_setup = false;
-                    return;
-                }
-                popup_label.setText(""); // Clear errors if valid
-                valid_setup = true;
-                traversal_speed = user_traversal_speed;
+                UI.traversal_speed_input_function(Main.this);
             }
         });
 
@@ -183,29 +152,7 @@ public class Main extends ApplicationAdapter {
         start_node_input.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                popup.setVisible(true);
-                try {
-                    int user_start_node = Integer.parseInt(start_node_input.getText());
-
-                    if (user_start_node == end_node) {
-                        popup_label.setText("Start node cannot be the same \nas the end node");
-                        valid_setup = false;
-                        return;
-                    }
-                    if (graph.get_node_id(user_start_node) == null) {
-                        popup_label.setText("Desired start node does not exist");
-                        valid_setup = false;
-                        return;
-                    }
-
-                    start_node = user_start_node;
-                    popup_label.setText(""); // Clear errors if valid
-                    valid_setup = true;
-                    test_popup_label.setText("Start node: " + start_node + " End node: " + end_node);
-                } catch (NumberFormatException e) {
-                    popup_label.setText("Invalid start node input:\ninput must be a integer");
-                    valid_setup = false;
-                }
+                UI.start_node_input_function(Main.this);
             }
         });
 
@@ -213,36 +160,15 @@ public class Main extends ApplicationAdapter {
         end_node_input.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                popup.setVisible(true);
-                try {
-                    int user_end_node = Integer.parseInt(end_node_input.getText());
-
-                    if (user_end_node == start_node) {
-                        popup_label.setText("End node cannot be the same \nas the start node");
-                        valid_setup = false;
-                        return;
-                    }
-                    if (graph.get_node_id(user_end_node) == null) {
-                        popup_label.setText("Desired end node does not exist");
-                        valid_setup = false;
-                        return;
-                    }
-
-                    end_node = user_end_node;
-                    popup_label.setText(""); // Clear errors if valid
-                    valid_setup = true;
-                    test_popup_label.setText("Start node: " + start_node + " End node: " + end_node);
-                } catch (NumberFormatException e) {
-                    popup_label.setText("Invalid end node input:\ninput must be a integer");
-                    valid_setup = false;
-                }
+                UI.end_node_input_function(Main.this);
             }
         });
 
-        traversal_options.addListener(new ChangeListener() { // Options for graph traversal
+        // Options for graph traversal
+        traversal_options.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                selected_traversal = traversal_options.getSelected();
+                UI.traversal_options_function(Main.this);
             }
         });
 
@@ -252,7 +178,8 @@ public class Main extends ApplicationAdapter {
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
         table.add(reset_button).pad(5).row();
-        table.add(traversal_speed_input).pad(5).row();
+        table.add(traversal_speed_slider).pad(5).row();
+        table.add(traversal_speed_label).pad(5).row();
         table.add(traversal_options).pad(5).row();
         table.add(start_node_input).pad(5).row();
         table.add(end_node_input).pad(5).row();
@@ -261,7 +188,6 @@ public class Main extends ApplicationAdapter {
 
         // Testing elements
         table.add(recreate_test_elements_button).pad(5).row();
-        table.add(test_popup_label).pad(5).row();
 
         popup.add(popup_label);
 
@@ -351,15 +277,6 @@ public class Main extends ApplicationAdapter {
     // Other uncategorisable calculations that need to happen every frame
     public void calculations(){
         delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
-        /*System.out.println(); // Check the neighbours of every node each frame, TESTING ELEMENT TODO: REMOVE WHEN NECESSARY
-        for (Node n: graph.get_nodes()) {
-            if(n != null){
-                System.out.print(n.getId() + ": ");
-                for(Node n2: n.getNeighbours()){
-                    System.out.print(n2.getId() + " ");
-                } System.out.println();
-            }
-        }*/
     }
 
     // Dispose of unneeded elements

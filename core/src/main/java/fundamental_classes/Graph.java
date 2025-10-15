@@ -1,17 +1,18 @@
-package io.github.some_example_name;
+package fundamental_classes;
 
 import com.badlogic.gdx.graphics.Color;
+import helper_classes.*;
 
 import java.util.*;
 
 public class Graph {
     private static Map<Node, List<Edge>> adj_list;
     private static int next_node_ID = 0;
-    private static PriorityQueue<Integer> free_IDs;
+    private static Priority_Queue free_IDs;
 
     public Graph() {
         adj_list = new HashMap<>();
-        free_IDs = new PriorityQueue<Integer>();
+        free_IDs = new Priority_Queue();
     }
 
     // Finds the lowest available ID from the priority queue, then creates a node with
@@ -45,8 +46,8 @@ public class Graph {
             }
         }
 
-        adj_list.get(source).add(new Edge(source, target, weight));
-        adj_list.get(target).add(new Edge(target, source, weight));
+        adj_list.get(source).add(new Edge(source, target, weight, Color.WHITE));
+        adj_list.get(target).add(new Edge(target, source, weight, Color.WHITE));
         source.neighbours.add(target);
         target.neighbours.add(source);
     }
@@ -101,9 +102,6 @@ public class Graph {
         return adj_list.getOrDefault(node, Collections.emptyList());
     }
 
-    public List<Node> get_neighbours(Node node) {
-        return node.getNeighbours();
-    }
 
     // Returns the total number of edges in the graph
     public int get_total_edges() {
