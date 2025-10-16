@@ -24,7 +24,7 @@ public class Main extends ApplicationAdapter {
     GlyphLayout layout;
 
     Table table;
-    public Table popup;
+    public Table error_popup;
     Skin skin;
     TextButton quit_button;
     TextButton reset_button;
@@ -38,16 +38,18 @@ public class Main extends ApplicationAdapter {
     Label fps_counter;
     Label node_counter;
     Label edge_counter;
-    public Label popup_label;
+    Label colour_key_information;
+    public Label error_popup_label;
     public Label traversal_speed_label;
 
     public final int node_radius = 30;
     public int start_node;
     public int end_node;
-    public float traversal_speed = 1;
+    public float traversal_speed = 1.0f;
     float delta;
 
     public boolean valid_setup = false;
+    public boolean traversal_in_progress = false;
     public String selected_traversal = "Breadth-First Search";
 
     @Override
@@ -65,11 +67,11 @@ public class Main extends ApplicationAdapter {
     public void create_menu() {
         menu = new Stage();
         table = new Table();
-        popup = new Table();
+        error_popup = new Table();
 
         table.setFillParent(true);
-        popup.setFillParent(true);
-        popup.setVisible(false);
+        error_popup.setFillParent(true);
+        error_popup.setVisible(false);
 
         // Create all the different elements for the UI
         skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -82,7 +84,8 @@ public class Main extends ApplicationAdapter {
 
         start_node_input = new TextField("", skin);
         end_node_input = new TextField("", skin);
-        traversal_speed_slider = new Slider(1,20,1,false, skin);
+        traversal_speed_slider = new Slider(0.1f,10.0f,0.1f,false, skin);
+        traversal_speed_slider.setValue(traversal_speed);
         start_node_input.setMessageText("Enter the start node");
         end_node_input.setMessageText("Enter the end node");
         start_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
@@ -91,9 +94,10 @@ public class Main extends ApplicationAdapter {
         fps_counter = new Label("FPS: ", skin);
         node_counter = new Label("Nodes: ", skin);
         edge_counter = new Label("Edges: ", skin);
-        popup_label = new Label("", skin);
-        popup_label.setColor(1,0,0,1);
-        traversal_speed_label = new Label("Traversal Speed: " + (int) traversal_speed_slider.getValue(), skin);
+        error_popup_label = new Label("", skin);
+        error_popup_label.setColor(1,0,0,1);
+        traversal_speed_label = new Label("Traversal Speed: " + traversal_speed_slider.getValue(), skin);
+        colour_key_information = new Label("TEST", skin);
 
         traversal_options = new SelectBox<>(skin);
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
@@ -189,17 +193,21 @@ public class Main extends ApplicationAdapter {
         // Testing elements
         table.add(recreate_test_elements_button).pad(5).row();
 
-        popup.add(popup_label);
+        // Colour key information
+        // TODO: MAKE TABLE SPECIFICALLY FOR KEY & ALIGN TO BOTTOM LEFT
+
+        // Error message label
+        error_popup.add(error_popup_label);
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
-        popup.align(Align.topLeft);
+        error_popup.align(Align.topLeft);
         table.setPosition(15,0);
-        popup.setPosition(15,-600);
+        error_popup.setPosition(15,-600);
 
         // Add the table, and subsequent buttons, to the menu stage
         menu.addActor(table);
-        menu.addActor(popup);
+        menu.addActor(error_popup);
     }
 
     // Render loop
@@ -215,6 +223,7 @@ public class Main extends ApplicationAdapter {
             sr.rect(250,0,10,1440); // Margin for UI
             edge_render();
             node_render(); // Render after so they are placed on top of the edge lines
+            colour_key_render();
         sr.end();
 
         batch.begin();
@@ -229,7 +238,7 @@ public class Main extends ApplicationAdapter {
         for(Node node: graph.get_nodes()){ // Loop over each node in the graph
             for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
                 if(edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one of the target node
-                    edge.render(sr); // Draw the edge
+                    edge.render(sr); // Draw the edge one time, rather than for both directions of the bidirectional edge
                 }
             }
         }
@@ -240,6 +249,14 @@ public class Main extends ApplicationAdapter {
         for(Node node: graph.get_nodes()){ // Loop over each node in the graph
             node.render(sr); // Draw each node after all its edges have been drawn
         }
+    }
+
+    public void colour_key_render(){
+        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);
+        sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);
+        sr.rect(10,95, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE);
+        sr.rect(10,130, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);
+        sr.rect(10,165, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);
     }
 
     // Menu render

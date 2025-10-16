@@ -17,13 +17,17 @@ public class UI {
     }
 
     public static void start_traversal_button_function(Main main){
+        if (main.traversal_in_progress){
+            main.error_popup_label.setText("Traversal is already running");
+            return;
+        }
         if(main.start_node == main.end_node){ // Make sure inputted nodes are unique
-            main.popup_label.setText("Start node cannot be the same \nas the end node");
+            main.error_popup_label.setText("Start node cannot be the same \nas the end node");
             main.valid_setup = false;
             return;
         }
         if(main.valid_setup){
-            Inputs.start_traversal(main.graph, main.selected_traversal, main.traversal_speed, main.start_node, main.end_node); // Start traversal
+            Inputs.start_traversal(main.graph, main.selected_traversal, main.traversal_speed, main.start_node, main.end_node, main); // Start traversal
         }
     }
 
@@ -36,60 +40,60 @@ public class UI {
     }
 
     public static void recreate_test_elements_button_function(Main main){
-        Testing_Functions.create(main.graph, main.node_radius); // Create testing node grid
+        Testing_Functions.create(main.graph, main.node_radius, main); // Create testing node grid
     }
 
     public static void traversal_speed_input_function(Main main){
-        main.traversal_speed = (int) main.traversal_speed_slider.getValue(); // Get divider value from slider
-        main.traversal_speed_label.setText("Traversal Speed: " + (int) main.traversal_speed); // Edit label below slider
+        main.traversal_speed = main.traversal_speed_slider.getValue(); // Get divider value from slider
+        main.traversal_speed_label.setText("Traversal Speed: " + main.traversal_speed); // Edit label below slider
     }
 
     public static void start_node_input_function(Main main){
-        main.popup.setVisible(true); // Ensure error label displays regardless of status
+        main.error_popup.setVisible(true); // Ensure error label displays regardless of status
         try {
             int user_start_node = Integer.parseInt(main.start_node_input.getText()); // Ensure only integer values can be inputted
 
             if (user_start_node == main.end_node) {
-                main.popup_label.setText("Start node cannot be the same \nas the end node"); // Make sure inputted nodes are unique
+                main.error_popup_label.setText("Start node cannot be the same \nas the end node"); // Make sure inputted nodes are unique
                 main.valid_setup = false;
                 return;
             }
             if (main.graph.get_node_id(user_start_node) == null) {
-                main.popup_label.setText("Desired start node does not exist"); // Make sure node exists
+                main.error_popup_label.setText("Desired start node does not exist"); // Make sure node exists
                 main.valid_setup = false;
                 return;
             }
 
             main.start_node = user_start_node;
-            main.popup_label.setText(""); // Clear errors if valid
+            main.error_popup_label.setText(""); // Clear errors if valid
             main.valid_setup = true;
         } catch (NumberFormatException e) {
-            main.popup_label.setText("Invalid start node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+            main.error_popup_label.setText("Invalid start node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
             main.valid_setup = false;
         }
     }
 
     public static void end_node_input_function(Main main){
-        main.popup.setVisible(true);
+        main.error_popup.setVisible(true);
         try {
             int user_end_node = Integer.parseInt(main.end_node_input.getText()); // Ensure only integer values can be inputted
 
             if (user_end_node == main.start_node) {
-                main.popup_label.setText("End node cannot be the same \nas the start node"); // Make sure inputted nodes are unique
+                main.error_popup_label.setText("End node cannot be the same \nas the start node"); // Make sure inputted nodes are unique
                 main.valid_setup = false;
                 return;
             }
             if (main.graph.get_node_id(user_end_node) == null) {
-                main.popup_label.setText("Desired end node does not exist"); // Make sure node exists
+                main.error_popup_label.setText("Desired end node does not exist"); // Make sure node exists
                 main.valid_setup = false;
                 return;
             }
 
             main.end_node = user_end_node;
-            main.popup_label.setText(""); // Clear errors if valid
+            main.error_popup_label.setText(""); // Clear errors if valid
             main.valid_setup = true;
         } catch (NumberFormatException e) {
-            main.popup_label.setText("Invalid end node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+            main.error_popup_label.setText("Invalid end node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
             main.valid_setup = false;
         }
     }

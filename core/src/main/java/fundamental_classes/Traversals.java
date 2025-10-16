@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.ArrayList;
 
 public class Traversals {
-    public static void bfs(Graph graph, float traversal_speed, int start_node, int end_node) {
+    public static void bfs(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
+        main.traversal_in_progress = true;
         long operation_speed = (long) (250 / traversal_speed);
 
         new Thread(() -> { // New local render thread to allow for nodes to change colours
@@ -35,24 +36,26 @@ public class Traversals {
                     }
                 });
 
-                try {
-                    Thread.sleep(operation_speed); // Wait the set time between each step so the user can follow
-                } catch (InterruptedException e) { // what is happening
-                    e.printStackTrace();
-                }
-
                 for (Node neighbour : current_node.getNeighbours()) { // Check each neighbour of the current node
+                    try {
+                        Thread.sleep(operation_speed); // Wait the set time between each step so the user can follow
+                    } catch (InterruptedException e) { // what is happening
+                        e.printStackTrace();
+                    }
+
                     if (!discovered.contains(neighbour)) {
                         discovered.add(neighbour); // Add the neighbour to the queue if not already discovered
                         queue.add(neighbour);
                         Gdx.app.postRunnable(() -> {
                             if (neighbour != start && neighbour != end) {
                                 neighbour.setColor(Color.YELLOW); // Highlight yellow to show it's been looked at
-                            }                                     // but not yet been the current node
+                                highlight_edge(current_node, neighbour);     // but not yet been the current node
+                            }
                         });
                         if (neighbour.equals(end)) {
-                            found = true; // Update to true if neighbour is end, and immediately break from loop
-                            break;        // To prevent unnecessary computation
+                            found = true; // Update to true if neighbour is the desired end node, and immediately break from loop
+                            main.traversal_in_progress = false;                             // To prevent unnecessary computation
+                            break;
                         }
                     }
                 }
@@ -70,19 +73,32 @@ public class Traversals {
         }).start(); // Ensure the thread is switched to, instead of main render thread
     }
 
-    public static void dfs(Graph graph, float traversal_speed, int start_node, int end_node) {
+    public static void dfs(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
 
     }
 
-    public static void dijkstra(Graph graph, float traversal_speed, int start_node, int end_node) {
+    public static void dijkstra(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
 
     }
 
-    public static void A_star(Graph graph, float traversal_speed, int start_node, int end_node) {
+    public static void A_star(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
 
     }
 
-    public static void minimum_spanning_tree(Graph graph, float traversal_speed, int start_node, int end_node) {
+    public static void minimum_spanning_tree(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
 
+    }
+
+    public static void highlight_edge(Node node, Node neighbour) {
+        for (Edge edge: node.getEdges()){
+            if(edge.getTarget().getId() == neighbour.getId()){
+                edge.setColour(Color.PURPLE);
+            }
+        }
+        for (Edge edge: neighbour.getEdges()){
+            if(edge.getTarget().getId() == node.getId()){
+                edge.setColour(Color.PURPLE);
+            }
+        }
     }
 }

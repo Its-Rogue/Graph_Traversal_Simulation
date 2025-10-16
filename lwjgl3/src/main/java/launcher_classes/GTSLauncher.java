@@ -17,12 +17,11 @@ public class GTSLauncher {
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
-        Graphics.DisplayMode primary_mode = Lwjgl3ApplicationConfiguration.getDisplayMode();
+        Graphics.DisplayMode primary_mode = Lwjgl3ApplicationConfiguration.getDisplayMode(); // Get primary monitor's information
         configuration.setTitle("Graph Traversal Simulation");
         configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate);
         configuration.useVsync(false);
-        configuration.setWindowedMode(2560, 1440);
-        configuration.setFullscreenMode(primary_mode);
+        configuration.setFullscreenMode(primary_mode); // Set window to size of primary monitor, in full screen mode
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
         return configuration;
     }

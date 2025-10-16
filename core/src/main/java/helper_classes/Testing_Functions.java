@@ -3,13 +3,18 @@ package helper_classes;
 import fundamental_classes.*;
 
 public class Testing_Functions {
-    public static void create(Graph graph, int node_radius) {
+    public static void create(Graph graph, int node_radius, Main main) {
         int rows = 5;
         int cols = 7;
         int spacing_x = 150;
         int spacing_y = 150;
         int start_x = 500;
         int start_y = 500;
+
+        Graph.clear();
+        main.start_node = 0;
+        main.end_node = 34;
+        main.valid_setup = true;
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {

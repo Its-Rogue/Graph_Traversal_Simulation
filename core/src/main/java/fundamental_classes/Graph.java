@@ -33,8 +33,7 @@ public class Graph {
         }
     }
 
-    // Gets the ID of the target and source node, checks they exist, then adds a forward
-    // and reverse edge between them
+    // Gets the ID of the target and source node, checks they exist, then adds a bidirectional edge between them
     public void add_edge(int source_id, int target_id, int weight) {
         Node source = get_node_id(source_id);
         Node target = get_node_id(target_id);

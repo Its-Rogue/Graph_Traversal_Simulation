@@ -46,12 +46,7 @@ public class Inputs {
             }
 
             for (Node node: graph.get_nodes()){
-                if (node.getPosition().x > mouse_x + 100 || node.getPosition().x < mouse_x - 100) continue;
-                if (node.getPosition().y > mouse_y + 100 || node.getPosition().y < mouse_y - 100) continue; // Skip checking the node if it is too far away from the clicked position
-                float dx = mouse_x - node.getPosition().x;
-                float dy = mouse_y - node.getPosition().y;
-                float distance =  (float) Math.sqrt(dx * dx + dy * dy);
-                if (distance < 4 * node_radius) {
+                if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) < 4 * node_radius) {
                     return; // Do not allow the new node to be placed too close to an already existing node
                 }
             }
@@ -62,14 +57,7 @@ public class Inputs {
         // Right click detection and code for edge creation
         if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: graph.get_nodes()) { // Loop over each node
-                if (node.getPosition().x > mouse_x + 100 || node.getPosition().x < mouse_x - 100) continue;
-                if (node.getPosition().y > mouse_y + 100 || node.getPosition().y < mouse_y - 100) continue;// Skip checking the node if it is too far away from the clicked position
-
-                float dx = mouse_x - node.getPosition().x;
-                float dy = mouse_y - node.getPosition().y;
-                float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
-                if (distance <= node_radius) {
+                if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
                     if(first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColor(Color.GREEN);
@@ -90,27 +78,19 @@ public class Inputs {
         // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
-                if (node.getPosition().x > mouse_x + 100 || node.getPosition().x < mouse_x - 100) continue;
-                if (node.getPosition().y > mouse_y + 100 || node.getPosition().y < mouse_y - 100) continue; // Skip checking the node if it is too far away from the clicked position
-
-                float dx = mouse_x - node.getPosition().x;
-                float dy = mouse_y - node.getPosition().y;
-                float distance =  (float) Math.sqrt(dx * dx + dy * dy);
-
-                if (distance <= node_radius) {
-                    if(first_node_selected != null) {
-                        if(first_node_selected != node) {
-                            graph.remove_edge(first_node_selected.getId(), node.getId());
+                if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
+                    if(first_node_selected != null) { // Checks to see if a node has already been selected
+                        if(first_node_selected != node) { // Checks to see if the node selected again is different
+                            graph.remove_edge(first_node_selected.getId(), node.getId()); // Remove edge if nodes are different
                         }
-                        first_node_selected.setColor(Color.WHITE);
+                        first_node_selected.setColor(Color.WHITE); // Reset first node selected
                         if(first_node_selected == node) {
                             graph.remove_node(node.getId());
-                            first_node_selected = null;
                         }
                     } else {
                         graph.remove_node(node.getId());
-                        first_node_selected = null;
                     }
+                    first_node_selected = null;
                     return;
                 }
             }
@@ -121,23 +101,33 @@ public class Inputs {
         }
     }
 
+    // First check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
+    public static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y) {
+        if (pos_x > mouse_x + 100 || pos_x < mouse_x - 100) return (int) Double.POSITIVE_INFINITY;
+        if (pos_y > mouse_y + 100 || pos_y < mouse_y - 100) return (int) Double.POSITIVE_INFINITY; // Skip checking the node if it is too far away from the clicked position
+
+        float dx = mouse_x - pos_x;
+        float dy = mouse_y - pos_y;
+        return (int) Math.sqrt(dx * dx + dy * dy);
+    }
+
     // Switch case the chosen traversal option
-    public static void start_traversal(Graph graph, String selected_traversal, float traversal_speed, int start_node, int end_node) {
+    public static void start_traversal(Graph graph, String selected_traversal, float traversal_speed, int start_node, int end_node, Main main) {
         switch (selected_traversal) {
             case "Breadth-First Search":
-                Traversals.bfs(graph, traversal_speed, start_node, end_node);
+                Traversals.bfs(graph, traversal_speed, start_node, end_node, main);
                 break;
             case "Depth-First Search":
-                Traversals.dfs(graph, traversal_speed, start_node, end_node);
+                Traversals.dfs(graph, traversal_speed, start_node, end_node, main);
                 break;
             case "Dijkstra's":
-                Traversals.dijkstra(graph, traversal_speed, start_node, end_node);
+                Traversals.dijkstra(graph, traversal_speed, start_node, end_node, main);
                 break;
             case "A*":
-                Traversals.A_star(graph, traversal_speed, start_node, end_node);
+                Traversals.A_star(graph, traversal_speed, start_node, end_node, main);
                 break;
             case "Minimum Spanning Tree":
-                Traversals.minimum_spanning_tree(graph, traversal_speed, start_node, end_node);
+                Traversals.minimum_spanning_tree(graph, traversal_speed, start_node, end_node, main);
                 break;
         }
     }
