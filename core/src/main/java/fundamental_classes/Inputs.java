@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 
 public class Inputs {
     static Node first_node_selected = null;
+
     // Simple method for all variants of input
     public static void all(Graph graph, int node_radius) {
         menu();
@@ -14,12 +15,10 @@ public class Inputs {
 
     // Code specifically related to menu hotkeys
     public static void menu() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            Gdx.app.exit(); // Exit the gdx app
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
             System.exit(0); // Exit the java program
         }
     }
-
 
     // Code for the detection of left and right-clicking with the mouse
     public static void mouse_click(Graph graph, int node_radius) {
@@ -31,7 +30,7 @@ public class Inputs {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
             // Ensure the pointer is within the screen bounds
-            if(mouse_x >= Gdx.graphics.getWidth() - node_radius) {
+            if (mouse_x >= Gdx.graphics.getWidth() - node_radius) {
                 mouse_x = Gdx.graphics.getWidth() - node_radius;
             } else if (mouse_x <= node_radius + menu_padding) {
                 if (mouse_x <= menu_padding) {
@@ -55,10 +54,10 @@ public class Inputs {
         }
 
         // Right click detection and code for edge creation
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
-                    if(first_node_selected == null){ // Checks if a node has already been selected
+                    if (first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColor(Color.GREEN);
                     } else if (first_node_selected != node) {
@@ -79,12 +78,12 @@ public class Inputs {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
                 if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
-                    if(first_node_selected != null) { // Checks to see if a node has already been selected
-                        if(first_node_selected != node) { // Checks to see if the node selected again is different
+                    if (first_node_selected != null) { // Checks to see if a node has already been selected
+                        if (first_node_selected != node) { // Checks to see if the node selected again is different
                             graph.remove_edge(first_node_selected.getId(), node.getId()); // Remove edge if nodes are different
                         }
                         first_node_selected.setColor(Color.WHITE); // Reset first node selected
-                        if(first_node_selected == node) {
+                        if (first_node_selected == node) {
                             graph.remove_node(node.getId());
                         }
                     } else {
@@ -94,7 +93,7 @@ public class Inputs {
                     return;
                 }
             }
-            if(first_node_selected != null){ // Reset selected node if node selected then user clicks again not on a different node
+            if (first_node_selected != null){ // Reset selected node if node selected then user clicks again not on a different node
                 first_node_selected.setColor(Color.WHITE);
                 first_node_selected = null;
             }

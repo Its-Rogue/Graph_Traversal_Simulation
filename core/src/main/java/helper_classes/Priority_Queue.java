@@ -23,7 +23,7 @@ public class Priority_Queue {
         int min = heap.get(0);
         int last = heap.remove(heap.size() - 1);
 
-        if (!heap.isEmpty()) { // fix
+        if (!heap.isEmpty()) {
             heap.set(0, last);
             bubble_down(0);
         }

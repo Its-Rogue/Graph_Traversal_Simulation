@@ -26,7 +26,7 @@ public class Graph {
             id = next_node_ID++;
         }
 
-        if(adj_list.size() < 100){
+        if (adj_list.size() < 100){
             vec2 position  = new vec2(x_pos, y_pos);
             Node node = new Node(node_radius, id, position, new ArrayList<>(), new ArrayList<>(), Color.WHITE);
             adj_list.put(node, new ArrayList<>());
@@ -39,8 +39,8 @@ public class Graph {
         Node target = get_node_id(target_id);
         if (source == null || target == null) return;
 
-        for(Edge edge: adj_list.get(source)) {
-            if(edge.getTarget().getId() == target.getId()) {
+        for (Edge edge: adj_list.get(source)) {
+            if (edge.getTarget().getId() == target.getId()) {
                 return;
             }
         }
@@ -61,7 +61,7 @@ public class Graph {
         }
 
         for (Node n: node.getNeighbours()) {
-            n.getNeighbours().remove(node_id);
+            n.getNeighbours().remove(node);
         }
 
         adj_list.remove(node);
@@ -100,7 +100,6 @@ public class Graph {
     public List<Edge> get_edges(Node node) {
         return adj_list.getOrDefault(node, Collections.emptyList());
     }
-
 
     // Returns the total number of edges in the graph
     public int get_total_edges() {

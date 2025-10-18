@@ -52,7 +52,7 @@ public class Edge {
 
     // Render code for each edge of a node in the graph, with width 2
     public void render(ShapeRenderer sr) {
-        sr.setColor(getColour());
+        sr.setColor(colour);
         sr.rectLine(source.getPosition().x, source.getPosition().y, target.getPosition().x, target.getPosition().y, 2);
     }
 }

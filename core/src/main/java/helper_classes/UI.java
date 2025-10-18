@@ -1,12 +1,10 @@
 package helper_classes;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import fundamental_classes.*;
 
 public class UI {
     public static void quit_button_function(){
-        Gdx.app.exit(); // Exit the GDX program
         System.exit(0); // Exit the whole Java program
     }
 
@@ -14,27 +12,43 @@ public class UI {
         Graph.clear(); // Clear the adj list of the graph
         main.start_node = 0; // Reset chosen start and end node
         main.end_node = 0;
+        main.traversal_cancelled = false;
+        main.traversal_in_progress = false;
     }
 
     public static void start_traversal_button_function(Main main){
         if (main.traversal_in_progress){
+            main.error_popup.setVisible(true);
             main.error_popup_label.setText("Traversal is already running");
             return;
         }
-        if(main.start_node == main.end_node){ // Make sure inputted nodes are unique
+        if (main.start_node == main.end_node){ // Make sure inputted nodes are unique
             main.error_popup_label.setText("Start node cannot be the same \nas the end node");
             main.valid_setup = false;
             return;
         }
-        if(main.valid_setup){
+        if (main.valid_setup){
+            reset_colours(main);
+            main.traversal_cancelled = false;
             Inputs.start_traversal(main.graph, main.selected_traversal, main.traversal_speed, main.start_node, main.end_node, main); // Start traversal
         }
     }
 
     public static void reset_traversal_button_function(Main main){
+        main.traversal_in_progress = false;
+        main.traversal_cancelled = true;
+        reset_colours(main);
+    }
+
+    public static void reset_colours(Main main){
         for (Node node: main.graph.get_nodes()){
             if (node.getColor() != Color.WHITE){
                 node.setColor(Color.WHITE); // Reset all nodes' colour if they aren't white
+            }
+            for (Edge edge: main.graph.get_edges(node)){
+                if (edge.getColour() != Color.WHITE){
+                    edge.setColour(Color.WHITE); // Reset all edges' colour if they aren't white
+                }
             }
         }
     }
@@ -45,7 +59,7 @@ public class UI {
 
     public static void traversal_speed_input_function(Main main){
         main.traversal_speed = main.traversal_speed_slider.getValue(); // Get divider value from slider
-        main.traversal_speed_label.setText("Traversal Speed: " + main.traversal_speed); // Edit label below slider
+        main.traversal_speed_label.setText(String.format("Traversal speed: %.1f", main.traversal_speed)); // Edit label below slider
     }
 
     public static void start_node_input_function(Main main){

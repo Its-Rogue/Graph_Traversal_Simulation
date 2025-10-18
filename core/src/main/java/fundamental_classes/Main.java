@@ -25,6 +25,7 @@ public class Main extends ApplicationAdapter {
 
     Table table;
     public Table error_popup;
+    Table colour_key;
     Skin skin;
     TextButton quit_button;
     TextButton reset_button;
@@ -50,6 +51,8 @@ public class Main extends ApplicationAdapter {
 
     public boolean valid_setup = false;
     public boolean traversal_in_progress = false;
+    public volatile boolean traversal_cancelled = false;
+
     public String selected_traversal = "Breadth-First Search";
 
     @Override
@@ -68,9 +71,11 @@ public class Main extends ApplicationAdapter {
         menu = new Stage();
         table = new Table();
         error_popup = new Table();
+        colour_key = new Table();
 
         table.setFillParent(true);
         error_popup.setFillParent(true);
+        colour_key.setFillParent(true);
         error_popup.setVisible(false);
 
         // Create all the different elements for the UI
@@ -96,8 +101,8 @@ public class Main extends ApplicationAdapter {
         edge_counter = new Label("Edges: ", skin);
         error_popup_label = new Label("", skin);
         error_popup_label.setColor(1,0,0,1);
-        traversal_speed_label = new Label("Traversal Speed: " + traversal_speed_slider.getValue(), skin);
-        colour_key_information = new Label("TEST", skin);
+        traversal_speed_label = new Label(String.format("Traversal speed: %.1f", traversal_speed), skin);
+        colour_key_information = new Label("HEROIN", skin);
 
         traversal_options = new SelectBox<>(skin);
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
@@ -168,7 +173,7 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        // Options for graph traversal
+        // Drop down menu options for graph traversal algorithm
         traversal_options.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -194,7 +199,7 @@ public class Main extends ApplicationAdapter {
         table.add(recreate_test_elements_button).pad(5).row();
 
         // Colour key information
-        // TODO: MAKE TABLE SPECIFICALLY FOR KEY & ALIGN TO BOTTOM LEFT
+        colour_key.add(colour_key_information);
 
         // Error message label
         error_popup.add(error_popup_label);
@@ -202,12 +207,14 @@ public class Main extends ApplicationAdapter {
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
         error_popup.align(Align.topLeft);
+        colour_key.setPosition(45,-1100);
         table.setPosition(15,0);
         error_popup.setPosition(15,-600);
 
         // Add the table, and subsequent buttons, to the menu stage
         menu.addActor(table);
         menu.addActor(error_popup);
+        menu.addActor(colour_key_information);
     }
 
     // Render loop
@@ -235,9 +242,9 @@ public class Main extends ApplicationAdapter {
 
     // Edge render loop
     public void edge_render(){
-        for(Node node: graph.get_nodes()){ // Loop over each node in the graph
-            for(Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
-                if(edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one of the target node
+        for (Node node: graph.get_nodes()){ // Loop over each node in the graph
+            for (Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
+                if (edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one of the target node
                     edge.render(sr); // Draw the edge one time, rather than for both directions of the bidirectional edge
                 }
             }
@@ -246,17 +253,17 @@ public class Main extends ApplicationAdapter {
 
     // Node render loop
     public void node_render(){
-        for(Node node: graph.get_nodes()){ // Loop over each node in the graph
+        for (Node node: graph.get_nodes()){ // Loop over each node in the graph
             node.render(sr); // Draw each node after all its edges have been drawn
         }
     }
 
     public void colour_key_render(){
-        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);
-        sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);
-        sr.rect(10,95, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE);
-        sr.rect(10,130, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);
-        sr.rect(10,165, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);
+        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE); // Visited node / edge
+        sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW); // Discovered node / edge
+        sr.rect(10,95, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Current node / edge
+        sr.rect(10,130, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);            // End node / edge
+        sr.rect(10,165, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);    // Start node / edge
     }
 
     // Menu render
@@ -271,8 +278,8 @@ public class Main extends ApplicationAdapter {
 
     // Edge weight render loop
     public void render_text(){
-        for(Node node: graph.get_nodes()){
-            if(node.getColor() == Color.PURPLE){
+        for (Node node: graph.get_nodes()){
+            if (node.getColor() == Color.PURPLE){
                 font.setColor(Color.WHITE);
             } else {
                 font.setColor(Color.BLACK);
@@ -282,11 +289,13 @@ public class Main extends ApplicationAdapter {
             font.draw(batch, text, node.getPosition().x - layout.width / 2, node.getPosition().y + layout.height / 2);
 
             // Draw edge weights centered on edges
-            for(Edge edge: graph.get_edges(node)){
-                font.setColor(Color.WHITE);
-                float midpoint_x = (edge.getSource().getPosition().x + edge.getTarget().getPosition().x) / 2f;
-                float midpoint_y = (edge.getSource().getPosition().y + edge.getTarget().getPosition().y) / 2f;
-                font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
+            if (!(selected_traversal.equals("Breadth-First Search") || selected_traversal.equals("Depth-First Search"))){
+                for (Edge edge: graph.get_edges(node)){
+                    font.setColor(Color.WHITE);
+                    float midpoint_x = (edge.getSource().getPosition().x + edge.getTarget().getPosition().x) / 2f;
+                    float midpoint_y = (edge.getSource().getPosition().y + edge.getTarget().getPosition().y) / 2f;
+                    font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
+                }
             }
         }
     }
