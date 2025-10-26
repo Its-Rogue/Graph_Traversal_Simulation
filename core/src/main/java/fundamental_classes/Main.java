@@ -17,29 +17,36 @@ import helper_classes.*;
 
 public class Main extends ApplicationAdapter {
     ShapeRenderer sr;
-    Stage menu;
+    Stage GUI;
     public Graph graph;
     BitmapFont font;
     SpriteBatch batch;
     GlyphLayout layout;
+    Skin skin;
 
     Table table;
     public Table error_popup;
-    Table colour_key;
-    Skin skin;
+
     TextButton quit_button;
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
     TextButton recreate_test_elements_button;
+
     public TextField start_node_input;
     public TextField end_node_input;
     public Slider traversal_speed_slider;
     public SelectBox<String> traversal_options;
+
     Label fps_counter;
     Label node_counter;
     Label edge_counter;
-    Label colour_key_information;
+    Label colour_key_text_header_label;
+    Label colour_key_text_green_label;
+    Label colour_key_text_red_label;
+    Label colour_key_text_orange_label;
+    Label colour_key_text_yellow_label;
+    Label colour_key_text_purple_label;
     public Label error_popup_label;
     public Label traversal_speed_label;
 
@@ -54,6 +61,12 @@ public class Main extends ApplicationAdapter {
     public volatile boolean traversal_cancelled = false;
 
     public String selected_traversal = "Breadth-First Search";
+    String colour_key_text_header = "Colour Key";
+    String colour_key_text_green = "Start node";
+    String colour_key_text_red = "End node";
+    String colour_key_text_orange = "Current node";
+    String colour_key_text_yellow = "Discovered node";
+    String colour_key_text_purple = "Node has been visited";
 
     @Override
     public void create() {
@@ -64,18 +77,16 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         layout = new GlyphLayout();
 
-        create_menu();
+        create_GUI();
     }
 
-    public void create_menu() {
-        menu = new Stage();
+    public void create_GUI() {
+        GUI = new Stage();
         table = new Table();
         error_popup = new Table();
-        colour_key = new Table();
 
         table.setFillParent(true);
         error_popup.setFillParent(true);
-        colour_key.setFillParent(true);
         error_popup.setVisible(false);
 
         // Create all the different elements for the UI
@@ -102,7 +113,12 @@ public class Main extends ApplicationAdapter {
         error_popup_label = new Label("", skin);
         error_popup_label.setColor(1,0,0,1);
         traversal_speed_label = new Label(String.format("Traversal speed: %.1f", traversal_speed), skin);
-        colour_key_information = new Label("HEROIN", skin);
+        colour_key_text_header_label = new Label(colour_key_text_header, skin);
+        colour_key_text_green_label = new Label(colour_key_text_green, skin);
+        colour_key_text_red_label = new Label(colour_key_text_red, skin);
+        colour_key_text_orange_label = new Label(colour_key_text_orange, skin);
+        colour_key_text_yellow_label = new Label(colour_key_text_yellow, skin);
+        colour_key_text_purple_label = new Label(colour_key_text_purple, skin);
 
         traversal_options = new SelectBox<>(skin);
         traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
@@ -173,7 +189,7 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        // Drop down menu options for graph traversal algorithm
+        // Drop down GUI options for graph traversal algorithm
         traversal_options.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -198,23 +214,18 @@ public class Main extends ApplicationAdapter {
         // Testing elements
         table.add(recreate_test_elements_button).pad(5).row();
 
-        // Colour key information
-        colour_key.add(colour_key_information);
-
         // Error message label
         error_popup.add(error_popup_label);
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
         error_popup.align(Align.topLeft);
-        colour_key.setPosition(45,-1100);
         table.setPosition(15,0);
         error_popup.setPosition(15,-600);
 
-        // Add the table, and subsequent buttons, to the menu stage
-        menu.addActor(table);
-        menu.addActor(error_popup);
-        menu.addActor(colour_key_information);
+        // Add the table, and subsequent buttons, to the GUI stage
+        GUI.addActor(table);
+        GUI.addActor(error_popup);
     }
 
     // Render loop
@@ -237,7 +248,7 @@ public class Main extends ApplicationAdapter {
             render_text(); // Render text after node and edges so it is drawn on top of these elements
         batch.end();
 
-        draw_menu(); // Draw the components of the menu
+        draw_GUI(); // Draw the components of the GUI
     }
 
     // Edge render loop
@@ -261,30 +272,43 @@ public class Main extends ApplicationAdapter {
     public void colour_key_render(){
         sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE); // Visited node / edge
         sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW); // Discovered node / edge
-        sr.rect(10,95, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Current node / edge
-        sr.rect(10,130, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);            // End node / edge
-        sr.rect(10,165, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);    // Start node / edge
+        sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);         // Explored node / edge
+        sr.rect(10,130, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Current node / edge
+        sr.rect(10,165, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);            // End node / edge
+        sr.rect(10,200, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);    // Start node / edge
+        sr.rect(10,228, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);     // Header underlining
     }
 
-    // Menu render
-    public void draw_menu() {
+    // GUI render
+    public void draw_GUI() {
         fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond()); // FPS counter
         node_counter.setText("Nodes: " + graph.get_nodes().size()); // Number of nodes in scene
         edge_counter.setText("Edges: " + graph.get_total_edges()); // Number of edges in scene
-        Gdx.input.setInputProcessor(menu); // Set the input processor to the menu, to check for mouse clicks on the buttons
-        menu.act(delta); // Pass delta through to ensure all the actors animate in a synchronised matter
-        menu.draw(); // Actually draw the menu
+        Gdx.input.setInputProcessor(GUI); // Set the input processor to the GUI, to check for mouse clicks on the buttons
+        GUI.act(delta); // Pass delta through to ensure all the actors animate in a synchronised matter
+        GUI.draw(); // Actually draw the GUI
     }
 
-    // Edge weight render loop
+    // Edge weight & colour key render loop
     public void render_text(){
+        // Colour key code
+        font.setColor(Color.WHITE);
+        font.draw(batch, "Colour Key", 10, 245);     // Header
+        font.draw(batch, "Start node", 40, 220);     // Green
+        font.draw(batch, "End node", 40, 185);       // Red
+        font.draw(batch, "Explored node", 40, 150);   // Orange
+        font.draw(batch, "Current node", 40, 115);  // Cyan
+        font.draw(batch, "Discovered node", 40, 80); // Yellow
+        font.draw(batch, "Visited node", 40, 45);    // Purple
+
+        // Edge weight code
         for (Node node: graph.get_nodes()){
             if (node.getColor() == Color.PURPLE){
-                font.setColor(Color.WHITE);
+                font.setColor(Color.WHITE); // Increase readability
             } else {
                 font.setColor(Color.BLACK);
             }
-            String text = Integer.toString(node.getId());
+            String text = Integer.toString(node.getId()); // Get node ID and cast to a string
             layout.setText(font, text);
             font.draw(batch, text, node.getPosition().x - layout.width / 2, node.getPosition().y + layout.height / 2);
 
@@ -309,7 +333,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         sr.dispose(); // Dispose of the shape renderer to free up resources
-        menu.dispose(); // Dispose of the menu stage to free up resources
+        GUI.dispose(); // Dispose of the GUI stage to free up resources
         font.dispose(); // Dispose of the font to free up resources
         batch.dispose(); // Dispose of the batch to free up resources
     }

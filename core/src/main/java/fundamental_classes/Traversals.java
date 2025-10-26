@@ -33,6 +33,10 @@ public class Traversals {
             while (!queue.isEmpty() && !found[0] && !main.traversal_cancelled) { // Loop through until found or no more nodes in graph
                 Node current_node = queue.remove(0); // Remove the node at the front of the queue
 
+                if (main.traversal_cancelled) {
+                    return;
+                }
+
                 Gdx.app.postRunnable(() -> {
                     if (current_node != start && current_node != end) {
                         current_node.setColor(Color.ORANGE); // Highlight the current node if it is not start / end
@@ -75,7 +79,7 @@ public class Traversals {
                             current_node.setColor(Color.PURPLE); // Highlight node purple to show no more operations
                         }                                        // will be performed with it
                         for (Node node : current_node.getNeighbours()) {
-                            if (visited.contains(node) && discovered.contains(node)) {
+                            if (visited.contains(node)) {
                                 highlight_edge(graph, current_node, node, Color.PURPLE);
                             }
                         }
@@ -95,6 +99,7 @@ public class Traversals {
 
         ArrayList<Node> stack = new ArrayList<>();
         ArrayList<Node> discovered = new ArrayList<>();
+        ArrayList<Node> visited = new ArrayList<>(); // Specifically for traversal colour updating, not needed for algorithm
         final boolean[] found = {false};
 
         new Thread(() -> {
@@ -106,25 +111,29 @@ public class Traversals {
             stack.add(start);
             discovered.add(start);
 
+            if (main.traversal_cancelled) {
+                return;
+            }
+
             while (!stack.isEmpty() && !found[0] && !main.traversal_cancelled) {
                 Node current_node = stack.remove(stack.size() - 1);
                 ArrayList<Node> neighbours = new ArrayList<>(current_node.getNeighbours());
 
                 Gdx.app.postRunnable(() -> {
                     if (current_node != start && current_node != end) {
-                        current_node.setColor(Color.ORANGE); // Highlight the current node if it is not start / end
+                        current_node.setColor(Color.CYAN); // Highlight the current node if it is not start / end
                     }
                 });
 
                 for (Node neighbour : neighbours) {
                     if (main.traversal_cancelled) {
-                        return;
+                        return; // Stop traversal if the user has reset it
                     }
 
                     sleep(operation_speed);
 
                     if (!discovered.contains(neighbour)) {
-                        stack.add(neighbour);
+                        stack.add(neighbour); // Add neighbour to stack if not already discovered
                         discovered.add(neighbour);
 
                         Gdx.app.postRunnable(() -> {
@@ -136,22 +145,35 @@ public class Traversals {
 
                         if (neighbour.equals(end)){
                             Gdx.app.postRunnable(() -> {
-                                highlight_edge(graph, current_node, neighbour, Color.RED);
-                            });
+                                highlight_edge(graph, current_node, neighbour, Color.RED); // Highlight edge between current node and end
+                            });                                                            // To show the path
                             found[0] = true;
                             break;
                         }
                     }
                 }
 
+                if (!visited.contains(current_node)) {
+                    visited.add(current_node);
+                }
+
                 Gdx.app.postRunnable(() -> {
-                    if (current_node != end && !main.traversal_cancelled) {
-                        if (current_node != start){
-                            current_node.setColor(Color.PURPLE);
-                        }
-                        for (Node neighbour : current_node.getNeighbours()) {
-                            if (neighbour.getColor().equals(Color.PURPLE) || neighbour.equals(start)) {
-                                highlight_edge(graph, current_node, neighbour, Color.PURPLE);
+                    for (Node node : visited) {
+                        if (node != start && node != end) {
+                            boolean allNeighboursVisited = true;
+                            for (Node neighbour : node.getNeighbours()) {
+                                if (!visited.contains(neighbour)) {
+                                    allNeighboursVisited = false;
+                                    break;
+                                }
+                            }
+                            if (allNeighboursVisited) {
+                                node.setColor(Color.PURPLE);
+                                if(visited.contains(node) && discovered.contains(node)) {}
+                            } else {
+                                if (node == current_node) {
+                                    node.setColor(Color.ORANGE);
+                                }
                             }
                         }
                     }
