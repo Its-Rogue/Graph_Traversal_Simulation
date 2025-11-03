@@ -59,17 +59,17 @@ public class Inputs {
                 if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
                     if (first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
-                        node.setColor(Color.GREEN);
+                        node.setColour(Color.GREEN);
                     } else if (first_node_selected != node) {
                         graph.add_edge(first_node_selected.getId(), node.getId(), 1); // Creates the edge between the nodes
-                        first_node_selected.setColor(Color.WHITE);
+                        first_node_selected.setColour(Color.WHITE);
                         first_node_selected = null; // Clears the first node to be used again
                     }
                     return; // Return so the loop is not run all the way through if the desired node is already found
                 }
             }
             if(first_node_selected != null){
-                first_node_selected.setColor(Color.WHITE);
+                first_node_selected.setColour(Color.WHITE);
                 first_node_selected = null; // Set to null if not right-clicked on a node
             }
         }
@@ -82,7 +82,7 @@ public class Inputs {
                         if (first_node_selected != node) { // Checks to see if the node selected again is different
                             graph.remove_edge(first_node_selected.getId(), node.getId()); // Remove edge if nodes are different
                         }
-                        first_node_selected.setColor(Color.WHITE); // Reset first node selected
+                        first_node_selected.setColour(Color.WHITE); // Reset first node selected
                         if (first_node_selected == node) {
                             graph.remove_node(node.getId());
                         }
@@ -94,7 +94,7 @@ public class Inputs {
                 }
             }
             if (first_node_selected != null){ // Reset selected node if node selected then user clicks again not on a different node
-                first_node_selected.setColor(Color.WHITE);
+                first_node_selected.setColour(Color.WHITE);
                 first_node_selected = null;
             }
         }

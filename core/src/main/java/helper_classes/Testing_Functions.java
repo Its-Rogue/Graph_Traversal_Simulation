@@ -5,7 +5,7 @@ import fundamental_classes.*;
 public class Testing_Functions {
     public static void create(Graph graph, int node_radius, Main main) {
         int rows = 9;
-        int cols = 11;
+        int columns = 11;
         int spacing_x = 150;
         int spacing_y = 150;
         int start_x = 500;
@@ -17,30 +17,30 @@ public class Testing_Functions {
         main.valid_setup = true;
 
         for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+            for (int c = 0; c < columns; c++) {
                 int x = start_x + c * spacing_x;
                 int y = start_y + r * spacing_y;
                 graph.add_node(node_radius, x, y);
             }
         }
 
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                int id = r * cols + c;
-                if (r > 0) {
-                    int up_id = (r - 1) * cols + c;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                int id = i * columns + j;
+                if (i > 0) {
+                    int up_id = (i - 1) * columns + j;
                     graph.add_edge(id, up_id, 1);
                 }
-                if (r < rows - 1) {
-                    int down_id = (r + 1) * cols + c;
+                if (i < rows - 1) {
+                    int down_id = (i + 1) * columns + j;
                     graph.add_edge(id, down_id, 1);
                 }
-                if (c > 0) {
-                    int left_id = r * cols + (c - 1);
+                if (j > 0) {
+                    int left_id = i * columns + (j - 1);
                     graph.add_edge(id, left_id, 1);
                 }
-                if (c < cols - 1) {
-                    int right_id = r * cols + (c + 1);
+                if (j < columns - 1) {
+                    int right_id = i * columns + (j + 1);
                     graph.add_edge(id, right_id, 1);
                 }
             }

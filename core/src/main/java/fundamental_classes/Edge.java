@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class Edge {
     Node source;
     Node target;
-    int weight = 1; // Default weight if none is inputted
-    Color colour = Color.WHITE;
+    int weight;
+    Color colour;
 
     // Constructors for the edges
     public Edge(Node source, Node target, int weight, Color colour) {
@@ -22,16 +22,8 @@ public class Edge {
         return source;
     }
 
-    public void setSource(Node source) {
-        this.source = source;
-    }
-
     public Node getTarget() {
         return target;
-    }
-
-    public void setTarget(Node target) {
-        this.target = target;
     }
 
     public int getWeight() {

@@ -42,8 +42,8 @@ public class UI {
 
     public static void reset_colours(Main main){
         for (Node node: main.graph.get_nodes()){
-            if (node.getColor() != Color.WHITE){
-                node.setColor(Color.WHITE); // Reset all nodes' colour if they aren't white
+            if (node.getColour() != Color.WHITE){
+                node.setColour(Color.WHITE); // Reset all nodes' colour if they aren't white
             }
             for (Edge edge: main.graph.get_edges(node)){
                 if (edge.getColour() != Color.WHITE){

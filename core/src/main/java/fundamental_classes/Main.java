@@ -54,7 +54,7 @@ public class Main extends ApplicationAdapter {
     public int start_node;
     public int end_node;
     public float traversal_speed = 1.0f;
-    float delta;
+    float frame_delta;
 
     public boolean valid_setup = false;
     public boolean traversal_in_progress = false;
@@ -270,13 +270,13 @@ public class Main extends ApplicationAdapter {
     }
 
     public void colour_key_render(){
-        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE); // Visited node / edge
-        sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW); // Discovered node / edge
-        sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);         // Explored node / edge
+        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);  // Visited node / edge
+        sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);  // Discovered node / edge
+        sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);          // Explored node / edge
         sr.rect(10,130, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Current node / edge
-        sr.rect(10,165, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);            // End node / edge
-        sr.rect(10,200, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);    // Start node / edge
-        sr.rect(10,228, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);     // Header underlining
+        sr.rect(10,165, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);             // End node / edge
+        sr.rect(10,200, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);     // Start node / edge
+        sr.rect(10,228, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);      // Header underlining
     }
 
     // GUI render
@@ -285,7 +285,7 @@ public class Main extends ApplicationAdapter {
         node_counter.setText("Nodes: " + graph.get_nodes().size()); // Number of nodes in scene
         edge_counter.setText("Edges: " + graph.get_total_edges()); // Number of edges in scene
         Gdx.input.setInputProcessor(GUI); // Set the input processor to the GUI, to check for mouse clicks on the buttons
-        GUI.act(delta); // Pass delta through to ensure all the actors animate in a synchronised matter
+        GUI.act(frame_delta); // Pass delta through to ensure all the actors animate in a synchronised matter
         GUI.draw(); // Actually draw the GUI
     }
 
@@ -296,14 +296,14 @@ public class Main extends ApplicationAdapter {
         font.draw(batch, "Colour Key", 10, 245);     // Header
         font.draw(batch, "Start node", 40, 220);     // Green
         font.draw(batch, "End node", 40, 185);       // Red
-        font.draw(batch, "Explored node", 40, 150);   // Orange
-        font.draw(batch, "Current node", 40, 115);  // Cyan
+        font.draw(batch, "Explored node", 40, 150);  // Orange
+        font.draw(batch, "Current node", 40, 115);   // Cyan
         font.draw(batch, "Discovered node", 40, 80); // Yellow
         font.draw(batch, "Visited node", 40, 45);    // Purple
 
         // Edge weight code
         for (Node node: graph.get_nodes()){
-            if (node.getColor() == Color.PURPLE){
+            if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED){
                 font.setColor(Color.WHITE); // Increase readability
             } else {
                 font.setColor(Color.BLACK);
@@ -326,7 +326,7 @@ public class Main extends ApplicationAdapter {
 
     // Other uncategorisable calculations that need to happen every frame
     public void calculations(){
-        delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
+        frame_delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
     }
 
     // Dispose of unneeded elements

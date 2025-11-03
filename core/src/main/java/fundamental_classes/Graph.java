@@ -28,7 +28,7 @@ public class Graph {
 
         if (adj_list.size() < 100){
             vec2 position  = new vec2(x_pos, y_pos);
-            Node node = new Node(node_radius, id, position, new ArrayList<>(), new ArrayList<>(), Color.WHITE);
+            Node node = new Node(node_radius, id, position, new ArrayList<>(), Color.WHITE);
             adj_list.put(node, new ArrayList<>());
         }
     }
