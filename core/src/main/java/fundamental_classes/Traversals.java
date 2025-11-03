@@ -2,8 +2,12 @@ package fundamental_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import helper_classes.Priority_Queue;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Traversals {
     static long operation_speed_base = 250;
@@ -139,7 +143,7 @@ public class Traversals {
                         Gdx.app.postRunnable(() -> {
                             highlight_edge(graph, current_node, neighbour, Color.YELLOW);
                             if(neighbour != start && neighbour != end) {
-                                neighbour.setColor(Color.YELLOW);
+                                neighbour.setColor(Color.YELLOW); // Set neighbour to yellow
                             }
                         });
 
@@ -154,24 +158,26 @@ public class Traversals {
                 }
 
                 if (!visited.contains(current_node)) {
-                    visited.add(current_node);
+                    visited.add(current_node); // Help track whether all the neighbours to a node have been visited
                 }
 
                 Gdx.app.postRunnable(() -> {
                     for (Node node : visited) {
                         if (node != start && node != end) {
-                            boolean allNeighboursVisited = true;
+                            boolean all_neighbours_visited = true;
                             for (Node neighbour : node.getNeighbours()) {
                                 if (!visited.contains(neighbour)) {
-                                    allNeighboursVisited = false;
+                                    all_neighbours_visited = false;
                                     break;
                                 }
                             }
-                            if (allNeighboursVisited) {
+                            if (all_neighbours_visited) { // Highlight edge and node purple if all neighbours visited
                                 node.setColor(Color.PURPLE);
-                                if(visited.contains(node) && discovered.contains(node)) {}
+                                if (visited.contains(node) && discovered.contains(node)) {
+                                    highlight_edge(graph, current_node, node, Color.PURPLE);
+                                }
                             } else {
-                                if (node == current_node) {
+                                if (node == current_node) { // Else, highlight the node orange if it has been visited but its neighbours haven't
                                     node.setColor(Color.ORANGE);
                                 }
                             }
@@ -183,7 +189,71 @@ public class Traversals {
     }
 
     public static void dijkstra(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
+        int num_nodes = graph.get_nodes().size();
+        int[] costs = new int[num_nodes];
+        Arrays.fill(costs, (int) Double.POSITIVE_INFINITY);
+        costs[start_node] = 0;
 
+        Priority_Queue costs_pq = new Priority_Queue();
+        Priority_Queue nodes_pq = new Priority_Queue();
+        costs_pq.add(0);
+        nodes_pq.add(start_node);
+
+        Boolean[] visited = new Boolean[num_nodes];
+        Arrays.fill(visited, false);
+
+        Node[] previous_nodes = new Node[num_nodes];
+
+        long operation_speed = (long) (operation_speed_base / traversal_speed);
+
+        new Thread(() -> {
+            while (!nodes_pq.isEmpty() && !costs_pq.isEmpty() && !main.traversal_cancelled) {
+                if (main.traversal_cancelled) {
+                    return;
+                }
+
+                int current_cost = costs_pq.poll();
+                Node current_node = graph.get_node_id(nodes_pq.poll());
+
+                Gdx.app.postRunnable(() -> {
+                    current_node.setColor(Color.CYAN);
+                });
+
+                if (!visited[current_node.getId()]) {
+                    visited[current_node.getId()] = true;
+
+                    for (Node neighbour : current_node.getNeighbours()) {
+                        sleep(operation_speed);
+                        Edge edge_between = null;
+                        for (Edge edge : current_node.getEdges()) {
+                            if (edge.getTarget() == neighbour) {
+                                edge_between = edge;
+                            }
+                        }
+
+                        if (edge_between == null) {
+                            continue;
+                        }
+
+                        int edge_cost = edge_between.getWeight();
+
+                        if (edge_cost > 0){
+                            int new_cost = current_cost + edge_cost;
+                            if (new_cost < costs[neighbour.getId()]) {
+                                costs[neighbour.getId()] = new_cost;
+                                previous_nodes[neighbour.getId()] = current_node;
+                                costs_pq.add(new_cost);
+                                nodes_pq.add(neighbour.getId());
+
+                                Gdx.app.postRunnable(() -> {
+                                    current_node.setColor(Color.ORANGE);
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }).start();
     }
 
     public static void A_star(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
