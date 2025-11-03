@@ -22,11 +22,13 @@ public class UI {
             main.error_popup_label.setText("Traversal is already running");
             return;
         }
+
         if (main.start_node == main.end_node){ // Make sure inputted nodes are unique
             main.error_popup_label.setText("Start node cannot be the same \nas the end node");
             main.valid_setup = false;
             return;
         }
+
         if (main.valid_setup){
             reset_colours(main);
             main.traversal_cancelled = false;

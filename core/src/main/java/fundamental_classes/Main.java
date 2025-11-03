@@ -121,7 +121,7 @@ public class Main extends ApplicationAdapter {
         colour_key_text_purple_label = new Label(colour_key_text_purple, skin);
 
         traversal_options = new SelectBox<>(skin);
-        traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Dijkstra's", "A*", "Minimum Spanning Tree");
+        traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Bidirectional", "Dijkstra's", "A*", "Bellman-Ford");
 
         // Create the listeners for the UI button presses
 

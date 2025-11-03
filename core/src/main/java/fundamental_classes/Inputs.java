@@ -119,14 +119,16 @@ public class Inputs {
             case "Depth-First Search":
                 Traversals.dfs(graph, traversal_speed, start_node, end_node, main);
                 break;
+            case "Bidirectional":
+                Traversals.bidirectional(graph, traversal_speed, start_node, end_node, main);
             case "Dijkstra's":
                 Traversals.dijkstra(graph, traversal_speed, start_node, end_node, main);
                 break;
             case "A*":
                 Traversals.A_star(graph, traversal_speed, start_node, end_node, main);
                 break;
-            case "Minimum Spanning Tree":
-                Traversals.minimum_spanning_tree(graph, traversal_speed, start_node, end_node, main);
+            case "Bellman-Ford":
+                Traversals.Bellman_Ford(graph, traversal_speed, start_node, end_node, main);
                 break;
         }
     }

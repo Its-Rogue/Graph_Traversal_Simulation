@@ -189,6 +189,10 @@ public class Traversals {
         }).start();
     }
 
+    public static void bidirectional(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
+
+    }
+
     public static void dijkstra(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
         int num_nodes = graph.get_nodes().size();
         int[] costs = new int[num_nodes];
@@ -284,7 +288,7 @@ public class Traversals {
 
     }
 
-    public static void minimum_spanning_tree(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
+    public static void Bellman_Ford(Graph graph, float traversal_speed, int start_node, int end_node, Main main) {
 
     }
 

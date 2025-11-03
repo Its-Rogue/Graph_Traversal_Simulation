@@ -5,9 +5,10 @@ This is a Graph Traversal Simulator, that uses LibGDX as a framework for visuali
 The simulator allows for the creation of a custom graph with weighted edges, and a series of different traversal algorithms. These include: 
 - Depth First
 - Breadth First
+- Bidirectional
 - Dijkstra's
 - A*
-- Minimum Spanning Tree
+- Bellman-Ford
 
 ## UI
 
@@ -17,7 +18,9 @@ On the left hand side of the screen, using Scene2D, there is a variety of elemen
 - Choose the start and end node for finding the shortest path
 - Quit the program
 
-Additionally, at the top of the UI, there are some statistics about the scene, such as node count and FPS.
+Additionally, at the top of the UI, there are some statistics about the scene, such as node and edge count.
+
+If an error is made in any of the options, a suitable error message will be displayed with what the problem is so that it can be fixed, thus allowing for the traversal to be started.
 
 ##  Controls
 
