@@ -7,10 +7,10 @@ import helper_classes.*;
 import java.util.List;
 
 public class Node {
-    int radius, id;
-    vec2 position;
-    List<Node> neighbours;
-    Color colour;
+    private final int radius, id;
+    private final vec2 position;
+    private final List<Node> neighbours;
+    private Color colour;
 
     // Constructor for the nodes
     public Node(int radius, int id, vec2 position, List<Node> neighbours, Color colour) {
@@ -35,6 +35,14 @@ public class Node {
         return neighbours;
     }
 
+    public void add_neighbour(Node neighbour){
+        neighbours.add(neighbour);
+    }
+
+    public void remove_neighbour(Node neighbour){
+        neighbours.remove(neighbour);
+    }
+
     public Color getColour() {
         return colour;
     }
@@ -46,6 +54,6 @@ public class Node {
     // Render code for each node within the adj list in the graph
     public void render(ShapeRenderer sr){
         sr.setColor(colour);
-        sr.circle(position.x, position.y, radius);
+        sr.circle(position.getX(), position.getY(), radius);
     }
 }

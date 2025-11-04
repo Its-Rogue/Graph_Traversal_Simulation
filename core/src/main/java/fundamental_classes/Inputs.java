@@ -8,9 +8,9 @@ public class Inputs {
     static Node first_node_selected = null;
 
     // Simple method for all variants of input
-    public static void all(Graph graph, int node_radius) {
+    public static void all(Graph graph, int node_radius, Main main) {
         menu();
-        mouse_click(graph, node_radius);
+        mouse_click(graph, node_radius, main);
     }
 
     // Code specifically related to menu hotkeys
@@ -21,7 +21,7 @@ public class Inputs {
     }
 
     // Code for the detection of left and right-clicking with the mouse
-    public static void mouse_click(Graph graph, int node_radius) {
+    public static void mouse_click(Graph graph, int node_radius, Main main) {
         int menu_padding = 250; // Padding to ensure the nodes are not hidden by the menu UI
         int mouse_x = Gdx.input.getX();
         int mouse_y = Gdx.graphics.getHeight() - Gdx.input.getY(); // GetY() is based on the top left corner, thus needs offsetting
@@ -45,23 +45,23 @@ public class Inputs {
             }
 
             for (Node node: graph.get_nodes()){
-                if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) < 4 * node_radius) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) < 4 * node_radius) {
                     return; // Do not allow the new node to be placed too close to an already existing node
                 }
             }
 
-            graph.add_node(node_radius, mouse_x, mouse_y); // Add a new node at the coordinates clicked at if in a valid location
+            graph.add_node(node_radius, mouse_x, mouse_y, main); // Add a new node at the coordinates clicked at if in a valid location
         }
 
         // Right click detection and code for edge creation
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: graph.get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= node_radius) {
                     if (first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColour(Color.GREEN);
                     } else if (first_node_selected != node) {
-                        graph.add_edge(first_node_selected.getId(), node.getId(), 1); // Creates the edge between the nodes
+                        graph.add_edge(first_node_selected.getId(), node.getId(), 1, main); // Creates the edge between the nodes
                         first_node_selected.setColour(Color.WHITE);
                         first_node_selected = null; // Clears the first node to be used again
                     }
@@ -77,17 +77,17 @@ public class Inputs {
         // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: graph.get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().x, node.getPosition().y, mouse_x, mouse_y) <= node_radius) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= node_radius) {
                     if (first_node_selected != null) { // Checks to see if a node has already been selected
                         if (first_node_selected != node) { // Checks to see if the node selected again is different
-                            graph.remove_edge(first_node_selected.getId(), node.getId()); // Remove edge if nodes are different
+                            graph.remove_edge(first_node_selected.getId(), node.getId(), main); // Remove edge if nodes are different
                         }
                         first_node_selected.setColour(Color.WHITE); // Reset first node selected
                         if (first_node_selected == node) {
-                            graph.remove_node(node.getId());
+                            graph.remove_node(node.getId(), main);
                         }
                     } else {
-                        graph.remove_node(node.getId());
+                        graph.remove_node(node.getId(), main);
                     }
                     first_node_selected = null;
                     return;

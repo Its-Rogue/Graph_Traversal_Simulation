@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -234,7 +236,7 @@ public class Main extends ApplicationAdapter {
         Gdx.input.setInputProcessor(null); // Change the input processor back to the main simulation
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 1.0f); // Set the background colour to #000000
         calculations(); // Perform necessary but ungroupable calculations each frame, such as delta time
-        Inputs.all(graph, node_radius); // Perform all keyboard and mouse input processing
+        Inputs.all(graph, node_radius, Main.this); // Perform all keyboard and mouse input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
             sr.setColor(Color.WHITE);
@@ -310,15 +312,21 @@ public class Main extends ApplicationAdapter {
             }
             String text = Integer.toString(node.getId()); // Get node ID and cast to a string
             layout.setText(font, text);
-            font.draw(batch, text, node.getPosition().x - layout.width / 2, node.getPosition().y + layout.height / 2);
+            font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
             // Draw edge weights centered on edges
             if (!(selected_traversal.equals("Breadth-First Search") || selected_traversal.equals("Depth-First Search"))){
+                int loop_count = 0;
                 for (Edge edge: graph.get_edges(node)){
+                    if (loop_count % 2 == 1){
+                        loop_count++;
+                        continue;
+                    }
                     font.setColor(Color.WHITE);
-                    float midpoint_x = (edge.getSource().getPosition().x + edge.getTarget().getPosition().x) / 2f;
-                    float midpoint_y = (edge.getSource().getPosition().y + edge.getTarget().getPosition().y) / 2f;
+                    float midpoint_x = (edge.getSource().getPosition().getX() + edge.getTarget().getPosition().getX()) / 2f;
+                    float midpoint_y = (edge.getSource().getPosition().getY() + edge.getTarget().getPosition().getY()) / 2f;
                     font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
+                    loop_count++;
                 }
             }
         }

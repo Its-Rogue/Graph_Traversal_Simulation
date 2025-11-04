@@ -20,7 +20,7 @@ public class Testing_Functions {
             for (int c = 0; c < columns; c++) {
                 int x = start_x + c * spacing_x;
                 int y = start_y + r * spacing_y;
-                graph.add_node(node_radius, x, y);
+                graph.add_node(node_radius, x, y, main);
             }
         }
 
@@ -29,19 +29,19 @@ public class Testing_Functions {
                 int id = i * columns + j;
                 if (i > 0) {
                     int up_id = (i - 1) * columns + j;
-                    graph.add_edge(id, up_id, 1);
+                    graph.add_edge(id, up_id, 1, main);
                 }
                 if (i < rows - 1) {
                     int down_id = (i + 1) * columns + j;
-                    graph.add_edge(id, down_id, 1);
+                    graph.add_edge(id, down_id, 1, main);
                 }
                 if (j > 0) {
                     int left_id = i * columns + (j - 1);
-                    graph.add_edge(id, left_id, 1);
+                    graph.add_edge(id, left_id, 1, main);
                 }
                 if (j < columns - 1) {
                     int right_id = i * columns + (j + 1);
-                    graph.add_edge(id, right_id, 1);
+                    graph.add_edge(id, right_id, 1, main);
                 }
             }
         }
