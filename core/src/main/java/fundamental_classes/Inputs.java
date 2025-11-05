@@ -8,9 +8,9 @@ public class Inputs {
     static Node first_node_selected = null;
 
     // Simple method for all variants of input
-    public static void all(Graph graph, int node_radius, Main main) {
+    public static void all(Runtime_Data data) {
         menu();
-        mouse_click(graph, node_radius, main);
+        mouse_click(data);
     }
 
     // Code specifically related to menu hotkeys
@@ -21,7 +21,7 @@ public class Inputs {
     }
 
     // Code for the detection of left and right-clicking with the mouse
-    public static void mouse_click(Graph graph, int node_radius, Main main) {
+    public static void mouse_click(Runtime_Data data) {
         int menu_padding = 250; // Padding to ensure the nodes are not hidden by the menu UI
         int mouse_x = Gdx.input.getX();
         int mouse_y = Gdx.graphics.getHeight() - Gdx.input.getY(); // GetY() is based on the top left corner, thus needs offsetting
@@ -30,38 +30,38 @@ public class Inputs {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
             // Ensure the pointer is within the screen bounds
-            if (mouse_x >= Gdx.graphics.getWidth() - node_radius) {
-                mouse_x = Gdx.graphics.getWidth() - node_radius;
-            } else if (mouse_x <= node_radius + menu_padding) {
+            if (mouse_x >= Gdx.graphics.getWidth() - data.getNode_radius()) {
+                mouse_x = Gdx.graphics.getWidth() - data.getNode_radius();
+            } else if (mouse_x <= data.getNode_radius() + menu_padding) {
                 if (mouse_x <= menu_padding) {
                     return; // If clicked within the menu area, do not create a node
                 }
-                mouse_x = node_radius + menu_padding + 10;
+                mouse_x = data.getNode_radius() + menu_padding + 10;
             }
-            if (mouse_y >= Gdx.graphics.getHeight() - node_radius) {
-                mouse_y = Gdx.graphics.getHeight() - node_radius; // Place node fully on screen if clicked in a position where it would be obscured
-            } else if (mouse_y <= node_radius) {
-                mouse_y = node_radius; // Place node fully on screen if clicked in a position where it would be obscured
+            if (mouse_y >= Gdx.graphics.getHeight() - data.getNode_radius()) {
+                mouse_y = Gdx.graphics.getHeight() - data.getNode_radius(); // Place node fully on screen if clicked in a position where it would be obscured
+            } else if (mouse_y <= data.getNode_radius()) {
+                mouse_y = data.getNode_radius(); // Place node fully on screen if clicked in a position where it would be obscured
             }
 
-            for (Node node: graph.get_nodes()){
-                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) < 4 * node_radius) {
+            for (Node node: data.getGraph().get_nodes()){
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) < 4 * data.getNode_radius()) {
                     return; // Do not allow the new node to be placed too close to an already existing node
                 }
             }
 
-            graph.add_node(node_radius, mouse_x, mouse_y, main); // Add a new node at the coordinates clicked at if in a valid location
+            data.getGraph().add_node(data.getNode_radius(), mouse_x, mouse_y, data); // Add a new node at the coordinates clicked at if in a valid location
         }
 
         // Right click detection and code for edge creation
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
-            for (Node node: graph.get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= node_radius) {
+            for (Node node: data.getGraph().get_nodes()) { // Loop over each node
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= data.getNode_radius()) {
                     if (first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColour(Color.GREEN);
                     } else if (first_node_selected != node) {
-                        graph.add_edge(first_node_selected.getId(), node.getId(), 1, main); // Creates the edge between the nodes
+                        data.getGraph().add_edge(first_node_selected.getId(), node.getId(), 1, data); // Creates the edge between the nodes
                         first_node_selected.setColour(Color.WHITE);
                         first_node_selected = null; // Clears the first node to be used again
                     }
@@ -76,18 +76,18 @@ public class Inputs {
 
         // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            for (Node node: graph.get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= node_radius) {
+            for (Node node: data.getGraph().get_nodes()) { // Loop over each node
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= data.getNode_radius()) {
                     if (first_node_selected != null) { // Checks to see if a node has already been selected
                         if (first_node_selected != node) { // Checks to see if the node selected again is different
-                            graph.remove_edge(first_node_selected.getId(), node.getId(), main); // Remove edge if nodes are different
+                            data.getGraph().remove_edge(first_node_selected.getId(), node.getId(), data); // Remove edge if nodes are different
                         }
                         first_node_selected.setColour(Color.WHITE); // Reset first node selected
                         if (first_node_selected == node) {
-                            graph.remove_node(node.getId(), main);
+                            data.getGraph().remove_node(node.getId(), data);
                         }
                     } else {
-                        graph.remove_node(node.getId(), main);
+                        data.getGraph().remove_node(node.getId(), data);
                     }
                     first_node_selected = null;
                     return;
@@ -111,25 +111,38 @@ public class Inputs {
     }
 
     // Switch case the chosen traversal option
-    public static void start_traversal(Graph graph, String selected_traversal, float traversal_speed, int start_node, int end_node, Main main) {
-        switch (selected_traversal) {
+    public static void start_traversal(Runtime_Data data) {
+        switch (data.getSelected_traversal()) {
             case "Breadth-First Search":
-                Traversals.bfs(graph, traversal_speed, start_node, end_node, main);
+                Traversals.bfs(data);
+                clear_error_display(data);
                 break;
             case "Depth-First Search":
-                Traversals.dfs(graph, traversal_speed, start_node, end_node, main);
+                Traversals.dfs(data);
+                clear_error_display(data);
                 break;
             case "Bidirectional":
-                Traversals.bidirectional(graph, traversal_speed, start_node, end_node, main);
+                Traversals.bidirectional(data);
+                clear_error_display(data);
             case "Dijkstra's":
-                Traversals.dijkstra(graph, traversal_speed, start_node, end_node, main);
+                Traversals.dijkstra(data);
+                clear_error_display(data);
                 break;
             case "A*":
-                Traversals.A_star(graph, traversal_speed, start_node, end_node, main);
+                Traversals.A_star(data);
+                clear_error_display(data);
                 break;
             case "Bellman-Ford":
-                Traversals.Bellman_Ford(graph, traversal_speed, start_node, end_node, main);
+                Traversals.Bellman_Ford(data);
+                clear_error_display(data);
                 break;
         }
+    }
+
+    // Clear any error messages that the user may have caused upon the completion / termination of a traversal
+    private static void clear_error_display(Runtime_Data data) {
+        data.getError_popup_label().setText("");
+        data.getError_popup_label().setVisible(false);
+        data.getError_popup().setVisible(false);
     }
 }

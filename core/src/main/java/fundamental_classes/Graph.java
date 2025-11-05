@@ -18,8 +18,8 @@ public class Graph {
     // Finds the lowest available ID from the priority queue, then creates a node with
     // that ID at the specified coords with the specified radius, then adds it to the
     // adj list
-    public void add_node(int node_radius, int x_pos, int y_pos, Main main) {
-        if (traversal_in_progress_check(main)) return;
+    public void add_node(int node_radius, int x_pos, int y_pos, Runtime_Data data) {
+        if (traversal_in_progress_check(data)) return;
 
         int id;
         if (!free_IDs.isEmpty()) {
@@ -36,8 +36,8 @@ public class Graph {
     }
 
     // Gets the ID of the target and source node, checks they exist, then adds a bidirectional edge between them
-    public void add_edge(int source_id, int target_id, int weight, Main main) {
-        if (traversal_in_progress_check(main)) return;
+    public void add_edge(int source_id, int target_id, int weight, Runtime_Data data) {
+        if (traversal_in_progress_check(data)) return;
 
         Node source = get_node_id(source_id);
         Node target = get_node_id(target_id);
@@ -57,8 +57,8 @@ public class Graph {
 
     // Gets the node from the ID, checks if it exists, then removes every edge it has
     // before remove the node itself and adding its ID back to the list of available IDs
-    public void remove_node(int node_id, Main main) {
-        if (traversal_in_progress_check(main)) return;
+    public void remove_node(int node_id, Runtime_Data data) {
+        if (traversal_in_progress_check(data)) return;
         Node node = get_node_id(node_id);
         if (node == null) return;
         for (List<Edge> edges : adj_list.values()) {
@@ -75,8 +75,8 @@ public class Graph {
 
     // Get IDs for the source and target edge, checks if they exist and then removes
     // the forward and reverse edges for the pair
-    public void remove_edge(int source_id, int target_id, Main main) {
-        if (traversal_in_progress_check(main)) return;
+    public void remove_edge(int source_id, int target_id, Runtime_Data data) {
+        if (traversal_in_progress_check(data)) return;
         Node source = get_node_id(source_id);
         Node target = get_node_id(target_id);
         if (source == null || target == null) return;
@@ -125,11 +125,11 @@ public class Graph {
 
     // Check to see if a traversal is already in progress to prevent the graph being altered,
     // preventing null data being fed into traversal algorithms
-    private static boolean traversal_in_progress_check(Main main){
-        if (main.traversal_in_progress) {
-            main.error_popup_label.setText("You cannot edit the graph at this \ntime, a traversal is in progress.");
-            main.error_popup_label.setVisible(true);
-            main.error_popup.setVisible(true);
+    private static boolean traversal_in_progress_check(Runtime_Data data){
+        if (data.isTraversal_in_progress()) {
+            data.getError_popup_label().setText("You cannot edit the graph at this \ntime, a traversal is in progress.");
+            data.getError_popup_label().setVisible(true);
+            data.getError_popup().setVisible(true);
             return true;
         }
         else return false;

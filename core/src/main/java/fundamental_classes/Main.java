@@ -20,25 +20,18 @@ import helper_classes.*;
 public class Main extends ApplicationAdapter {
     ShapeRenderer sr;
     Stage GUI;
-    public Graph graph;
+    Runtime_Data data;
     BitmapFont font;
     SpriteBatch batch;
     GlyphLayout layout;
-    Skin skin;
 
     Table table;
-    public Table error_popup;
 
     TextButton quit_button;
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
     TextButton recreate_test_elements_button;
-
-    public TextField start_node_input;
-    public TextField end_node_input;
-    public Slider traversal_speed_slider;
-    public SelectBox<String> traversal_options;
 
     Label fps_counter;
     Label node_counter;
@@ -49,20 +42,9 @@ public class Main extends ApplicationAdapter {
     Label colour_key_text_orange_label;
     Label colour_key_text_yellow_label;
     Label colour_key_text_purple_label;
-    public Label error_popup_label;
-    public Label traversal_speed_label;
 
-    public final int node_radius = 30;
-    public int start_node;
-    public int end_node;
-    public float traversal_speed = 1.0f;
     float frame_delta;
 
-    public boolean valid_setup = false;
-    public boolean traversal_in_progress = false;
-    public volatile boolean traversal_cancelled = false;
-
-    public String selected_traversal = "Breadth-First Search";
     String colour_key_text_header = "Colour Key";
     String colour_key_text_green = "Start node";
     String colour_key_text_red = "End node";
@@ -74,10 +56,10 @@ public class Main extends ApplicationAdapter {
     public void create() {
         // Initialise elements
         sr = new ShapeRenderer();
-        graph = new Graph();
         font  = new BitmapFont();
         batch = new SpriteBatch();
         layout = new GlyphLayout();
+        data =  new Runtime_Data();
 
         create_GUI();
     }
@@ -85,45 +67,37 @@ public class Main extends ApplicationAdapter {
     public void create_GUI() {
         GUI = new Stage();
         table = new Table();
-        error_popup = new Table();
 
         table.setFillParent(true);
-        error_popup.setFillParent(true);
-        error_popup.setVisible(false);
+        data.getError_popup().setFillParent(true);
+        data.getError_popup().setVisible(false);
 
         // Create all the different elements for the UI
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        quit_button = new TextButton("Quit", skin);
-        reset_button = new TextButton("Reset Graph", skin);
-        start_traversal_button = new TextButton("Start Traversal", skin);
-        reset_traversal_button = new TextButton("Reset Traversal", skin);
-        recreate_test_elements_button = new TextButton("Recreate Test Elements", skin);
+        quit_button = new TextButton("Quit", data.getSkin());
+        reset_button = new TextButton("Reset Graph", data.getSkin());
+        start_traversal_button = new TextButton("Start Traversal", data.getSkin());
+        reset_traversal_button = new TextButton("Reset Traversal", data.getSkin());
+        recreate_test_elements_button = new TextButton("Recreate Test Elements", data.getSkin());
 
-        start_node_input = new TextField("", skin);
-        end_node_input = new TextField("", skin);
-        traversal_speed_slider = new Slider(0.1f,10.0f,0.1f,false, skin);
-        traversal_speed_slider.setValue(traversal_speed);
-        start_node_input.setMessageText("Enter the start node");
-        end_node_input.setMessageText("Enter the end node");
-        start_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
-        end_node_input.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
+        data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
+        data.getStart_node_input().setMessageText("Enter the start node");
+        data.getEnd_node_input().setMessageText("Enter the end node");
+        data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
+        data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
 
-        fps_counter = new Label("FPS: ", skin);
-        node_counter = new Label("Nodes: ", skin);
-        edge_counter = new Label("Edges: ", skin);
-        error_popup_label = new Label("", skin);
-        error_popup_label.setColor(1,0,0,1);
-        traversal_speed_label = new Label(String.format("Traversal speed: %.1f", traversal_speed), skin);
-        colour_key_text_header_label = new Label(colour_key_text_header, skin);
-        colour_key_text_green_label = new Label(colour_key_text_green, skin);
-        colour_key_text_red_label = new Label(colour_key_text_red, skin);
-        colour_key_text_orange_label = new Label(colour_key_text_orange, skin);
-        colour_key_text_yellow_label = new Label(colour_key_text_yellow, skin);
-        colour_key_text_purple_label = new Label(colour_key_text_purple, skin);
+        fps_counter = new Label("FPS: ", data.getSkin());
+        node_counter = new Label("Nodes: ", data.getSkin());
+        edge_counter = new Label("Edges: ", data.getSkin());
+        data.getError_popup_label().setColor(1,0,0,1);
+        colour_key_text_header_label = new Label(colour_key_text_header, data.getSkin());
+        colour_key_text_green_label = new Label(colour_key_text_green, data.getSkin());
+        colour_key_text_red_label = new Label(colour_key_text_red, data.getSkin());
+        colour_key_text_orange_label = new Label(colour_key_text_orange, data.getSkin());
+        colour_key_text_yellow_label = new Label(colour_key_text_yellow, data.getSkin());
+        colour_key_text_purple_label = new Label(colour_key_text_purple, data.getSkin());
 
-        traversal_options = new SelectBox<>(skin);
-        traversal_options.setItems("Breadth-First Search", "Depth-First Search", "Bidirectional", "Dijkstra's", "A*", "Bellman-Ford");
+        data.getTraversal_options().setItems("Breadth-First Search", "Depth-First Search", "Bidirectional", "Dijkstra's", "A*", "Bellman-Ford");
 
         // Create the listeners for the UI button presses
 
@@ -139,7 +113,7 @@ public class Main extends ApplicationAdapter {
         reset_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.reset_button_function(Main.this);
+                UI.reset_button_function(data);
             }
         });
 
@@ -147,7 +121,7 @@ public class Main extends ApplicationAdapter {
         start_traversal_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.start_traversal_button_function(Main.this);
+                UI.start_traversal_button_function(data);
             }
         });
 
@@ -155,7 +129,7 @@ public class Main extends ApplicationAdapter {
         reset_traversal_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.reset_traversal_button_function(Main.this);
+                UI.reset_traversal_button_function(data);
             }
         });
 
@@ -163,39 +137,39 @@ public class Main extends ApplicationAdapter {
         recreate_test_elements_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.recreate_test_elements_button_function(Main.this);
+                UI.recreate_test_elements_button_function(data);
             }
         });
 
         // Get traversal speed from text input field
-        traversal_speed_slider.addListener(new ChangeListener() {
+        data.getTraversal_speed_slider().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.traversal_speed_input_function(Main.this);
+                UI.traversal_speed_input_function(data);
             }
         });
 
         // Text field input for the user's desired start node
-        start_node_input.addListener(new ChangeListener() {
+        data.getStart_node_input().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.start_node_input_function(Main.this);
+                UI.start_node_input_function(data);
             }
         });
 
         // Text field input for the user's desired end node
-        end_node_input.addListener(new ChangeListener() {
+        data.getEnd_node_input().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.end_node_input_function(Main.this);
+                UI.end_node_input_function(data);
             }
         });
 
         // Drop down GUI options for graph traversal algorithm
-        traversal_options.addListener(new ChangeListener() {
+        data.getTraversal_options().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.traversal_options_function(Main.this);
+                UI.traversal_options_function(data);
             }
         });
 
@@ -205,11 +179,11 @@ public class Main extends ApplicationAdapter {
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
         table.add(reset_button).pad(5).row();
-        table.add(traversal_speed_slider).pad(5).row();
-        table.add(traversal_speed_label).pad(5).row();
-        table.add(traversal_options).pad(5).row();
-        table.add(start_node_input).pad(5).row();
-        table.add(end_node_input).pad(5).row();
+        table.add(data.getTraversal_speed_slider()).pad(5).row();
+        table.add(data.getTraversal_speed_slider()).pad(5).row();
+        table.add(data.getTraversal_options()).pad(5).row();
+        table.add(data.getStart_node_input()).pad(5).row();
+        table.add(data.getEnd_node_input()).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
         table.add(reset_traversal_button).pad(5).row();
 
@@ -217,17 +191,17 @@ public class Main extends ApplicationAdapter {
         table.add(recreate_test_elements_button).pad(5).row();
 
         // Error message label
-        error_popup.add(error_popup_label);
+        data.getError_popup().add(data.getError_popup_label());
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
-        error_popup.align(Align.topLeft);
+        data.getError_popup().align(Align.topLeft);
         table.setPosition(15,0);
-        error_popup.setPosition(15,-600);
+        data.getError_popup().setPosition(15,-600);
 
         // Add the table, and subsequent buttons, to the GUI stage
         GUI.addActor(table);
-        GUI.addActor(error_popup);
+        GUI.addActor(data.getError_popup());
     }
 
     // Render loop
@@ -236,7 +210,7 @@ public class Main extends ApplicationAdapter {
         Gdx.input.setInputProcessor(null); // Change the input processor back to the main simulation
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 1.0f); // Set the background colour to #000000
         calculations(); // Perform necessary but ungroupable calculations each frame, such as delta time
-        Inputs.all(graph, node_radius, Main.this); // Perform all keyboard and mouse input processing
+        Inputs.all(data); // Perform all keyboard and mouse input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
             sr.setColor(Color.WHITE);
@@ -255,8 +229,8 @@ public class Main extends ApplicationAdapter {
 
     // Edge render loop
     public void edge_render(){
-        for (Node node: graph.get_nodes()){ // Loop over each node in the graph
-            for (Edge edge: graph.get_edges(node)){ // Loop over each edge that a node has
+        for (Node node: data.getGraph().get_nodes()){ // Loop over each node in the graph
+            for (Edge edge: data.getGraph().get_edges(node)){ // Loop over each edge that a node has
                 if (edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one of the target node
                     edge.render(sr); // Draw the edge one time, rather than for both directions of the bidirectional edge
                 }
@@ -266,7 +240,7 @@ public class Main extends ApplicationAdapter {
 
     // Node render loop
     public void node_render(){
-        for (Node node: graph.get_nodes()){ // Loop over each node in the graph
+        for (Node node: data.getGraph().get_nodes()){ // Loop over each node in the graph
             node.render(sr); // Draw each node after all its edges have been drawn
         }
     }
@@ -284,8 +258,8 @@ public class Main extends ApplicationAdapter {
     // GUI render
     public void draw_GUI() {
         fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond()); // FPS counter
-        node_counter.setText("Nodes: " + graph.get_nodes().size()); // Number of nodes in scene
-        edge_counter.setText("Edges: " + graph.get_total_edges()); // Number of edges in scene
+        node_counter.setText("Nodes: " + data.getGraph().get_nodes().size()); // Number of nodes in scene
+        edge_counter.setText("Edges: " + data.getGraph().get_total_edges()); // Number of edges in scene
         Gdx.input.setInputProcessor(GUI); // Set the input processor to the GUI, to check for mouse clicks on the buttons
         GUI.act(frame_delta); // Pass delta through to ensure all the actors animate in a synchronised matter
         GUI.draw(); // Actually draw the GUI
@@ -304,20 +278,21 @@ public class Main extends ApplicationAdapter {
         font.draw(batch, "Visited node", 40, 45);    // Purple
 
         // Edge weight code
-        for (Node node: graph.get_nodes()){
+        for (Node node: data.getGraph().get_nodes()){
             if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED){
                 font.setColor(Color.WHITE); // Increase readability
             } else {
                 font.setColor(Color.BLACK);
             }
+
             String text = Integer.toString(node.getId()); // Get node ID and cast to a string
             layout.setText(font, text);
             font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
             // Draw edge weights centered on edges
-            if (!(selected_traversal.equals("Breadth-First Search") || selected_traversal.equals("Depth-First Search"))){
+            if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search"))){
                 int loop_count = 0;
-                for (Edge edge: graph.get_edges(node)){
+                for (Edge edge: data.getGraph().get_edges(node)){
                     if (loop_count % 2 == 1){
                         loop_count++;
                         continue;

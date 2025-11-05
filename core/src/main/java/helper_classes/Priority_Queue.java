@@ -25,7 +25,7 @@ public class Priority_Queue {
 
         if (!heap.isEmpty()) {
             heap.set(0, last);
-            bubble_down(0);
+            bubble_down();
         }
 
         return min;
@@ -55,7 +55,8 @@ public class Priority_Queue {
         }
     }
 
-    private void bubble_down(int index) {
+    private void bubble_down() {
+        int index = 0;
         int size = heap.size();
         while (true) {
             int left = 2 * index + 1;
