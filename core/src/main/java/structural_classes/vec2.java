@@ -1,4 +1,4 @@
-package helper_classes;
+package structural_classes;
 
 public class vec2 {
     private final int x, y;

@@ -1,7 +1,8 @@
-package fundamental_classes;
+package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
-import helper_classes.*;
+import fundamental_classes.Runtime_Data;
+import helper_classes.Inputs;
 
 import java.util.*;
 
@@ -45,7 +46,12 @@ public class Graph {
 
         for (Edge edge: adj_list.get(source)) {
             if (edge.getTarget().getId() == target.getId()) {
-                return;
+                if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search")
+                || data.getSelected_traversal().equals("Bidirectional Search"))) {
+                    Inputs.change_edge_weight(data, source, target);
+                } else {
+                    return;
+                }
             }
         }
 

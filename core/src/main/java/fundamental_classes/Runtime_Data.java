@@ -7,17 +7,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import structural_classes.Graph;
 
 public class Runtime_Data {
-    private Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-    private Graph graph = new Graph();
-    private Table error_popup = new Table();
-    private TextField start_node_input = new TextField("", skin);;
-    private TextField end_node_input = new TextField("", skin);;
-    private Slider traversal_speed_slider = new Slider(0.1f,10.0f,0.1f,false, skin);
-    private SelectBox<String> traversal_options = new SelectBox<>(skin);
-    private Label error_popup_label = new Label("", skin);
-    private Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
+    private final Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+    private final Graph graph = new Graph();
+    private final Table error_popup = new Table();
+    private final Table change_edge_weight_popup = new Table();
+    private final TextField start_node_input = new TextField("", skin);
+    private final TextField end_node_input = new TextField("", skin);
+    private final TextField change_edge_weight_input = new TextField("", skin);
+    private final Slider traversal_speed_slider = new Slider(0.1f,10.0f,0.1f,false, skin);
+    private final SelectBox<String> traversal_options = new SelectBox<>(skin);
+    private final Label error_popup_label = new Label("", skin);
+    private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
     private int start_node, end_node;
     private float traversal_speed = 1.0f;
     private boolean valid_setup = false;
@@ -37,32 +40,16 @@ public class Runtime_Data {
         return end_node_input;
     }
 
-    public void setEnd_node_input(TextField end_node_input) {
-        this.end_node_input = end_node_input;
-    }
-
     public Table getError_popup() {
         return error_popup;
-    }
-
-    public void setError_popup(Table error_popup) {
-        this.error_popup = error_popup;
     }
 
     public Label getError_popup_label() {
         return error_popup_label;
     }
 
-    public void setError_popup_label(Label error_popup_label) {
-        this.error_popup_label = error_popup_label;
-    }
-
     public Graph getGraph() {
         return graph;
-    }
-
-    public void setGraph(Graph graph) {
-        this.graph = graph;
     }
 
     public int getNode_radius() {
@@ -89,10 +76,6 @@ public class Runtime_Data {
         return start_node_input;
     }
 
-    public void setStart_node_input(TextField start_node_input) {
-        this.start_node_input = start_node_input;
-    }
-
     public boolean isTraversal_canceled() {
         return traversal_canceled;
     }
@@ -113,10 +96,6 @@ public class Runtime_Data {
         return traversal_options;
     }
 
-    public void setTraversal_options(SelectBox<String> traversal_options) {
-        this.traversal_options = traversal_options;
-    }
-
     public float getTraversal_speed() {
         return traversal_speed;
     }
@@ -129,16 +108,8 @@ public class Runtime_Data {
         return traversal_speed_label;
     }
 
-    public void setTraversal_speed_label(Label traversal_speed_label) {
-        this.traversal_speed_label = traversal_speed_label;
-    }
-
     public Slider getTraversal_speed_slider() {
         return traversal_speed_slider;
-    }
-
-    public void setTraversal_speed_slider(Slider traversal_speed_slider) {
-        this.traversal_speed_slider = traversal_speed_slider;
     }
 
     public boolean isValid_setup() {
@@ -153,7 +124,11 @@ public class Runtime_Data {
         return skin;
     }
 
-    public void setSkin(Skin skin) {
-        this.skin = skin;
+    public TextField getChange_edge_weight_input() {
+        return change_edge_weight_input;
+    }
+
+    public Table getChange_edge_weight_popup() {
+        return change_edge_weight_popup;
     }
 }

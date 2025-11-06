@@ -1,4 +1,4 @@
-package helper_classes;
+package structural_classes;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

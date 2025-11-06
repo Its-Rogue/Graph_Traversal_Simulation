@@ -1,11 +1,16 @@
-package fundamental_classes;
+package helper_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import structural_classes.Edge;
+import structural_classes.Node;
+import fundamental_classes.Runtime_Data;
+import fundamental_classes.Traversals;
 
 public class Inputs {
-    static Node first_node_selected = null;
+    private static Node first_node_selected = null;
+    private final static int menu_padding = 250; // Padding to ensure the nodes are not hidden by the menu UI
 
     // Simple method for all variants of input
     public static void all(Runtime_Data data) {
@@ -22,7 +27,6 @@ public class Inputs {
 
     // Code for the detection of left and right-clicking with the mouse
     public static void mouse_click(Runtime_Data data) {
-        int menu_padding = 250; // Padding to ensure the nodes are not hidden by the menu UI
         int mouse_x = Gdx.input.getX();
         int mouse_y = Gdx.graphics.getHeight() - Gdx.input.getY(); // GetY() is based on the top left corner, thus needs offsetting
 
@@ -98,6 +102,19 @@ public class Inputs {
                 first_node_selected = null;
             }
         }
+    }
+
+    public static void change_edge_weight(Runtime_Data data, Node source, Node target) {
+        // Get edge from nodes, display text input field on top of edge with msg "Enter edge weight"
+        Edge edge;
+        for (Edge e: data.getGraph().get_edges(source)){
+            if (e.getTarget().equals(target)){
+                edge = e;
+            }
+        }
+        data.getChange_edge_weight_input().setVisible(true);
+        data.getChange_edge_weight_popup().setVisible(true);
+        // TODO: Figure out how this will work as well
     }
 
     // First check if the node is close enough to the clicked position, then calculate the distance to the centre of the node

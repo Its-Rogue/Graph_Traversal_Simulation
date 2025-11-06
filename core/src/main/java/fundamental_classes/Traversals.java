@@ -2,14 +2,17 @@ package fundamental_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import helper_classes.Priority_Queue;
+import structural_classes.Edge;
+import structural_classes.Graph;
+import structural_classes.Node;
+import structural_classes.Priority_Queue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Traversals {
-    static long operation_speed_base = 250;
+    static long operation_speed_base = 1;
 
     public static void bfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
@@ -73,14 +76,31 @@ public class Traversals {
                     }
                 }
 
-                if (!visited.contains(current_node) && !data.isTraversal_canceled()) { // If end node not found in neighbours of current node
+                if (!visited.contains(current_node) && !data.isTraversal_canceled()) {
                     visited.add(current_node); // Add to visited list
-                    if (current_node != start && current_node != end) {
-                        Gdx.app.postRunnable(() -> current_node.setColour(Color.PURPLE)); // Highlight node purple to show no more operations
-                    }                                                                        // will be performed with it
-                    for (Node node : current_node.getNeighbours()) {
-                        if (visited.contains(node)) {
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, node, Color.PURPLE));
+                }
+
+                for (Node node : visited) {
+                    if (node != start && node != end && !data.isTraversal_canceled()) {
+                        boolean all_neighbours_visited = true;
+                        for (Node neighbour : node.getNeighbours()) {
+                            if (!visited.contains(neighbour)) {
+                                all_neighbours_visited = false;
+                                break;
+                            }
+                        }
+
+                        if (all_neighbours_visited) { // Highlight edge and node purple if all neighbours visited
+                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
+                            if (visited.contains(node) && discovered.contains(node)) {
+                                for (Node neighbour : node.getNeighbours()) {
+                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
+                                }
+                            }
+                        } else {
+                            if (node == current_node) { // Else, highlight the node orange if it has been visited but its neighbours haven't
+                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));
+                            }
                         }
                     }
                 }

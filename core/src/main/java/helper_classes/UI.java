@@ -1,6 +1,9 @@
 package helper_classes;
 
 import com.badlogic.gdx.graphics.Color;
+import structural_classes.Edge;
+import structural_classes.Graph;
+import structural_classes.Node;
 import fundamental_classes.*;
 
 public class UI {
@@ -12,13 +15,13 @@ public class UI {
         Graph.clear(); // Clear the adj list of the graph
         data.setStart_node(0); // Reset chosen start and end node
         data.setEnd_node(0);
-        data.setTraversal_canceled(false);
+        data.setTraversal_canceled(false); // Reset status flags for authorising traversal start
         data.setTraversal_in_progress(false);
     }
 
     public static void start_traversal_button_function(Runtime_Data data){
         if (data.isTraversal_in_progress()){
-            data.getError_popup().setVisible(true);
+            data.getError_popup().setVisible(true); // Make sure the user can only run 1 traversal at a time
             data.getError_popup_label().setText("Traversal is already running");
             return;
         }
@@ -30,16 +33,16 @@ public class UI {
         }
 
         if (data.isValid_setup()){
-            reset_colours(data);
-            data.setTraversal_canceled(false);
+            reset_colours(data); // Ensure the nodes are all white in the graph
+            data.setTraversal_canceled(false); // Reset status to make sure the traversal doesn't instantly stop
             Inputs.start_traversal(data); // Start traversal
         }
     }
 
     public static void reset_traversal_button_function(Runtime_Data data){
-        data.setTraversal_in_progress(false);
-        data.setTraversal_canceled(true);
-        reset_colours(data);
+        data.setTraversal_canceled(true); // Stop the current traversal from running
+        data.setTraversal_in_progress(false); // Allow a new traversal to be run
+        reset_colours(data); // Reset colours of nodes in graph
     }
 
     public static void reset_colours(Runtime_Data data){
@@ -116,5 +119,17 @@ public class UI {
 
     public static void traversal_options_function(Runtime_Data data){
         data.setSelected_traversal(data.getTraversal_options().getSelected()); // Update selected traversal based on option from drop down menu
+    }
+
+    public static void change_edge_weight_function(Runtime_Data data){
+        int edge_weight = Integer.parseInt(data.getChange_edge_weight_input().getText());
+
+        if (!data.getTraversal_options().getSelected().equals("Bellman-Ford"));{
+            if (edge_weight < 0){
+                data.getError_popup().setVisible(true);
+                data.getError_popup_label().setText("Edge weight cannot be negative for chosen traversal option");
+                return;
+            }
+        } // TODO: Figure out how this will work
     }
 }

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
+import structural_classes.*;
 import helper_classes.*;
 
 public class Main extends ApplicationAdapter {
@@ -36,21 +37,8 @@ public class Main extends ApplicationAdapter {
     Label fps_counter;
     Label node_counter;
     Label edge_counter;
-    Label colour_key_text_header_label;
-    Label colour_key_text_green_label;
-    Label colour_key_text_red_label;
-    Label colour_key_text_orange_label;
-    Label colour_key_text_yellow_label;
-    Label colour_key_text_purple_label;
 
     float frame_delta;
-
-    String colour_key_text_header = "Colour Key";
-    String colour_key_text_green = "Start node";
-    String colour_key_text_red = "End node";
-    String colour_key_text_orange = "Current node";
-    String colour_key_text_yellow = "Discovered node";
-    String colour_key_text_purple = "Node has been visited";
 
     @Override
     public void create() {
@@ -59,7 +47,7 @@ public class Main extends ApplicationAdapter {
         font  = new BitmapFont();
         batch = new SpriteBatch();
         layout = new GlyphLayout();
-        data =  new Runtime_Data();
+        data =  new Runtime_Data(); // Class that holds variables / structures that need to be accessed throughout the entire program
 
         create_GUI();
     }
@@ -71,6 +59,8 @@ public class Main extends ApplicationAdapter {
         table.setFillParent(true);
         data.getError_popup().setFillParent(true);
         data.getError_popup().setVisible(false);
+        data.getChange_edge_weight_popup().setFillParent(true);
+        data.getChange_edge_weight_popup().setVisible(false);
 
         // Create all the different elements for the UI
 
@@ -83,19 +73,16 @@ public class Main extends ApplicationAdapter {
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
         data.getStart_node_input().setMessageText("Enter the start node");
         data.getEnd_node_input().setMessageText("Enter the end node");
+        data.getChange_edge_weight_input().setMessageText("Enter the edge weight");
         data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
+        data.getChange_edge_weight_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
+        data.getChange_edge_weight_input().setVisible(false);
 
         fps_counter = new Label("FPS: ", data.getSkin());
         node_counter = new Label("Nodes: ", data.getSkin());
         edge_counter = new Label("Edges: ", data.getSkin());
-        data.getError_popup_label().setColor(1,0,0,1);
-        colour_key_text_header_label = new Label(colour_key_text_header, data.getSkin());
-        colour_key_text_green_label = new Label(colour_key_text_green, data.getSkin());
-        colour_key_text_red_label = new Label(colour_key_text_red, data.getSkin());
-        colour_key_text_orange_label = new Label(colour_key_text_orange, data.getSkin());
-        colour_key_text_yellow_label = new Label(colour_key_text_yellow, data.getSkin());
-        colour_key_text_purple_label = new Label(colour_key_text_purple, data.getSkin());
+        data.getError_popup_label().setColor(1,0,0,1); // Set colour to red
 
         data.getTraversal_options().setItems("Breadth-First Search", "Depth-First Search", "Bidirectional", "Dijkstra's", "A*", "Bellman-Ford");
 
@@ -165,6 +152,14 @@ public class Main extends ApplicationAdapter {
             }
         });
 
+        // Text field that appears when the user wants to change the weight of an edge
+        data.getChange_edge_weight_input().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                UI.change_edge_weight_function(data); //
+            }
+        });
+
         // Drop down GUI options for graph traversal algorithm
         data.getTraversal_options().addListener(new ChangeListener() {
             @Override
@@ -180,7 +175,7 @@ public class Main extends ApplicationAdapter {
         table.add(edge_counter).pad(5).row();
         table.add(reset_button).pad(5).row();
         table.add(data.getTraversal_speed_slider()).pad(5).row();
-        table.add(data.getTraversal_speed_slider()).pad(5).row();
+        table.add(data.getTraversal_speed_label()).pad(5).row();
         table.add(data.getTraversal_options()).pad(5).row();
         table.add(data.getStart_node_input()).pad(5).row();
         table.add(data.getEnd_node_input()).pad(5).row();
@@ -269,18 +264,18 @@ public class Main extends ApplicationAdapter {
     public void render_text(){
         // Colour key code
         font.setColor(Color.WHITE);
-        font.draw(batch, "Colour Key", 10, 245);     // Header
-        font.draw(batch, "Start node", 40, 220);     // Green
-        font.draw(batch, "End node", 40, 185);       // Red
-        font.draw(batch, "Explored node", 40, 150);  // Orange
-        font.draw(batch, "Current node", 40, 115);   // Cyan
-        font.draw(batch, "Discovered node", 40, 80); // Yellow
-        font.draw(batch, "Visited node", 40, 45);    // Purple
+        font.draw(batch, "Colour Key", 10, 245);            // Header
+        font.draw(batch, "Start node", 40, 220);            // Green
+        font.draw(batch, "End node", 40, 185);              // Red
+        font.draw(batch, "Visited node", 40, 150);          // Orange
+        font.draw(batch, "Current node", 40, 115);          // Cyan
+        font.draw(batch, "Discovered node", 40, 80);        // Yellow
+        font.draw(batch, "Fully explored node", 40, 45);    // Purple
 
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()){
             if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED){
-                font.setColor(Color.WHITE); // Increase readability
+                font.setColor(Color.WHITE); // Increase readability on darker colours
             } else {
                 font.setColor(Color.BLACK);
             }
@@ -290,18 +285,13 @@ public class Main extends ApplicationAdapter {
             font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
             // Draw edge weights centered on edges
-            if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search"))){
-                int loop_count = 0;
+            if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
+                data.getSelected_traversal().equals("Bidirectional Search"))){
                 for (Edge edge: data.getGraph().get_edges(node)){
-                    if (loop_count % 2 == 1){
-                        loop_count++;
-                        continue;
-                    }
                     font.setColor(Color.WHITE);
                     float midpoint_x = (edge.getSource().getPosition().getX() + edge.getTarget().getPosition().getX()) / 2f;
                     float midpoint_y = (edge.getSource().getPosition().getY() + edge.getTarget().getPosition().getY()) / 2f;
                     font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
-                    loop_count++;
                 }
             }
         }
