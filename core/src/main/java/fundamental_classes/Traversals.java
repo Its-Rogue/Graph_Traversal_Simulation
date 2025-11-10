@@ -71,7 +71,7 @@ public class Traversals {
                             Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED));
                             found[0] = true; // Update to true if neighbour is the desired end node, and immediately break from loop
                             data.setTraversal_in_progress(false);                             // To prevent unnecessary computation
-                            break;
+                            return;
                         }
                     }
                 }
@@ -165,7 +165,8 @@ public class Traversals {
                         if (neighbour.equals(end)){                                     // Highlight edge between current node and end
                             Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED)); // To show the path
                             found[0] = true;
-                            break;
+                            data.setTraversal_in_progress(false);
+                            return;
                         }
                     }
                 }

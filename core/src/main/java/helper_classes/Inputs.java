@@ -3,7 +3,6 @@ package helper_classes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import structural_classes.Edge;
 import structural_classes.Node;
 import fundamental_classes.Runtime_Data;
 import fundamental_classes.Traversals;
@@ -72,7 +71,8 @@ public class Inputs {
                     return; // Return so the loop is not run all the way through if the desired node is already found
                 }
             }
-            if(first_node_selected != null){
+
+            if (first_node_selected != null){
                 first_node_selected.setColour(Color.WHITE);
                 first_node_selected = null; // Set to null if not right-clicked on a node
             }
@@ -102,19 +102,6 @@ public class Inputs {
                 first_node_selected = null;
             }
         }
-    }
-
-    public static void change_edge_weight(Runtime_Data data, Node source, Node target) {
-        // Get edge from nodes, display text input field on top of edge with msg "Enter edge weight"
-        Edge edge;
-        for (Edge e: data.getGraph().get_edges(source)){
-            if (e.getTarget().equals(target)){
-                edge = e;
-            }
-        }
-        data.getChange_edge_weight_input().setVisible(true);
-        data.getChange_edge_weight_popup().setVisible(true);
-        // TODO: Figure out how this will work as well
     }
 
     // First check if the node is close enough to the clicked position, then calculate the distance to the centre of the node

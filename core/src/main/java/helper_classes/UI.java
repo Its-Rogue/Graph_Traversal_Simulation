@@ -117,19 +117,17 @@ public class UI {
         }
     }
 
-    public static void traversal_options_function(Runtime_Data data){
-        data.setSelected_traversal(data.getTraversal_options().getSelected()); // Update selected traversal based on option from drop down menu
+    public static void change_edge_weight_input_function(Runtime_Data data){
+        data.getError_popup().setVisible(true);
+        try {
+            data.setNew_edge_weight(Integer.parseInt(data.getChange_edge_weight_input().getText()));
+        }catch (Exception e){
+            data.getError_popup_label().setText("Invalid edge weight inputted");
+            data.setValid_setup(false);
+        }
     }
 
-    public static void change_edge_weight_function(Runtime_Data data){
-        int edge_weight = Integer.parseInt(data.getChange_edge_weight_input().getText());
-
-        if (!data.getTraversal_options().getSelected().equals("Bellman-Ford"));{
-            if (edge_weight < 0){
-                data.getError_popup().setVisible(true);
-                data.getError_popup_label().setText("Edge weight cannot be negative for chosen traversal option");
-                return;
-            }
-        } // TODO: Figure out how this will work
+    public static void traversal_options_function(Runtime_Data data){
+        data.setSelected_traversal(data.getTraversal_options().getSelected()); // Update selected traversal based on option from drop down menu
     }
 }
