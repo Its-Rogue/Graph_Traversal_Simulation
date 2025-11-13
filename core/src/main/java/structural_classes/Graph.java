@@ -45,9 +45,8 @@ public class Graph {
 
         for (Edge edge: adj_list.get(source)) {
             if (edge.getTarget().getId() == target.getId()) {
-                if (!data.getSelected_traversal().equals("Breadth-First Search") && !data.getSelected_traversal().equals("Depth-First Search")
-                    && !data.getSelected_traversal().equals("Bidirectional")) {
-                    data.getChange_edge_weight_input().setVisible(true);
+                if (data.getTraversal_options().equals("Breadth-First Search") || data.getTraversal_options().equals("Depth-First Search") || data.getTraversal_options().equals("Bidirectional Search")) {
+
                 }
                 return;
             }

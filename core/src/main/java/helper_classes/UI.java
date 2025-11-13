@@ -121,13 +121,21 @@ public class UI {
         data.getError_popup().setVisible(true);
         try {
             data.setNew_edge_weight(Integer.parseInt(data.getChange_edge_weight_input().getText()));
-        }catch (Exception e){
-            data.getError_popup_label().setText("Invalid edge weight inputted");
+            data.getError_popup_label().setText("");
+            data.setValid_setup(true);
+        } catch (Exception e){
+            data.getError_popup_label().setText("Invalid edge weight");
+            data.getError_popup_label().setVisible(true);
             data.setValid_setup(false);
         }
     }
 
     public static void traversal_options_function(Runtime_Data data){
         data.setSelected_traversal(data.getTraversal_options().getSelected()); // Update selected traversal based on option from drop down menu
+        if (data.getSelected_traversal().equals("Bellman-Ford")){
+            data.getChange_edge_weight_input().setTextFieldFilter(((text_field, c) -> Character.isDigit(c) || Character.toString(c).equals("-")));
+        } else {
+            data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
+        }
     }
 }

@@ -125,7 +125,7 @@ public class Inputs {
                 Traversals.dfs(data);
                 clear_error_display(data);
                 break;
-            case "Bidirectional":
+            case "Bidirectional Search":
                 Traversals.bidirectional(data);
                 clear_error_display(data);
             case "Dijkstra's":

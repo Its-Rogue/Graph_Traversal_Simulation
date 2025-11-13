@@ -59,6 +59,7 @@ public class Main extends ApplicationAdapter {
         table.setFillParent(true);
         data.getError_popup().setFillParent(true);
         data.getError_popup().setVisible(false);
+        data.getChange_edge_weight_popup().setVisible(true);
 
         // Create all the different elements for the UI
 
@@ -71,18 +72,17 @@ public class Main extends ApplicationAdapter {
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
         data.getStart_node_input().setMessageText("Enter the start node");
         data.getEnd_node_input().setMessageText("Enter the end node");
-        data.getChange_edge_weight_input().setMessageText("Enter the new edge weight");
+        data.getChange_edge_weight_input().setMessageText("Input new weight");
         data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
-        data.getChange_edge_weight_input().setTextFieldFilter((_, c) -> Character.isDigit(c) || Character.toString(c).equals("-"));
-        data.getChange_edge_weight_input().setVisible(false);
+        data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
 
         fps_counter = new Label("FPS: ", data.getSkin());
         node_counter = new Label("Nodes: ", data.getSkin());
         edge_counter = new Label("Edges: ", data.getSkin());
         data.getError_popup_label().setColor(1,0,0,1); // Set colour to red
 
-        data.getTraversal_options().setItems("Breadth-First Search", "Depth-First Search", "Bidirectional", "Dijkstra's", "A*", "Bellman-Ford");
+        data.getTraversal_options().setItems("Breadth-First Search", "Depth-First Search", "Bidirectional Search", "Dijkstra's", "A*", "Bellman-Ford");
 
         // Create the listeners for the UI button presses
 
@@ -150,7 +150,7 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        // Text field input for changing the weight of the selected edge
+        // Text field input for changing the weight of the user's chosen edge
         data.getChange_edge_weight_input().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -186,14 +186,15 @@ public class Main extends ApplicationAdapter {
         // Error message label
         data.getError_popup().add(data.getError_popup_label());
 
-        // Change edge weight popup
-        data.getChange_edge_weight_popup().add(data.getChange_edge_weight_popup());
+        // Change edge weight label
+        data.getChange_edge_weight_popup().add(data.getChange_edge_weight_input());
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
         data.getError_popup().align(Align.topLeft);
         table.setPosition(15,0);
         data.getError_popup().setPosition(15,-600);
+        data.getChange_edge_weight_popup().setPosition(1280,720);
 
         // Add the table, and subsequent buttons, to the GUI stage
         GUI.addActor(table);
@@ -266,13 +267,13 @@ public class Main extends ApplicationAdapter {
     public void render_text(){
         // Colour key code
         font.setColor(Color.WHITE);
-        font.draw(batch, "Colour Key", 10, 244);            // Header
-        font.draw(batch, "Start node", 40, 219);            // Green
-        font.draw(batch, "End node", 40, 184);              // Red
-        font.draw(batch, "Visited node", 40, 149);          // Orange
-        font.draw(batch, "Current node", 40, 114);          // Cyan
-        font.draw(batch, "Discovered node", 40, 79);        // Yellow
-        font.draw(batch, "Fully explored node", 40, 44);    // Purple
+        font.draw(batch, "Colour Key", 10, 245);            // Header
+        font.draw(batch, "Start node", 40, 220);            // Green
+        font.draw(batch, "End node", 40, 185);              // Red
+        font.draw(batch, "Visited node", 40, 150);          // Orange
+        font.draw(batch, "Current node", 40, 115);          // Cyan
+        font.draw(batch, "Discovered node", 40, 80);        // Yellow
+        font.draw(batch, "Fully explored node", 40, 45);    // Purple
 
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()){

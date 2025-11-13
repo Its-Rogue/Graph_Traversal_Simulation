@@ -22,7 +22,7 @@ public class Runtime_Data {
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
     private int start_node, end_node;
-    private int new_edge_weight = 1;
+    private int new_edge_weight;
     private float traversal_speed = 1.0f;
     private boolean valid_setup = false;
     private boolean traversal_in_progress = false;
@@ -125,19 +125,19 @@ public class Runtime_Data {
         return skin;
     }
 
-    public int getNew_edge_weight() {
-        return new_edge_weight;
-    }
-
-    public void setNew_edge_weight(int new_edge_weight) {
-        this.new_edge_weight = new_edge_weight;
+    public Table getChange_edge_weight_popup() {
+        return change_edge_weight_popup;
     }
 
     public TextField getChange_edge_weight_input() {
         return change_edge_weight_input;
     }
 
-    public Table getChange_edge_weight_popup() {
-        return change_edge_weight_popup;
+    public int getNew_edge_weight() {
+        return new_edge_weight;
+    }
+
+    public void setNew_edge_weight(int new_edge_weight) {
+        this.new_edge_weight = new_edge_weight;
     }
 }

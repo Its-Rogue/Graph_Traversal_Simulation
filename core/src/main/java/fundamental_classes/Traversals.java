@@ -107,6 +107,8 @@ public class Traversals {
             }
 
         }).start(); // Ensure the thread is switched to, instead of main render thread
+        data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
     }
 
     public static void dfs(Runtime_Data data) {
@@ -201,6 +203,8 @@ public class Traversals {
                 }
             }
         }).start();
+        data.setTraversal_in_progress(false);  // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
     }
 
     public static void bidirectional(Runtime_Data data) {
