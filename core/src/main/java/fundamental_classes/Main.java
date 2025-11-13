@@ -9,14 +9,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-import structural_classes.*;
-import helper_classes.*;
+import structural_classes.Node;
+import structural_classes.Edge;
+import helper_classes.UI;
+import helper_classes.Inputs;
 
 public class Main extends ApplicationAdapter {
     ShapeRenderer sr;
@@ -187,7 +190,8 @@ public class Main extends ApplicationAdapter {
         data.getError_popup().add(data.getError_popup_label());
 
         // Change edge weight label
-        data.getChange_edge_weight_popup().add(data.getChange_edge_weight_input());
+        data.getChange_edge_weight_popup().add(data.getChange_edge_weight_input()).row();
+        data.getChange_edge_weight_popup().add(data.getChange_edge_weight_label()).pad(2).row();
 
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
@@ -267,13 +271,13 @@ public class Main extends ApplicationAdapter {
     public void render_text(){
         // Colour key code
         font.setColor(Color.WHITE);
-        font.draw(batch, "Colour Key", 10, 245);            // Header
-        font.draw(batch, "Start node", 40, 220);            // Green
-        font.draw(batch, "End node", 40, 185);              // Red
-        font.draw(batch, "Visited node", 40, 150);          // Orange
-        font.draw(batch, "Current node", 40, 115);          // Cyan
-        font.draw(batch, "Discovered node", 40, 80);        // Yellow
-        font.draw(batch, "Fully explored node", 40, 45);    // Purple
+        font.draw(batch, "Colour Key", 10, 244);            // Header
+        font.draw(batch, "Start node", 40, 219);            // Green
+        font.draw(batch, "End node", 40, 184);              // Red
+        font.draw(batch, "Visited node", 40, 149);          // Orange
+        font.draw(batch, "Current node", 40, 114);          // Cyan
+        font.draw(batch, "Discovered node", 40, 79);        // Yellow
+        font.draw(batch, "Fully explored node", 40, 44);    // Purple
 
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()){

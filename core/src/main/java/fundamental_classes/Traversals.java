@@ -6,7 +6,6 @@ import structural_classes.Edge;
 import structural_classes.Graph;
 import structural_classes.Node;
 import structural_classes.Priority_Queue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +20,7 @@ public class Traversals {
         Node start = data.getGraph().get_node_id(data.getStart_node());   // Cache start and end node to update colour at the end
         Node end = data.getGraph().get_node_id(data.getEnd_node());     // in the case they are overwritten
 
-        ArrayList<Node> queue = new ArrayList<>(); // Initialise needed lists
+        ArrayList<Node> queue = new ArrayList<>(); // Initialise the various lists
         ArrayList<Node> discovered = new ArrayList<>();
         ArrayList<Node> visited = new ArrayList<>();
         final boolean[] found = {false};

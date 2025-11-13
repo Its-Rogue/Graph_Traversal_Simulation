@@ -21,6 +21,7 @@ public class Runtime_Data {
     private final SelectBox<String> traversal_options = new SelectBox<>(skin);
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
+    private final Label change_edge_weight_label = new Label("Press ENTER to confirm change", skin);
     private int start_node, end_node;
     private int new_edge_weight;
     private float traversal_speed = 1.0f;
@@ -139,5 +140,9 @@ public class Runtime_Data {
 
     public void setNew_edge_weight(int new_edge_weight) {
         this.new_edge_weight = new_edge_weight;
+    }
+
+    public Label getChange_edge_weight_label() {
+        return change_edge_weight_label;
     }
 }

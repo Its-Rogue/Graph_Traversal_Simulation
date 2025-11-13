@@ -48,8 +48,14 @@ public class Inputs {
             }
 
             for (Node node: data.getGraph().get_nodes()){
-                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) < 4 * data.getNode_radius()) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) < 4 * data.getNode_radius()) {
                     return; // Do not allow the new node to be placed too close to an already existing node
+                }
+            }
+
+            if (data.getChange_edge_weight_popup().isVisible()){
+                if (distance_check((int) data.getChange_edge_weight_popup().getX(), (int) data.getChange_edge_weight_popup().getY(), mouse_x, mouse_y, data) < 2 * data.getChange_edge_weight_label().getWidth()){
+                    return; // Do not allow the new node to be placed if it is too close to the change edge weight popup, allowing the user to select the text field without accidentally editing the graph
                 }
             }
 
@@ -59,7 +65,7 @@ public class Inputs {
         // Right click detection and code for edge creation
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= data.getNode_radius()) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
                     if (first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColour(Color.GREEN);
@@ -81,7 +87,7 @@ public class Inputs {
         // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y) <= data.getNode_radius()) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
                     if (first_node_selected != null) { // Checks to see if a node has already been selected
                         if (first_node_selected != node) { // Checks to see if the node selected again is different
                             data.getGraph().remove_edge(first_node_selected.getId(), node.getId(), data); // Remove edge if nodes are different
@@ -105,9 +111,13 @@ public class Inputs {
     }
 
     // First check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
-    public static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y) {
-        if (pos_x > mouse_x + 100 || pos_x < mouse_x - 100) return (int) Double.POSITIVE_INFINITY;
-        if (pos_y > mouse_y + 100 || pos_y < mouse_y - 100) return (int) Double.POSITIVE_INFINITY; // Skip checking the node if it is too far away from the clicked position
+    public static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y, Runtime_Data data) {
+        float offset_multiplier = 1;
+        if (data.getChange_edge_weight_popup().isVisible()){
+            offset_multiplier = 1.5f;
+        }
+        if (pos_x > mouse_x + 100 * offset_multiplier || pos_x < mouse_x - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY;
+        if (pos_y > mouse_y + 100 * offset_multiplier || pos_y < mouse_y - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY; // Skip checking the node if it is too far away from the clicked position
 
         float dx = mouse_x - pos_x;
         float dy = mouse_y - pos_y;

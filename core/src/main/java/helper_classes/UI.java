@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Graph;
 import structural_classes.Node;
-import fundamental_classes.*;
+import fundamental_classes.Runtime_Data;
 
 public class UI {
     public static void quit_button_function(){

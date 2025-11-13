@@ -2,7 +2,6 @@ package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
 import fundamental_classes.Runtime_Data;
-
 import java.util.*;
 
 public class Graph {
