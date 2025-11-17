@@ -30,7 +30,7 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `Right Click` to select 2 different nodes and create an edge between them
 
-`Right Click + Left Control` to edit the weight of an already existing edge, should a suitable traversal algorithm<sup>1</sup> be presently selected
+`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm<sup>1</sup> be presently selected
 
 `Right Click` then `Middle Click` or press `Backspace` to delete an edge
 

@@ -7,11 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import structural_classes.Edge;
 import structural_classes.Graph;
 
 public class Runtime_Data {
     private final Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
     private final Graph graph = new Graph();
+    private Edge edge_to_edit;
     private final Table error_popup = new Table();
     private final Table change_edge_weight_popup = new Table();
     private final TextField start_node_input = new TextField("", skin);
@@ -144,5 +146,13 @@ public class Runtime_Data {
 
     public Label getChange_edge_weight_label() {
         return change_edge_weight_label;
+    }
+
+    public Edge getEdge_to_edit() {
+        return edge_to_edit;
+    }
+
+    public void setEdge_to_edit(Edge edge_to_edit) {
+        this.edge_to_edit = edge_to_edit;
     }
 }

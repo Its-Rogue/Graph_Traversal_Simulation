@@ -62,7 +62,7 @@ public class Main extends ApplicationAdapter {
         table.setFillParent(true);
         data.getError_popup().setFillParent(true);
         data.getError_popup().setVisible(false);
-        data.getChange_edge_weight_popup().setVisible(true);
+        data.getChange_edge_weight_popup().setVisible(false);
 
         // Create all the different elements for the UI
 
@@ -291,17 +291,24 @@ public class Main extends ApplicationAdapter {
             layout.setText(font, text);
             font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
-            // Draw edge weights centered on edges
+            // Draw edge weights centered on edges, offset for readability
             if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
                 data.getSelected_traversal().equals("Bidirectional Search"))){
                 for (Edge edge: data.getGraph().get_edges(node)){
                     font.setColor(Color.WHITE);
                     float midpoint_x = (edge.getSource().getPosition().getX() + edge.getTarget().getPosition().getX()) / 2f;
                     float midpoint_y = (edge.getSource().getPosition().getY() + edge.getTarget().getPosition().getY()) / 2f;
-                    font.draw(batch, Integer.toString(edge.getWeight()), midpoint_x - layout.width / 2, midpoint_y + layout.height / 2);
+                    float offset_x = calculate_offset();
+                    float offset_y = calculate_offset();
+                    font.draw(batch, Integer.toString(edge.getWeight()), (midpoint_x - layout.width / 2) + offset_x, (midpoint_y + layout.height / 2) +  offset_y);
                 }
             }
         }
+    }
+
+    public float calculate_offset(){
+        float offset = 0;
+        return offset;
     }
 
     // Other uncategorisable calculations that need to happen every frame

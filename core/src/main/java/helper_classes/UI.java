@@ -120,9 +120,9 @@ public class UI {
     public static void change_edge_weight_input_function(Runtime_Data data){
         data.getError_popup().setVisible(true);
         try {
-            data.setNew_edge_weight(Integer.parseInt(data.getChange_edge_weight_input().getText()));
+            data.setNew_edge_weight(Integer.parseInt(data.getChange_edge_weight_input().getText())); // Update the edge weight each time the user inputs a new character
             data.getError_popup_label().setText("");
-            data.setValid_setup(true);
+            data.setValid_setup(true); // Clear errors if valid
         } catch (Exception e){
             data.getError_popup_label().setText("Invalid edge weight");
             data.getError_popup_label().setVisible(true);

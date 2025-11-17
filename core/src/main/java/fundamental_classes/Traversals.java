@@ -18,7 +18,7 @@ public class Traversals {
         long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
 
         Node start = data.getGraph().get_node_id(data.getStart_node());   // Cache start and end node to update colour at the end
-        Node end = data.getGraph().get_node_id(data.getEnd_node());     // in the case they are overwritten
+        Node end = data.getGraph().get_node_id(data.getEnd_node());       // in the case they are overwritten
 
         ArrayList<Node> queue = new ArrayList<>(); // Initialise the various lists
         ArrayList<Node> discovered = new ArrayList<>();
@@ -69,7 +69,7 @@ public class Traversals {
                         if (neighbour.equals(end)) {
                             Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED));
                             found[0] = true; // Update to true if neighbour is the desired end node, and immediately break from loop
-                            data.setTraversal_in_progress(false);                             // To prevent unnecessary computation
+                            data.setTraversal_in_progress(false);                              // To prevent unnecessary computation
                             return;
                         }
                     }

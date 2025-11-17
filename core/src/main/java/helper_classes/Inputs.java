@@ -3,6 +3,7 @@ package helper_classes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import structural_classes.Edge;
 import structural_classes.Node;
 import fundamental_classes.Runtime_Data;
 import fundamental_classes.Traversals;
@@ -14,22 +15,28 @@ public class Inputs {
     // Simple method for all variants of input
     public static void all(Runtime_Data data) {
         menu();
-        mouse_click(data);
+        mouse_or_keyboard_input(data);
     }
 
     // Code specifically related to menu hotkeys
-    public static void menu() {
+    private static void menu() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
             System.exit(0); // Exit the java program
         }
     }
 
     // Code for the detection of left and right-clicking with the mouse
-    public static void mouse_click(Runtime_Data data) {
+    private static void mouse_or_keyboard_input(Runtime_Data data) {
         int mouse_x = Gdx.input.getX();
         int mouse_y = Gdx.graphics.getHeight() - Gdx.input.getY(); // GetY() is based on the top left corner, thus needs offsetting
 
-        // Left click detection and code
+        left_click(mouse_x, mouse_y, data); // Left click detection and code
+        right_click(mouse_x, mouse_y, data); // Right click detection and code for edge creation
+        middle_click(mouse_x, mouse_y, data); // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
+        enter_key_input(data);
+    }
+
+    private static void left_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
             // Ensure the pointer is within the screen bounds
@@ -61,8 +68,9 @@ public class Inputs {
 
             data.getGraph().add_node(data.getNode_radius(), mouse_x, mouse_y, data); // Add a new node at the coordinates clicked at if in a valid location
         }
+    }
 
-        // Right click detection and code for edge creation
+    private static void right_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
                 if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
@@ -83,9 +91,13 @@ public class Inputs {
                 first_node_selected = null; // Set to null if not right-clicked on a node
             }
         }
+    }
 
-        // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
+    private static void middle_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && data.getChange_edge_weight_popup().isVisible()){
+                return; // Prevent accidental deletion of nodes while typing in new edge weight
+            }
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
                 if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
                     if (first_node_selected != null) { // Checks to see if a node has already been selected
@@ -110,18 +122,38 @@ public class Inputs {
         }
     }
 
+    private static void enter_key_input(Runtime_Data data){
+        if (!data.getChange_edge_weight_popup().isVisible()){
+            return; // Do not run if edge weight is not being changed
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+            data.getEdge_to_edit().setWeight(data.getNew_edge_weight()); // Set forward edge to have the new weight
+            for (Node node: data.getEdge_to_edit().getSource().getNeighbours()){
+                if (node == data.getEdge_to_edit().getTarget()){
+                    for (Edge edge: data.getGraph().get_edges(node)){
+                        if (edge.getTarget().equals(data.getEdge_to_edit().getSource())){
+                            edge.setWeight(data.getNew_edge_weight()); // Find the reverse edge and set it to have the new weight as well
+                        }
+                    }
+                }
+            }
+            data.getChange_edge_weight_popup().setVisible(false);
+            data.getChange_edge_weight_input().setText(""); // Reset inputted text and hide the input field / popup
+        }
+    }
+
     // First check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
-    public static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y, Runtime_Data data) {
+    private static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y, Runtime_Data data) {
         float offset_multiplier = 1;
         if (data.getChange_edge_weight_popup().isVisible()){
-            offset_multiplier = 1.5f;
+            offset_multiplier = 1.5f; // Bounds check for the change edge weight popup specifically
         }
         if (pos_x > mouse_x + 100 * offset_multiplier || pos_x < mouse_x - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY;
         if (pos_y > mouse_y + 100 * offset_multiplier || pos_y < mouse_y - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY; // Skip checking the node if it is too far away from the clicked position
 
         float dx = mouse_x - pos_x;
         float dy = mouse_y - pos_y;
-        return (int) Math.sqrt(dx * dx + dy * dy);
+        return (int) Math.sqrt(dx * dx + dy * dy); // Euclidean distance calculation
     }
 
     // Switch case the chosen traversal option
