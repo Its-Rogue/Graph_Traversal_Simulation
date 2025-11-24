@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Traversals {
-    static long operation_speed_base = 1;
+    static long operation_speed_base = 200;
 
     public static void bfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
@@ -211,90 +211,7 @@ public class Traversals {
     }
 
     public static void dijkstra(Runtime_Data data) {
-        int num_nodes = data.getGraph().get_nodes().size();
-        int[] costs = new int[num_nodes];
-        Arrays.fill(costs, (int) Double.POSITIVE_INFINITY);
-        costs[data.getStart_node()] = 0;
 
-        Priority_Queue costs_pq = new Priority_Queue();
-        Priority_Queue nodes_pq = new Priority_Queue();
-        costs_pq.add(0);
-        nodes_pq.add(data.getStart_node());
-
-        Boolean[] visited = new Boolean[num_nodes];
-        Arrays.fill(visited, false);
-
-        Node[] previous_nodes = new Node[num_nodes];
-
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
-
-        Node start = data.getGraph().get_node_id(data.getStart_node());
-        Node end = data.getGraph().get_node_id(data.getEnd_node());
-
-        new Thread(() -> {
-            Gdx.app.postRunnable(() -> {
-                start.setColour(Color.GREEN);
-                end.setColour(Color.RED);
-            });
-
-            if (data.isTraversal_canceled()) {
-                return;
-            }
-
-            while (!nodes_pq.isEmpty() && !costs_pq.isEmpty() && !data.isTraversal_canceled()) {
-                System.out.println("loop start");
-                int current_cost = costs_pq.poll();
-                Node current_node = data.getGraph().get_node_id(nodes_pq.poll());
-
-                if (current_node == null){
-                    System.out.println("Current node is null \nExiting traversal");
-                    return;
-                }
-
-                Gdx.app.postRunnable(() -> current_node.setColour(Color.CYAN));
-
-                if (!visited[current_node.getId()]) {
-                    System.out.println("not visited");
-                    visited[current_node.getId()] = true;
-
-                    for (Node neighbour : current_node.getNeighbours()) {
-                        System.out.println("neighbour: " + neighbour.getId());
-                        if (data.isTraversal_canceled()) {
-                            return;
-                        }
-
-                        sleep(operation_speed);
-                        Edge edge_between = null;
-
-                        for (Edge edge : data.getGraph().get_edges(current_node)) {
-                            if (edge.getTarget() == neighbour) {
-                                edge_between = edge;
-                            }
-                        }
-
-                        if (edge_between == null) {
-                            System.out.println("No edge exists between " + neighbour.getId() + " and " + current_node.getId());
-                            continue;
-                        }
-
-                        int edge_cost = edge_between.getWeight();
-
-                        if (edge_cost > 0){
-                            int new_cost = current_cost + edge_cost;
-
-                            if (new_cost < costs[neighbour.getId()]) {
-                                costs[neighbour.getId()] = new_cost;
-                                previous_nodes[neighbour.getId()] = current_node;
-                                costs_pq.add(new_cost);
-                                nodes_pq.add(neighbour.getId());
-
-                                Gdx.app.postRunnable(() -> current_node.setColour(Color.ORANGE));
-                            }
-                        }
-                    }
-                }
-            }
-        }).start();
     }
 
     public static void A_star(Runtime_Data data) {

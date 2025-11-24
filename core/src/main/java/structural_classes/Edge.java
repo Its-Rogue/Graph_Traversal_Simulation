@@ -8,12 +8,14 @@ public class Edge {
     private final Node target;
     private int weight;
     private Color colour;
+    private String direction;
 
     // Constructors for the edges
-    public Edge(Node source, Node target, int weight, Color colour) {
+    public Edge(Node source, Node target, int weight, String direction, Color colour) {
         this.source = source;
         this.target = target;
         this.weight = weight;
+        this.direction = direction;
         this.colour = colour;
     }
 
@@ -32,6 +34,14 @@ public class Edge {
 
     public void setWeight(int weight) {
         this.weight = weight;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 
     public Color getColour() {

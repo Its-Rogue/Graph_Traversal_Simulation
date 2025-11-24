@@ -295,20 +295,49 @@ public class Main extends ApplicationAdapter {
             if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
                 data.getSelected_traversal().equals("Bidirectional Search"))){
                 for (Edge edge: data.getGraph().get_edges(node)){
+                    if (edge.getDirection().equals("reverse")){
+                        continue;
+                    }
                     font.setColor(Color.WHITE);
                     float midpoint_x = (edge.getSource().getPosition().getX() + edge.getTarget().getPosition().getX()) / 2f;
                     float midpoint_y = (edge.getSource().getPosition().getY() + edge.getTarget().getPosition().getY()) / 2f;
-                    float offset_x = calculate_offset();
-                    float offset_y = calculate_offset();
-                    font.draw(batch, Integer.toString(edge.getWeight()), (midpoint_x - layout.width / 2) + offset_x, (midpoint_y + layout.height / 2) +  offset_y);
+                    float[] offsets = calculate_offsets(edge);
+                    font.draw(batch, Integer.toString(edge.getWeight()), (midpoint_x - layout.width / 2) + offsets[0], (midpoint_y + layout.height / 2) +  offsets[1]);
                 }
             }
         }
     }
 
-    public float calculate_offset(){
-        float offset = 0;
-        return offset;
+    public float[] calculate_offsets(Edge edge){
+        float offset_x = 0,  offset_y = 0;
+
+        if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()){
+            offset_x = 12;
+            return new float[]{offset_x, offset_y};
+        }
+
+        if (edge.getSource().getPosition().getY() == edge.getTarget().getPosition().getY()){
+            offset_y = 10;
+            return new float[]{offset_x, offset_y};
+        }
+
+        if (edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY()){
+            offset_x = -15;
+            offset_y = 15;
+            return new float[]{offset_x, offset_y};
+        }
+
+        if (edge.getSource().getPosition().getY() > edge.getTarget().getPosition().getY()){
+            offset_x = 15;
+            offset_y = 15;
+            return new float[]{offset_x, offset_y};
+        }
+
+        //         /       |      \
+        //      x /      x |       \ x       x
+        //       /         |        \      -----
+
+        return new float[]{offset_x, offset_y};
     }
 
     // Other uncategorisable calculations that need to happen every frame

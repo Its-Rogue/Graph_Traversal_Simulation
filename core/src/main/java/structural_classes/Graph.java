@@ -55,8 +55,8 @@ public class Graph {
             }
         }
 
-        adj_list.get(source).add(new Edge(source, target, weight, Color.WHITE));
-        adj_list.get(target).add(new Edge(target, source, weight, Color.WHITE));
+        adj_list.get(source).add(new Edge(source, target, weight, "forward", Color.WHITE));
+        adj_list.get(target).add(new Edge(target, source, weight, "reverse", Color.WHITE));
         source.add_neighbour(target);
         target.add_neighbour(source);
     }
