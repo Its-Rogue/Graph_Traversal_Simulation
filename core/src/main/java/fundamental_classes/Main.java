@@ -22,13 +22,14 @@ import helper_classes.UI;
 import helper_classes.Inputs;
 
 public class Main extends ApplicationAdapter {
-    ShapeRenderer sr;
-    Stage GUI;
-    Runtime_Data data;
+    Runtime_Data data; // Class that holds variables / structures that need to be accessed throughout the entire program
+
+    ShapeRenderer sr; // Shapes and text
     BitmapFont font;
     SpriteBatch batch;
     GlyphLayout layout;
 
+    Stage GUI; // Scene2D elements
     Table table;
 
     TextButton quit_button;
@@ -46,11 +47,11 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         // Initialise elements
+        data =  new Runtime_Data();
         sr = new ShapeRenderer();
         font  = new BitmapFont();
         batch = new SpriteBatch();
         layout = new GlyphLayout();
-        data =  new Runtime_Data(); // Class that holds variables / structures that need to be accessed throughout the entire program
 
         create_GUI();
     }
@@ -198,7 +199,6 @@ public class Main extends ApplicationAdapter {
         data.getError_popup().align(Align.topLeft);
         table.setPosition(15,0);
         data.getError_popup().setPosition(15,-600);
-        data.getChange_edge_weight_popup().setPosition(1280,720);
 
         // Add the table, and subsequent buttons, to the GUI stage
         GUI.addActor(table);
@@ -209,17 +209,16 @@ public class Main extends ApplicationAdapter {
     // Render loop
     @Override
     public void render() {
-        Gdx.input.setInputProcessor(null); // Change the input processor back to the main simulation
-        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 1.0f); // Set the background colour to #000000
+        Gdx.input.setInputProcessor(null); // Change the input processor back to the main simulation, and not a Scene2D element
+        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 1.0f); // Set the background colour to #000000 (Black)
         calculations(); // Perform necessary but ungroupable calculations each frame, such as delta time
         Inputs.all(data); // Perform all keyboard and mouse input processing
 
         sr.begin(ShapeRenderer.ShapeType.Filled);
-            sr.setColor(Color.WHITE);
-            sr.rect(250,0,10,1440); // Margin for UI
             edge_render();
-            node_render(); // Render after so they are placed on top of the edge lines
+            node_render(); // Render the nodes after the edges so that they are drawn on top of the edge lines
             colour_key_render();
+            shape_render(); // Render simple shapes provided by LibGDX
         sr.end();
 
         batch.begin();
@@ -227,6 +226,19 @@ public class Main extends ApplicationAdapter {
         batch.end();
 
         draw_GUI(); // Draw the components of the GUI
+    }
+
+    // Shape render loop
+    public void shape_render(){
+        sr.setColor(Color.WHITE);
+        sr.rect(250,0,10,1440); // Margin for UI
+
+        if (data.getChange_edge_weight_popup().isVisible()){ // Add a rectangle behind the popup to increase the legibility of the text hint
+            sr.setColor(Color.RED); // Border shape
+            sr.rect(data.getChange_edge_weight_popup().getX() - 127,data.getChange_edge_weight_popup().getY() - 24,252,52);
+            sr.setColor(Color.BLACK); // Background shape
+            sr.rect(data.getChange_edge_weight_popup().getX() - 126 ,data.getChange_edge_weight_popup().getY() - 23,250,50);
+        }
     }
 
     // Edge render loop
@@ -282,7 +294,7 @@ public class Main extends ApplicationAdapter {
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()){
             if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED){
-                font.setColor(Color.WHITE); // Increase readability on darker colours
+                font.setColor(Color.WHITE); // Increase legibility on darker colours
             } else {
                 font.setColor(Color.BLACK);
             }
@@ -291,7 +303,7 @@ public class Main extends ApplicationAdapter {
             layout.setText(font, text);
             font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
-            // Draw edge weights centered on edges, offset for readability
+            // Draw edge weights centered on edges, offset for legibility
             if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
                 data.getSelected_traversal().equals("Bidirectional Search"))){
                 for (Edge edge: data.getGraph().get_edges(node)){
@@ -312,7 +324,7 @@ public class Main extends ApplicationAdapter {
         float offset_x = 0,  offset_y = 0;
 
         if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()){
-            offset_x = 12;
+            offset_x = -15;
             return new float[]{offset_x, offset_y};
         }
 
@@ -321,23 +333,23 @@ public class Main extends ApplicationAdapter {
             return new float[]{offset_x, offset_y};
         }
 
-        if (edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY()){
-            offset_x = -15;
-            offset_y = 15;
-            return new float[]{offset_x, offset_y};
+        if ((edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY())){
+            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
+                offset_x = -15;
+            } else {
+                offset_x = 15;
+            }
+
+        } else {
+            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
+                offset_x = 15;
+            } else {
+                offset_x = -15;
+            }
+
         }
-
-        if (edge.getSource().getPosition().getY() > edge.getTarget().getPosition().getY()){
-            offset_x = 15;
-            offset_y = 15;
-            return new float[]{offset_x, offset_y};
-        }
-
-        //         /       |      \
-        //      x /      x |       \ x       x
-        //       /         |        \      -----
-
-        return new float[]{offset_x, offset_y};
+        offset_y = 10;
+        return new float[]{offset_x, offset_y}; // For each instance, return an array with the 2 offsets, rather than having 2 identical functions for x / y
     }
 
     // Other uncategorisable calculations that need to happen every frame

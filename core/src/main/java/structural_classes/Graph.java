@@ -2,7 +2,12 @@ package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
 import fundamental_classes.Runtime_Data;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.Collections;
 
 public class Graph {
     private static Map<Node, List<Edge>> adj_list;
@@ -14,9 +19,8 @@ public class Graph {
         free_IDs = new Priority_Queue();
     }
 
-    // Finds the lowest available ID from the priority queue, then creates a node with
-    // that ID at the specified coords with the specified radius, then adds it to the
-    // adj list
+    // Finds the lowest available ID from the priority queue, then creates a node - with that ID - at the specified coords
+    // with the specified radius, then adds it to the adj list
     public void add_node(int node_radius, int x_pos, int y_pos, Runtime_Data data) {
         if (traversal_in_progress_check(data)) return;
 

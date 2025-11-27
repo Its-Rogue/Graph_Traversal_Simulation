@@ -5,9 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Graph;
 import structural_classes.Node;
-import structural_classes.Priority_Queue;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Traversals {
@@ -147,7 +145,7 @@ public class Traversals {
 
                 for (Node neighbour : neighbours) {
                     if (data.isTraversal_canceled()) {
-                        return; // Stop traversal if the user has reset it
+                        return; // Stop traversal if the user has pressed the reset traversal button
                     }
 
                     sleep(operation_speed);
@@ -163,7 +161,7 @@ public class Traversals {
                             }
                         });
 
-                        if (neighbour.equals(end)){                                     // Highlight edge between current node and end
+                        if (neighbour.equals(end)){                                               // Highlight edge between current node and end
                             Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED)); // To show the path
                             found[0] = true;
                             data.setTraversal_in_progress(false);
