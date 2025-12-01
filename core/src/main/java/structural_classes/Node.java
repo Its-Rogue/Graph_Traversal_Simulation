@@ -21,7 +21,6 @@ public class Node {
     }
 
     // Getters and setters for the nodes
-
     public int getId() {
         return id;
     }

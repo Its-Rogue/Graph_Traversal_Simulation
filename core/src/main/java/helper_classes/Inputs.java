@@ -25,7 +25,7 @@ public class Inputs {
         }
     }
 
-    // Code for the detection of left and right-clicking with the mouse
+    // Code for the detection of mouse / keyboard inputs
     private static void mouse_or_keyboard_input(Runtime_Data data) {
         int mouse_x = Gdx.input.getX();
         int mouse_y = Gdx.graphics.getHeight() - Gdx.input.getY(); // GetY() is based on the top left corner, thus needs offsetting
@@ -36,6 +36,7 @@ public class Inputs {
         enter_key_input(data);
     }
 
+    // Code for adding nodes upon left-clicking
     private static void left_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
 
@@ -70,6 +71,7 @@ public class Inputs {
         }
     }
 
+    // Code for selecting nodes / edges to create an edge / edit an edge's weight when right clicking
     private static void right_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
@@ -93,6 +95,7 @@ public class Inputs {
         }
     }
 
+    // Code for deleting a node / edge when middle-clicking
     private static void middle_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && data.getChange_edge_weight_popup().isVisible()){
@@ -122,6 +125,7 @@ public class Inputs {
         }
     }
 
+    // Code for updating the edge's weight after it has been inputted
     private static void enter_key_input(Runtime_Data data){
         if (!data.getChange_edge_weight_popup().isVisible()){
             return; // Do not run if edge weight is not being changed
@@ -142,7 +146,7 @@ public class Inputs {
         }
     }
 
-    // First check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
+    // Check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
     private static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y, Runtime_Data data) {
         float offset_multiplier = 1;
         if (data.getChange_edge_weight_popup().isVisible()){
@@ -153,18 +157,18 @@ public class Inputs {
 
         float dx = mouse_x - pos_x;
         float dy = mouse_y - pos_y;
-        return (int) Math.sqrt(dx * dx + dy * dy); // Euclidean distance calculation
+        return (int) Math.sqrt(dx * dx + dy * dy); // Euclidean distance calculation between mouse x,y and pos x,y
     }
 
     // Switch case the chosen traversal option
     public static void start_traversal(Runtime_Data data) {
         switch (data.getSelected_traversal()) {
-            case "Breadth-First Search":
-                Traversals.bfs(data);
-                clear_error_display(data);
-                break;
             case "Depth-First Search":
                 Traversals.dfs(data);
+                clear_error_display(data);
+                break;
+            case "Breadth-First Search":
+                Traversals.bfs(data);
                 clear_error_display(data);
                 break;
             case "Bidirectional Search":

@@ -33,6 +33,8 @@ public class Main extends ApplicationAdapter {
     Table table;
 
     TextButton quit_button;
+    TextButton save_current_layout_button;
+    TextButton load_saved_layout_button;
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
@@ -60,14 +62,16 @@ public class Main extends ApplicationAdapter {
         GUI = new Stage();
         table = new Table();
 
+        // Initialise the containers for the variants of GUI element
         table.setFillParent(true);
         data.getError_popup().setFillParent(true);
         data.getError_popup().setVisible(false);
         data.getChange_edge_weight_popup().setVisible(false);
 
-        // Create all the different elements for the UI
-
+        // Initialise all the different elements for the UI
         quit_button = new TextButton("Quit", data.getSkin());
+        save_current_layout_button = new TextButton("Save current layout", data.getSkin());
+        load_saved_layout_button = new TextButton("Load saved layout", data.getSkin());
         reset_button = new TextButton("Reset Graph", data.getSkin());
         start_traversal_button = new TextButton("Start Traversal", data.getSkin());
         reset_traversal_button = new TextButton("Reset Traversal", data.getSkin());
@@ -86,7 +90,7 @@ public class Main extends ApplicationAdapter {
         edge_counter = new Label("Edges: ", data.getSkin());
         data.getError_popup_label().setColor(1,0,0,1); // Set colour to red
 
-        data.getTraversal_options().setItems("Breadth-First Search", "Depth-First Search", "Bidirectional Search", "Dijkstra's", "A*", "Bellman-Ford");
+        data.getTraversal_options().setItems("Depth-First Search", "Breadth-First Search", "Bidirectional Search", "Dijkstra's", "A*", "Bellman-Ford");
 
         // Create the listeners for the UI button presses
 
@@ -95,6 +99,22 @@ public class Main extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 UI.quit_button_function();
+            }
+        });
+
+        // Button to save the layout of nodes and edges currently on the screen
+        save_current_layout_button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                UI.save_current_layout_button_function(data);
+            }
+        });
+
+        // Button to load a previously created layout of nodes and edges
+        load_saved_layout_button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                UI.load_saved_layout_button_function(data);
             }
         });
 
@@ -175,6 +195,8 @@ public class Main extends ApplicationAdapter {
         table.add(fps_counter).pad(5).row();
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
+        table.add(save_current_layout_button).pad(5).row();
+        table.add(load_saved_layout_button).pad(5).row();
         table.add(reset_button).pad(5).row();
         table.add(data.getTraversal_speed_slider()).pad(5).row();
         table.add(data.getTraversal_speed_label()).pad(5).row();
@@ -294,7 +316,7 @@ public class Main extends ApplicationAdapter {
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()){
             if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED){
-                font.setColor(Color.WHITE); // Increase legibility on darker colours
+                font.setColor(Color.WHITE); // Increase legibility when rendered darker colours
             } else {
                 font.setColor(Color.BLACK);
             }

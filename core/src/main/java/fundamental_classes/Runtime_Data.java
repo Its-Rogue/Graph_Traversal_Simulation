@@ -12,25 +12,34 @@ import structural_classes.Graph;
 
 public class Runtime_Data {
     private final Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+
     private final Graph graph = new Graph();
     private Edge edge_to_edit;
+
     private final Table error_popup = new Table();
     private final Table change_edge_weight_popup = new Table();
+
     private final TextField start_node_input = new TextField("", skin);
     private final TextField end_node_input = new TextField("", skin);
     private final TextField change_edge_weight_input = new TextField("", skin);
+
     private final Slider traversal_speed_slider = new Slider(0.1f,10.0f,0.1f,false, skin);
+
     private final SelectBox<String> traversal_options = new SelectBox<>(skin);
+
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
     private final Label change_edge_weight_label = new Label("Press ENTER to confirm change", skin);
+
     private int start_node, end_node;
     private int new_edge_weight;
     private float traversal_speed = 1.0f;
+
     private boolean valid_setup = false;
     private boolean traversal_in_progress = false;
     private volatile boolean traversal_canceled = false;
-    private String selected_traversal = "Breadth-First Search";
+
+    private String selected_traversal = "Depth-First Search";
 
     public int getEnd_node() {
         return end_node;

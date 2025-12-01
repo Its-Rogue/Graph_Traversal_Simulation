@@ -40,10 +40,6 @@ public class Edge {
         return direction;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
     public Color getColour() {
         return colour;
     }

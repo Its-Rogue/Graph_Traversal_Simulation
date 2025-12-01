@@ -11,6 +11,102 @@ import java.util.List;
 public class Traversals {
     static long operation_speed_base = 200;
 
+    public static void dfs(Runtime_Data data) {
+        data.setTraversal_in_progress(true);
+        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+
+        Node start = data.getGraph().get_node_id(data.getStart_node()); // Cache start and end node to update colour at the end
+        Node end = data.getGraph().get_node_id(data.getEnd_node());     // in the case they are overwritten
+
+        ArrayList<Node> stack = new ArrayList<>();
+        ArrayList<Node> discovered = new ArrayList<>();
+        ArrayList<Node> visited = new ArrayList<>(); // Specifically for traversal colour updating, not needed for algorithm
+        final boolean[] found = {false};
+
+        new Thread(() -> {
+            Gdx.app.postRunnable(() -> {
+                start.setColour(Color.GREEN); // Highlight the chosen start and end node
+                end.setColour(Color.RED);
+            });
+
+            stack.add(start);
+            discovered.add(start);
+
+            if (data.isTraversal_canceled()) {
+                return;
+            }
+
+            while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()) {
+                Node current_node = stack.remove(stack.size() - 1);
+                ArrayList<Node> neighbours = new ArrayList<>(current_node.getNeighbours());
+
+                Gdx.app.postRunnable(() -> {
+                    if (current_node != start && current_node != end) {
+                        current_node.setColour(Color.CYAN); // Highlight the current node if it is not start / end
+                    }
+                });
+
+                for (Node neighbour : neighbours) {
+                    if (data.isTraversal_canceled()) {
+                        return; // Stop traversal if the user has pressed the reset traversal button
+                    }
+
+                    sleep(operation_speed);
+
+                    if (!discovered.contains(neighbour) && !data.isTraversal_canceled()) {
+                        stack.add(neighbour); // Add neighbour to stack if not already discovered
+                        discovered.add(neighbour);
+
+                        Gdx.app.postRunnable(() -> {
+                            highlight_edge(data.getGraph(), current_node, neighbour, Color.YELLOW);
+                            if(neighbour != start && neighbour != end) {
+                                neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                            }
+                        });
+
+                        if (neighbour.equals(end)){                                               // Highlight edge between current node and end
+                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED)); // To show the path
+                            found[0] = true;
+                            data.setTraversal_in_progress(false);
+                            return;
+                        }
+                    }
+                }
+
+                if (!visited.contains(current_node) && !data.isTraversal_canceled()) {
+                    visited.add(current_node); // Help track whether all the neighbours to a node have been visited
+                }
+
+                for (Node node : visited) {
+                    if (node != start && node != end && !data.isTraversal_canceled()) {
+                        boolean all_neighbours_visited = true;
+                        for (Node neighbour : node.getNeighbours()) {
+                            if (!visited.contains(neighbour)) {
+                                all_neighbours_visited = false;
+                                break;
+                            }
+                        }
+
+                        if (all_neighbours_visited) { // Highlight edge and node purple if all neighbours visited
+                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
+                            if (visited.contains(node) && discovered.contains(node)) {
+                                for (Node neighbour : node.getNeighbours()) {
+                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
+                                }
+                            }
+                        } else {
+                            if (node == current_node) { // Else, highlight the node orange if it has been visited but its neighbours haven't
+                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));
+                            }
+                        }
+                    }
+                }
+            }
+        }).start();
+        data.setTraversal_in_progress(false);  // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
+    }
+
     public static void bfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
         long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
@@ -105,102 +201,6 @@ public class Traversals {
 
         }).start(); // Ensure the thread is switched to, instead of main render thread
         data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
-        data.setTraversal_canceled(false);
-    }
-
-    public static void dfs(Runtime_Data data) {
-        data.setTraversal_in_progress(true);
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
-
-        Node start = data.getGraph().get_node_id(data.getStart_node()); // Cache start and end node to update colour at the end
-        Node end = data.getGraph().get_node_id(data.getEnd_node());     // in the case they are overwritten
-
-        ArrayList<Node> stack = new ArrayList<>();
-        ArrayList<Node> discovered = new ArrayList<>();
-        ArrayList<Node> visited = new ArrayList<>(); // Specifically for traversal colour updating, not needed for algorithm
-        final boolean[] found = {false};
-
-        new Thread(() -> {
-            Gdx.app.postRunnable(() -> {
-                start.setColour(Color.GREEN); // Highlight the chosen start and end node
-                end.setColour(Color.RED);
-            });
-
-            stack.add(start);
-            discovered.add(start);
-
-            if (data.isTraversal_canceled()) {
-                return;
-            }
-
-            while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()) {
-                Node current_node = stack.remove(stack.size() - 1);
-                ArrayList<Node> neighbours = new ArrayList<>(current_node.getNeighbours());
-
-                Gdx.app.postRunnable(() -> {
-                    if (current_node != start && current_node != end) {
-                        current_node.setColour(Color.CYAN); // Highlight the current node if it is not start / end
-                    }
-                });
-
-                for (Node neighbour : neighbours) {
-                    if (data.isTraversal_canceled()) {
-                        return; // Stop traversal if the user has pressed the reset traversal button
-                    }
-
-                    sleep(operation_speed);
-
-                    if (!discovered.contains(neighbour) && !data.isTraversal_canceled()) {
-                        stack.add(neighbour); // Add neighbour to stack if not already discovered
-                        discovered.add(neighbour);
-
-                        Gdx.app.postRunnable(() -> {
-                            highlight_edge(data.getGraph(), current_node, neighbour, Color.YELLOW);
-                            if(neighbour != start && neighbour != end) {
-                                neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
-                            }
-                        });
-
-                        if (neighbour.equals(end)){                                               // Highlight edge between current node and end
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED)); // To show the path
-                            found[0] = true;
-                            data.setTraversal_in_progress(false);
-                            return;
-                        }
-                    }
-                }
-
-                if (!visited.contains(current_node) && !data.isTraversal_canceled()) {
-                    visited.add(current_node); // Help track whether all the neighbours to a node have been visited
-                }
-
-                for (Node node : visited) {
-                    if (node != start && node != end && !data.isTraversal_canceled()) {
-                        boolean all_neighbours_visited = true;
-                        for (Node neighbour : node.getNeighbours()) {
-                            if (!visited.contains(neighbour)) {
-                                all_neighbours_visited = false;
-                                break;
-                            }
-                        }
-
-                        if (all_neighbours_visited) { // Highlight edge and node purple if all neighbours visited
-                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
-                            if (visited.contains(node) && discovered.contains(node)) {
-                                for (Node neighbour : node.getNeighbours()) {
-                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
-                                }
-                            }
-                        } else {
-                            if (node == current_node) { // Else, highlight the node orange if it has been visited but its neighbours haven't
-                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));
-                            }
-                        }
-                    }
-                }
-            }
-        }).start();
-        data.setTraversal_in_progress(false);  // Allow a new traversal to be run after this one has completed
         data.setTraversal_canceled(false);
     }
 

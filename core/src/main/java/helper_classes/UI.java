@@ -1,5 +1,6 @@
 package helper_classes;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Graph;
@@ -8,7 +9,16 @@ import fundamental_classes.Runtime_Data;
 
 public class UI {
     public static void quit_button_function(){
+        Gdx.app.exit();
         System.exit(0); // Exit the whole Java program
+    }
+
+    public static void save_current_layout_button_function(Runtime_Data data){
+
+    }
+
+    public static void load_saved_layout_button_function(Runtime_Data data){
+
     }
 
     public static void reset_button_function(Runtime_Data data){
