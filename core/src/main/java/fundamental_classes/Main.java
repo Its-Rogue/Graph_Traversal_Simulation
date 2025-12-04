@@ -342,31 +342,32 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    // Calculate the various offsets for the edge weight text to improve legibility
     public float[] calculate_offsets(Edge edge){
         float offset_x = 0,  offset_y = 0;
 
         if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()){
-            offset_x = -15;
+            offset_x = -15; // Offset to the left of the vertical lines
             return new float[]{offset_x, offset_y};
         }
 
         if (edge.getSource().getPosition().getY() == edge.getTarget().getPosition().getY()){
-            offset_y = 10;
+            offset_y = 10; // Offset above horizontal lines
             return new float[]{offset_x, offset_y};
         }
 
         if ((edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY())){
             if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
-                offset_x = -15;
+                offset_x = -15; // Offset to the left on / lines
             } else {
-                offset_x = 15;
+                offset_x = 15; // Offset to the right on \ lines
             }
 
         } else {
             if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
-                offset_x = 15;
+                offset_x = 15; // Offset to the right on \ lines
             } else {
-                offset_x = -15;
+                offset_x = -15; // Offset to the left on / lines
             }
 
         }

@@ -6,6 +6,9 @@ import structural_classes.Edge;
 import structural_classes.Graph;
 import structural_classes.Node;
 import fundamental_classes.Runtime_Data;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class UI {
     public static void quit_button_function(){
@@ -14,7 +17,13 @@ public class UI {
     }
 
     public static void save_current_layout_button_function(Runtime_Data data){
+        String documents_path =  System.getProperty("user.home") + "\\Documents\\";
+        Path save_path = Path.of(documents_path + "\\GTS Saved Layouts\\");
 
+        if (Files.notExists(save_path)) {
+            new File(documents_path + "\\GTS Saved Layouts\\").mkdir();
+        }
+        System.out.println(save_path);
     }
 
     public static void load_saved_layout_button_function(Runtime_Data data){

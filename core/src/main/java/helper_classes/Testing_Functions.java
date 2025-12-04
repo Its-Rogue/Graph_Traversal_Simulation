@@ -21,7 +21,6 @@ public class Testing_Functions {
         }
 
         // Normal grid layout creation
-        /*
         for (int i = 0; i < 10; i++) { // loop over each node and add an edge with each of its neighbours
             for (int j = 0; j < 10; j++) {
                 int id = i * 10 + j;
@@ -42,18 +41,18 @@ public class Testing_Functions {
                     data.getGraph().add_edge(id, right_id, 1, data);
                 }
             }
-        }*/
+        }
 
         // Stress test for edge / node rendering
         // This is not intended to be used, and will be removed
         // TODO: REMOVE BEFORE FINAL
-        for (Node node: data.getGraph().get_nodes()){
+        /*for (Node node: data.getGraph().get_nodes()){
             for (Node node1: data.getGraph().get_nodes()){
                 if(!(node.equals(node1))){
                     data.getGraph().add_edge(node.getId(), node1.getId(), 1, data);
                 } // Connect each node to all other nodes
             }
-        }
+        }*/
         // For traversal testing
 
 

@@ -71,7 +71,7 @@ public class Inputs {
         }
     }
 
-    // Code for selecting nodes / edges to create an edge / edit an edge's weight when right clicking
+    // Code for selecting nodes / edges to create an edge / edit an edge's weight when right-clicking
     private static void right_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node

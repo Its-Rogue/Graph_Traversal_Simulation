@@ -205,7 +205,184 @@ public class Traversals {
     }
 
     public static void bidirectional(Runtime_Data data) {
+        data.setTraversal_in_progress(true);
+        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
 
+        Node forward_start = data.getGraph().get_node_id(data.getStart_node());
+        Node reverse_start = data.getGraph().get_node_id(data.getEnd_node());
+
+        ArrayList<Node> forward_queue = new ArrayList<>();
+        ArrayList<Node> reverse_queue = new ArrayList<>();
+        ArrayList<Node> forward_discovered = new ArrayList<>();
+        ArrayList<Node> reverse_discovered = new ArrayList<>();
+        ArrayList<Node> forward_visited = new ArrayList<>();
+        ArrayList<Node> reverse_visited = new ArrayList<>();
+        final boolean[] found = {false};
+
+        new Thread(() -> {
+            Gdx.app.postRunnable(() -> {
+                forward_start.setColour(Color.GREEN); // Highlight start nodes green
+                reverse_start.setColour(Color.GREEN);
+            });
+
+            forward_queue.add(forward_start);
+            reverse_queue.add(reverse_start);
+            forward_discovered.add(forward_start);
+            reverse_discovered.add(reverse_start);
+
+            while ((!forward_queue.isEmpty() || !reverse_queue.isEmpty()) && !found[0] && !data.isTraversal_canceled()) {
+                Node forward_current_node = forward_queue.remove(0);
+                Node reverse_current_node = reverse_queue.remove(0);
+
+                if (data.isTraversal_canceled()) {
+                    return;
+                }
+
+                Gdx.app.postRunnable(() -> {
+                   if (forward_current_node != forward_start){
+                       forward_current_node.setColour(Color.CYAN);
+                   }
+                   if (reverse_current_node != reverse_start){
+                       reverse_current_node.setColour(Color.CYAN);
+                   }
+                });
+
+                for (Node neighbour : forward_current_node.getNeighbours()) { // Check each neighbour of the forward current node
+                    if (data.isTraversal_canceled()) {
+                        return;
+                    }
+
+                    sleep(operation_speed);
+
+                    if (!forward_discovered.contains(neighbour) && !data.isTraversal_canceled()) {
+                        forward_discovered.add(neighbour); // Add the neighbour to the forward queue if not already discovered
+                        forward_queue.add(neighbour);
+
+                        Gdx.app.postRunnable(() -> {
+                            highlight_edge(data.getGraph(), forward_current_node, neighbour, Color.YELLOW);
+                            if(neighbour != forward_start && neighbour != reverse_start) {
+                                neighbour.setColour(Color.YELLOW);
+                            }
+                        });
+
+                        for (Node forward_node: reverse_discovered) {
+                            for (Node reverse_node: forward_queue) {
+                                if (forward_node.equals(reverse_node)) {
+                                    found[0] = true;
+                                    data.setTraversal_in_progress(false);
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (neighbour.equals(reverse_start)) {
+                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), forward_current_node, neighbour, Color.RED));
+                            found[0] = true; // Update to true if neighbour is the desired reverse start node, and immediately break from loop
+                            data.setTraversal_in_progress(false);                                        // To prevent unnecessary computation
+                            return;
+                        }
+                    }
+                }
+
+                if (!forward_visited.contains(forward_current_node) && !data.isTraversal_canceled()) {
+                    forward_visited.add(forward_current_node); // Add to forward visited list
+                }
+
+                for (Node node : forward_visited) {
+                    if (node != forward_start && node != reverse_start && !data.isTraversal_canceled()) {
+                        boolean all_neighbours_visited = true;
+                        for (Node neighbour : node.getNeighbours()) {
+                            if (!forward_visited.contains(neighbour)) {
+                                all_neighbours_visited = false;
+                                break;
+                            }
+                        }
+
+                        if (all_neighbours_visited) { // Highlight edge and forward node purple if all neighbours visited
+                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
+                            if (forward_visited.contains(node) && forward_discovered.contains(node)) {
+                                for (Node neighbour : node.getNeighbours()) {
+                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
+                                }
+                            }
+                        } else {
+                            if (node == forward_current_node) { // Else, highlight the forward node orange if it has been visited
+                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));           // but its neighbours haven't
+                            }
+                        }
+                    }
+                }
+
+
+                for (Node neighbour : reverse_current_node.getNeighbours()) { // Check each neighbour of the reverse current node
+                    if (data.isTraversal_canceled()) {
+                        return;
+                    }
+
+                    sleep(operation_speed);
+
+                    if (!reverse_discovered.contains(neighbour) && !data.isTraversal_canceled()) {
+                        reverse_discovered.add(neighbour); // Add the neighbour to the reverse queue if not already discovered
+                        reverse_queue.add(neighbour);
+
+                        Gdx.app.postRunnable(() -> {
+                            highlight_edge(data.getGraph(), reverse_current_node, neighbour, Color.YELLOW);
+                            if(neighbour != reverse_start && neighbour != forward_start) {
+                                neighbour.setColour(Color.YELLOW);
+                            }
+                        });
+
+                        for (Node reverse_node: reverse_discovered) {
+                            for (Node forward_node: forward_queue) {
+                                if (reverse_node.equals(forward_node)) {
+                                    found[0] = true;
+                                    data.setTraversal_in_progress(false);
+                                    return;
+                                }
+                            }
+                        }
+
+                        if (neighbour.equals(forward_start)) {
+                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), reverse_current_node, neighbour, Color.RED));
+                            found[0] = true; // Update to true if neighbour is the desired forward start node, and immediately break from loop
+                            data.setTraversal_in_progress(false);                                        // To prevent unnecessary computation
+                            return;
+                        }
+                    }
+                }
+
+                if (!reverse_visited.contains(reverse_current_node) && !data.isTraversal_canceled()) {
+                    reverse_visited.add(reverse_current_node); // Add to reverse visited list
+                }
+
+                for (Node node : reverse_visited) {
+                    if (node != reverse_start && node != forward_start && !data.isTraversal_canceled()) {
+                        boolean all_neighbours_visited = true;
+                        for (Node neighbour : node.getNeighbours()) {
+                            if (!reverse_visited.contains(neighbour)) {
+                                all_neighbours_visited = false;
+                                break;
+                            }
+                        }
+
+                        if (all_neighbours_visited) { // Highlight edge and reverse node purple if all neighbours visited
+                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
+                            if (reverse_visited.contains(node) && reverse_discovered.contains(node)) {
+                                for (Node neighbour : node.getNeighbours()) {
+                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
+                                }
+                            }
+                        } else {
+                            if (node == reverse_current_node) { // Else, highlight the reverse node orange if it has been visited
+                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));           // but its neighbours haven't
+                            }
+                        }
+                    }
+                }
+            }
+        }).start(); // Ensure the thread is switched to, instead of main render thread
+        data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
     }
 
     public static void dijkstra(Runtime_Data data) {
@@ -218,6 +395,13 @@ public class Traversals {
 
     public static void Bellman_Ford(Runtime_Data data) {
 
+    }
+
+    // Euclidean distance calculation for the A* heuristic
+    public static double euclidean_heuristic(int source_x, int source_y, int target_x, int target_y) {
+        int dx = target_x - source_x;
+        int dy = target_y - source_y;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     public static void highlight_edge(Graph graph, Node node, Node neighbour, Color colour) {
