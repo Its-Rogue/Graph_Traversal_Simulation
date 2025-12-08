@@ -8,7 +8,7 @@ public class Edge {
     private final Node target;
     private int weight;
     private Color colour;
-    private String direction;
+    private final String direction;
 
     // Constructors for the edges
     public Edge(Node source, Node target, int weight, String direction, Color colour) {
@@ -51,6 +51,6 @@ public class Edge {
     // Render code for each edge of a node in the graph, with width 2
     public void render(ShapeRenderer sr) {
         sr.setColor(colour);
-        sr.rectLine(source.getPosition().getX(), source.getPosition().getY(), target.getPosition().getX(), target.getPosition().getY(), 2);
+        sr.rectLine(source.getPosition().x(), source.getPosition().y(), target.getPosition().x(), target.getPosition().y(), 2);
     }
 }

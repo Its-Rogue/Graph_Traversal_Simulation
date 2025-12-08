@@ -2,7 +2,6 @@ package helper_classes;
 
 import fundamental_classes.Runtime_Data;
 import structural_classes.Graph;
-import structural_classes.Node;
 
 public class Testing_Functions {
     public static void create(Runtime_Data data) {
@@ -42,22 +41,11 @@ public class Testing_Functions {
                 }
             }
         }
-
-        // Stress test for edge / node rendering
-        // This is not intended to be used, and will be removed
-        // TODO: REMOVE BEFORE FINAL
-        /*for (Node node: data.getGraph().get_nodes()){
-            for (Node node1: data.getGraph().get_nodes()){
-                if(!(node.equals(node1))){
-                    data.getGraph().add_edge(node.getId(), node1.getId(), 1, data);
-                } // Connect each node to all other nodes
-            }
-        }*/
         // For traversal testing
 
 
 
-        // For rendering testing
+        // For node, edge, text rendering testing
         /*
         data.getGraph().add_node(data.getNode_radius(), 800, 500, data);
         data.getGraph().add_node(data.getNode_radius(), 800, 700, data);
@@ -79,7 +67,7 @@ public class Testing_Functions {
         data.getGraph().add_edge(0, 7, 1, data);
         data.getGraph().add_edge(0, 8, 1, data);
         */
-        // For rendering testing
+        // For node, edge, text rendering testing
 
 
         data.getChange_edge_weight_popup().setVisible(false);

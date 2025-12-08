@@ -52,6 +52,6 @@ public class Node {
     // Render code for each node within the adj list in the graph
     public void render(ShapeRenderer sr){
         sr.setColor(colour);
-        sr.circle(position.getX(), position.getY(), radius);
+        sr.circle(position.x(), position.y(), radius);
     }
 }

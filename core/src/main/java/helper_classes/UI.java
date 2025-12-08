@@ -21,9 +21,8 @@ public class UI {
         Path save_path = Path.of(documents_path + "\\GTS Saved Layouts\\");
 
         if (Files.notExists(save_path)) {
-            new File(documents_path + "\\GTS Saved Layouts\\").mkdir();
+            new File(save_path.toString()).mkdir();
         }
-        System.out.println(save_path);
     }
 
     public static void load_saved_layout_button_function(Runtime_Data data){

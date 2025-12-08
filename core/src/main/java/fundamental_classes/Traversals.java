@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Traversals {
-    static long operation_speed_base = 200;
+    private final static long operation_speed_base = 200;
 
     public static void dfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
@@ -46,7 +46,7 @@ public class Traversals {
                     }
                 });
 
-                for (Node neighbour : neighbours) {
+                for (Node neighbour: neighbours) {
                     if (data.isTraversal_canceled()) {
                         return; // Stop traversal if the user has pressed the reset traversal button
                     }
@@ -77,30 +77,7 @@ public class Traversals {
                     visited.add(current_node); // Help track whether all the neighbours to a node have been visited
                 }
 
-                for (Node node : visited) {
-                    if (node != start && node != end && !data.isTraversal_canceled()) {
-                        boolean all_neighbours_visited = true;
-                        for (Node neighbour : node.getNeighbours()) {
-                            if (!visited.contains(neighbour)) {
-                                all_neighbours_visited = false;
-                                break;
-                            }
-                        }
-
-                        if (all_neighbours_visited) { // Highlight edge and node purple if all neighbours visited
-                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
-                            if (visited.contains(node) && discovered.contains(node)) {
-                                for (Node neighbour : node.getNeighbours()) {
-                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
-                                }
-                            }
-                        } else {
-                            if (node == current_node) { // Else, highlight the node orange if it has been visited but its neighbours haven't
-                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));
-                            }
-                        }
-                    }
-                }
+                element_highlight(data, visited, discovered, current_node, start, end);
             }
         }).start();
         data.setTraversal_in_progress(false);  // Allow a new traversal to be run after this one has completed
@@ -142,7 +119,7 @@ public class Traversals {
                     }
                 });
 
-                for (Node neighbour : current_node.getNeighbours()) { // Check each neighbour of the current node
+                for (Node neighbour: current_node.getNeighbours()) { // Check each neighbour of the current node
                     if (data.isTraversal_canceled()) {
                         return;
                     }
@@ -173,30 +150,7 @@ public class Traversals {
                     visited.add(current_node); // Add to visited list
                 }
 
-                for (Node node : visited) {
-                    if (node != start && node != end && !data.isTraversal_canceled()) {
-                        boolean all_neighbours_visited = true;
-                        for (Node neighbour : node.getNeighbours()) {
-                            if (!visited.contains(neighbour)) {
-                                all_neighbours_visited = false;
-                                break;
-                            }
-                        }
-
-                        if (all_neighbours_visited) { // Highlight edge and node purple if all neighbours visited
-                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
-                            if (visited.contains(node) && discovered.contains(node)) {
-                                for (Node neighbour : node.getNeighbours()) {
-                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
-                                }
-                            }
-                        } else {
-                            if (node == current_node) { // Else, highlight the node orange if it has been visited but its neighbours haven't
-                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));
-                            }
-                        }
-                    }
-                }
+                element_highlight(data, visited, discovered, current_node, start, end);
             }
 
         }).start(); // Ensure the thread is switched to, instead of main render thread
@@ -270,6 +224,8 @@ public class Traversals {
                                 if (forward_node.equals(reverse_node)) {
                                     found[0] = true;
                                     data.setTraversal_in_progress(false);
+                                    forward_current_node.setColour(Color.SKY);
+                                    reverse_current_node.setColour(Color.SKY);
                                     return;
                                 }
                             }
@@ -287,32 +243,6 @@ public class Traversals {
                 if (!forward_visited.contains(forward_current_node) && !data.isTraversal_canceled()) {
                     forward_visited.add(forward_current_node); // Add to forward visited list
                 }
-
-                for (Node node : forward_visited) {
-                    if (node != forward_start && node != reverse_start && !data.isTraversal_canceled()) {
-                        boolean all_neighbours_visited = true;
-                        for (Node neighbour : node.getNeighbours()) {
-                            if (!forward_visited.contains(neighbour)) {
-                                all_neighbours_visited = false;
-                                break;
-                            }
-                        }
-
-                        if (all_neighbours_visited) { // Highlight edge and forward node purple if all neighbours visited
-                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
-                            if (forward_visited.contains(node) && forward_discovered.contains(node)) {
-                                for (Node neighbour : node.getNeighbours()) {
-                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
-                                }
-                            }
-                        } else {
-                            if (node == forward_current_node) { // Else, highlight the forward node orange if it has been visited
-                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));           // but its neighbours haven't
-                            }
-                        }
-                    }
-                }
-
 
                 for (Node neighbour : reverse_current_node.getNeighbours()) { // Check each neighbour of the reverse current node
                     if (data.isTraversal_canceled()) {
@@ -337,6 +267,8 @@ public class Traversals {
                                 if (reverse_node.equals(forward_node)) {
                                     found[0] = true;
                                     data.setTraversal_in_progress(false);
+                                    forward_current_node.setColour(Color.SKY);
+                                    reverse_current_node.setColour(Color.SKY);
                                     return;
                                 }
                             }
@@ -355,30 +287,8 @@ public class Traversals {
                     reverse_visited.add(reverse_current_node); // Add to reverse visited list
                 }
 
-                for (Node node : reverse_visited) {
-                    if (node != reverse_start && node != forward_start && !data.isTraversal_canceled()) {
-                        boolean all_neighbours_visited = true;
-                        for (Node neighbour : node.getNeighbours()) {
-                            if (!reverse_visited.contains(neighbour)) {
-                                all_neighbours_visited = false;
-                                break;
-                            }
-                        }
-
-                        if (all_neighbours_visited) { // Highlight edge and reverse node purple if all neighbours visited
-                            Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
-                            if (reverse_visited.contains(node) && reverse_discovered.contains(node)) {
-                                for (Node neighbour : node.getNeighbours()) {
-                                    Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
-                                }
-                            }
-                        } else {
-                            if (node == reverse_current_node) { // Else, highlight the reverse node orange if it has been visited
-                                Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));           // but its neighbours haven't
-                            }
-                        }
-                    }
-                }
+                element_highlight(data, forward_visited, forward_discovered, forward_current_node, forward_start, reverse_start);
+                element_highlight(data, reverse_visited, reverse_discovered, reverse_current_node, reverse_start, forward_start);
             }
         }).start(); // Ensure the thread is switched to, instead of main render thread
         data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
@@ -397,14 +307,41 @@ public class Traversals {
 
     }
 
+    private static void element_highlight(Runtime_Data data, ArrayList<Node> visited, ArrayList<Node> discovered, Node current_node, Node start, Node end) {
+        for (Node node: visited) {
+            if (node != start && node != end && !data.isTraversal_canceled()) {
+                boolean all_neighbours_visited = true;
+                for (Node neighbour: node.getNeighbours()) {
+                    if (!visited.contains(neighbour)) {
+                        all_neighbours_visited = false; // Check to see if each neighbour of every visited node has also been visited
+                        break;
+                    }
+                }
+
+                if (all_neighbours_visited) { // Highlight edge and reverse node purple if all neighbours visited
+                    Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
+                    if (visited.contains(node) && discovered.contains(node)) {
+                        for (Node neighbour: node.getNeighbours()) {
+                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
+                        }
+                    }
+                } else {
+                    if (node == current_node) { // Else, highlight the reverse node orange if it has been visited
+                        Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));           // but its neighbours haven't
+                    }
+                }
+            }
+        }
+    }
+
     // Euclidean distance calculation for the A* heuristic
-    public static double euclidean_heuristic(int source_x, int source_y, int target_x, int target_y) {
+    private static double euclidean_heuristic(int source_x, int source_y, int target_x, int target_y) {
         int dx = target_x - source_x;
         int dy = target_y - source_y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    public static void highlight_edge(Graph graph, Node node, Node neighbour, Color colour) {
+    private static void highlight_edge(Graph graph, Node node, Node neighbour, Color colour) {
         List<Edge> edge = graph.get_edges(node);
         for (Edge e: edge) {
             if (e.getTarget().equals(neighbour)) {

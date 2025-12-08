@@ -49,8 +49,8 @@ public class Graph {
         for (Edge edge: adj_list.get(source)) {
             if (edge.getTarget().getId() == target.getId()) {
                 if (!(data.getTraversal_options().equals("Breadth-First Search") || data.getTraversal_options().equals("Depth-First Search") || data.getTraversal_options().equals("Bidirectional Search"))) {
-                    float midpoint_x = (edge.getSource().getPosition().getX() + edge.getTarget().getPosition().getX()) / 2f;
-                    float midpoint_y = (edge.getSource().getPosition().getY() + edge.getTarget().getPosition().getY()) / 2f;
+                    float midpoint_x = (edge.getSource().getPosition().x() + edge.getTarget().getPosition().x()) / 2f;
+                    float midpoint_y = (edge.getSource().getPosition().y() + edge.getTarget().getPosition().y()) / 2f;
                     data.getChange_edge_weight_popup().setPosition(midpoint_x, midpoint_y);
                     data.getChange_edge_weight_popup().setVisible(true); // Find midpoint of existing edge, then set the edit text field's position to it
                     data.setEdge_to_edit(edge); // Cache edge to be updated after user has inputted new weight
