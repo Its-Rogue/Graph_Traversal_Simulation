@@ -323,7 +323,7 @@ public class Main extends ApplicationAdapter {
 
             String text = Integer.toString(node.getId()); // Get node ID and cast to a string
             layout.setText(font, text);
-            font.draw(batch, text, node.getPosition().x() - layout.width / 2, node.getPosition().y() + layout.height / 2);
+            font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
             // Draw edge weights centered on edges, offset for legibility
             if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
@@ -333,8 +333,8 @@ public class Main extends ApplicationAdapter {
                         continue;
                     }
                     font.setColor(Color.WHITE);
-                    float midpoint_x = (edge.getSource().getPosition().x() + edge.getTarget().getPosition().x()) / 2f;
-                    float midpoint_y = (edge.getSource().getPosition().y() + edge.getTarget().getPosition().y()) / 2f;
+                    float midpoint_x = (edge.getSource().getPosition().getX() + edge.getTarget().getPosition().getX()) / 2f;
+                    float midpoint_y = (edge.getSource().getPosition().getY() + edge.getTarget().getPosition().getY()) / 2f;
                     float[] offsets = calculate_offsets(edge);
                     font.draw(batch, Integer.toString(edge.getWeight()), (midpoint_x - layout.width / 2) + offsets[0], (midpoint_y + layout.height / 2) +  offsets[1]);
                 }
@@ -346,25 +346,25 @@ public class Main extends ApplicationAdapter {
     public float[] calculate_offsets(Edge edge){
         float offset_x = 0,  offset_y = 0;
 
-        if (edge.getSource().getPosition().x() == edge.getTarget().getPosition().x()){
+        if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()){
             offset_x = -15; // Offset to the left of the vertical lines
             return new float[]{offset_x, offset_y};
         }
 
-        if (edge.getSource().getPosition().y() == edge.getTarget().getPosition().y()){
+        if (edge.getSource().getPosition().getY() == edge.getTarget().getPosition().getY()){
             offset_y = 10; // Offset above horizontal lines
             return new float[]{offset_x, offset_y};
         }
 
-        if ((edge.getSource().getPosition().y() < edge.getTarget().getPosition().y())){
-            if (edge.getSource().getPosition().x() < edge.getTarget().getPosition().x()){
+        if ((edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY())){
+            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
                 offset_x = -15; // Offset to the left on / lines
             } else {
                 offset_x = 15; // Offset to the right on \ lines
             }
 
         } else {
-            if (edge.getSource().getPosition().x() < edge.getTarget().getPosition().x()){
+            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
                 offset_x = 15; // Offset to the right on \ lines
             } else {
                 offset_x = -15; // Offset to the left on / lines

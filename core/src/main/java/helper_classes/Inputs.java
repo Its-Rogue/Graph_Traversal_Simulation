@@ -56,7 +56,7 @@ public class Inputs {
             }
 
             for (Node node: data.getGraph().get_nodes()){
-                if (distance_check(node.getPosition().x(), node.getPosition().y(), mouse_x, mouse_y, data) < 4 * data.getNode_radius()) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) < 4 * data.getNode_radius()) {
                     return; // Do not allow the new node to be placed too close to an already existing node
                 }
             }
@@ -75,7 +75,7 @@ public class Inputs {
     private static void right_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().x(), node.getPosition().y(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
                     if (first_node_selected == null){ // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColour(Color.GREEN);
@@ -102,7 +102,7 @@ public class Inputs {
                 return; // Prevent accidental deletion of nodes while typing in new edge weight
             }
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
-                if (distance_check(node.getPosition().x(), node.getPosition().y(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
+                if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
                     if (first_node_selected != null) { // Checks to see if a node has already been selected
                         if (first_node_selected != node) { // Checks to see if the node selected again is different
                             data.getGraph().remove_edge(first_node_selected.getId(), node.getId(), data); // Remove edge if nodes are different

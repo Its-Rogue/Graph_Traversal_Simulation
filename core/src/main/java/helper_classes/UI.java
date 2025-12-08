@@ -18,8 +18,13 @@ public class UI {
 
     public static void save_current_layout_button_function(Runtime_Data data){
         String documents_path =  System.getProperty("user.home") + "\\Documents\\";
-        Path save_path = Path.of(documents_path + "\\GTS Saved Layouts\\");
+        Path save_path = Path.of(documents_path + "\\Graph Traversal Simulator\\");
 
+        if (Files.notExists(save_path)) {
+            new File(save_path.toString()).mkdir();
+        }
+
+        save_path = Path.of(save_path + "\\Saved Layouts\\");
         if (Files.notExists(save_path)) {
             new File(save_path.toString()).mkdir();
         }
