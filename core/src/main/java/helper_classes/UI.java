@@ -9,6 +9,8 @@ import fundamental_classes.Runtime_Data;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UI {
     public static void quit_button_function(){
@@ -17,21 +19,11 @@ public class UI {
     }
 
     public static void save_current_layout_button_function(Runtime_Data data){
-        String documents_path =  System.getProperty("user.home") + "\\Documents\\";
-        Path save_path = Path.of(documents_path + "\\Graph Traversal Simulator\\");
-
-        if (Files.notExists(save_path)) {
-            new File(save_path.toString()).mkdir();
-        }
-
-        save_path = Path.of(save_path + "\\Saved Layouts\\");
-        if (Files.notExists(save_path)) {
-            new File(save_path.toString()).mkdir();
-        }
+        Save_Handling.save_current_layout(data);
     }
 
     public static void load_saved_layout_button_function(Runtime_Data data){
-
+        Save_Handling.load_saved_layout(data);
     }
 
     public static void reset_button_function(Runtime_Data data){
