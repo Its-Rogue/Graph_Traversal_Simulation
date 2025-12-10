@@ -14,6 +14,7 @@ The simulator allows for the creation of a custom graph with weighted edges, and
 
 On the left hand side of the screen, using Scene2D, there is a variety of elements. There are buttons to control the simulation in the following ways:
 - Clear the graph
+- Save or load a layout of nodes and edges
 - Choose the type of graph traversal
 - Choose the start and end node for finding the shortest path
 - Quit the program
