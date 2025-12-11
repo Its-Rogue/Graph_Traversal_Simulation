@@ -13,7 +13,7 @@ import structural_classes.Graph;
 public class Runtime_Data {
     private final Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-    private final Graph graph = new Graph();
+    private Graph graph = new Graph();
     private Edge edge_to_edit;
 
     private final Table error_popup = new Table();
@@ -63,6 +63,10 @@ public class Runtime_Data {
 
     public Graph getGraph() {
         return graph;
+    }
+
+    public void setGraph(Graph graph){
+        this.graph = graph;
     }
 
     public int getNode_radius() {
