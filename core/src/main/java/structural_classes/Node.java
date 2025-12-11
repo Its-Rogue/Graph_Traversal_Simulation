@@ -2,7 +2,6 @@ package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
 import java.util.List;
 
 public class Node {
@@ -33,11 +32,11 @@ public class Node {
         return neighbours;
     }
 
-    public void add_neighbour(Node neighbour){
+    public void add_neighbour(Node neighbour) {
         neighbours.add(neighbour);
     }
 
-    public void remove_neighbour(Node neighbour){
+    public void remove_neighbour(Node neighbour) {
         neighbours.remove(neighbour);
     }
 
@@ -50,7 +49,7 @@ public class Node {
     }
 
     // Render code for each node within the adj list in the graph
-    public void render(ShapeRenderer sr){
+    public void render(ShapeRenderer sr) {
         sr.setColor(colour);
         sr.circle(position.getX(), position.getY(), radius);
     }

@@ -251,11 +251,11 @@ public class Main extends ApplicationAdapter {
     }
 
     // Shape render loop
-    public void shape_render(){
+    public void shape_render() {
         sr.setColor(Color.WHITE);
         sr.rect(250,0,10,1440); // Margin for UI
 
-        if (data.getChange_edge_weight_popup().isVisible()){ // Add a rectangle behind the popup to increase the legibility of the text hint
+        if (data.getChange_edge_weight_popup().isVisible()) { // Add a rectangle behind the popup to increase the legibility of the text hint
             sr.setColor(Color.RED); // Border shape
             sr.rect(data.getChange_edge_weight_popup().getX() - 127,data.getChange_edge_weight_popup().getY() - 24,252,52);
             sr.setColor(Color.BLACK); // Background shape
@@ -264,10 +264,10 @@ public class Main extends ApplicationAdapter {
     }
 
     // Edge render loop
-    public void edge_render(){
-        for (Node node: data.getGraph().get_nodes()){ // Loop over each node in the graph
-            for (Edge edge: data.getGraph().get_edges(node)){ // Loop over each edge that a node has
-                if (edge.getSource().getId() < edge.getTarget().getId()){ // Check if the id is less than the one of the target node
+    public void edge_render() {
+        for (Node node: data.getGraph().get_nodes()) { // Loop over each node in the graph
+            for (Edge edge: data.getGraph().get_edges(node)) { // Loop over each edge that a node has
+                if (edge.getSource().getId() < edge.getTarget().getId()) { // Check if the id is less than the one of the target node
                     edge.render(sr); // Draw the edge one time, rather than for both directions of the bidirectional edge
                 }
             }
@@ -275,13 +275,13 @@ public class Main extends ApplicationAdapter {
     }
 
     // Node render loop
-    public void node_render(){
-        for (Node node: data.getGraph().get_nodes()){ // Loop over each node in the graph
+    public void node_render() {
+        for (Node node: data.getGraph().get_nodes()) { // Loop over each node in the graph
             node.render(sr); // Draw each node after all its edges have been drawn
         }
     }
 
-    public void colour_key_render(){
+    public void colour_key_render() {
         sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);  // Visited node / edge
         sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);  // Discovered node / edge
         sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);          // Explored node / edge
@@ -302,7 +302,7 @@ public class Main extends ApplicationAdapter {
     }
 
     // Edge weight & colour key render loop
-    public void render_text(){
+    public void render_text() {
         // Colour key code
         font.setColor(Color.WHITE);
         font.draw(batch, "Colour Key", 10, 244);            // Header
@@ -314,8 +314,8 @@ public class Main extends ApplicationAdapter {
         font.draw(batch, "Fully explored node", 40, 44);    // Purple
 
         // Edge weight code
-        for (Node node: data.getGraph().get_nodes()){
-            if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED){
+        for (Node node: data.getGraph().get_nodes()) {
+            if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED) {
                 font.setColor(Color.WHITE); // Increase legibility when rendered darker colours
             } else {
                 font.setColor(Color.BLACK);
@@ -327,9 +327,9 @@ public class Main extends ApplicationAdapter {
 
             // Draw edge weights centered on edges, offset for legibility
             if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
-                data.getSelected_traversal().equals("Bidirectional Search"))){
-                for (Edge edge: data.getGraph().get_edges(node)){
-                    if (edge.getDirection().equals("reverse")){
+                data.getSelected_traversal().equals("Bidirectional Search"))) {
+                for (Edge edge: data.getGraph().get_edges(node)) {
+                    if (edge.getDirection().equals("reverse")) {
                         continue;
                     }
                     font.setColor(Color.WHITE);
@@ -343,28 +343,28 @@ public class Main extends ApplicationAdapter {
     }
 
     // Calculate the various offsets for the edge weight text to improve legibility
-    public float[] calculate_offsets(Edge edge){
+    public float[] calculate_offsets(Edge edge) {
         float offset_x = 0,  offset_y = 0;
 
-        if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()){
+        if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()) {
             offset_x = -15; // Offset to the left of the vertical lines
-            return new float[]{offset_x, offset_y};
+            return new float[] {offset_x, offset_y};
         }
 
-        if (edge.getSource().getPosition().getY() == edge.getTarget().getPosition().getY()){
+        if (edge.getSource().getPosition().getY() == edge.getTarget().getPosition().getY()) {
             offset_y = 10; // Offset above horizontal lines
-            return new float[]{offset_x, offset_y};
+            return new float[] {offset_x, offset_y};
         }
 
-        if ((edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY())){
-            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
+        if ((edge.getSource().getPosition().getY() < edge.getTarget().getPosition().getY())) {
+            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()) {
                 offset_x = -15; // Offset to the left on / lines
             } else {
                 offset_x = 15; // Offset to the right on \ lines
             }
 
         } else {
-            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()){
+            if (edge.getSource().getPosition().getX() < edge.getTarget().getPosition().getX()) {
                 offset_x = 15; // Offset to the right on \ lines
             } else {
                 offset_x = -15; // Offset to the left on / lines
@@ -372,11 +372,11 @@ public class Main extends ApplicationAdapter {
 
         }
         offset_y = 10;
-        return new float[]{offset_x, offset_y}; // For each instance, return an array with the 2 offsets, rather than having 2 identical functions for x / y
+        return new float[] {offset_x, offset_y}; // For each instance, return an array with the 2 offsets, rather than having 2 identical functions for x / y
     }
 
     // Other uncategorisable calculations that need to happen every frame
-    public void calculations(){
+    public void calculations() {
         frame_delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
     }
 

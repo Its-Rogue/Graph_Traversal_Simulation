@@ -31,11 +31,26 @@ public class Graph {
             id = next_node_ID++;
         }
 
-        if (adj_list.size() < 100){
+        if (adj_list.size() < 100) {
             vec2 position  = new vec2(x_pos, y_pos);
             Node node = new Node(node_radius, id, position, new ArrayList<>(), Color.WHITE);
             adj_list.put(node, new ArrayList<>());
         }
+    }
+
+    public void add_node(Node node) {
+        for (Node n: adj_list.keySet()) { // Check to see if the node already exists, and if so prevent the node from being added
+            if (n.getId() == node.getId()) {
+                return;
+            }
+        }
+
+        if (node.getId() >= next_node_ID) { // Update the next node ID
+            next_node_ID = node.getId() + 1;
+        }
+
+        free_IDs.remove(node.getId()); // Remove the ID from the list of free IDs
+        adj_list.put(node, new ArrayList<>()); // Add the node without its neighbours to the adj list
     }
 
     // Gets the ID of the target and source node, checks they exist, then adds a bidirectional edge between them
@@ -62,6 +77,26 @@ public class Graph {
         adj_list.get(source).add(new Edge(source, target, weight, "forward", Color.WHITE));
         adj_list.get(target).add(new Edge(target, source, weight, "reverse", Color.WHITE));
         source.add_neighbour(target);
+        target.add_neighbour(source);
+    }
+
+    public void add_edge(Edge edge) {
+        Node source = edge.getSource(); // Get the node structure for the source and target
+        Node target = edge.getTarget();
+
+        for (Edge e: adj_list.getOrDefault(source, new ArrayList<>())) { // Make sure that the edge does not already exist
+            if (e.getTarget().getId() == target.getId()) {
+                return;
+            }
+        }
+
+        Edge reverse_edge = new Edge(target, source, edge.getWeight(), "reverse", Color.WHITE);
+
+        List<Edge> source_edges = adj_list.computeIfAbsent(source, k -> new ArrayList<>()); // Get or create edge lists for both nodes
+        List<Edge> target_edges = adj_list.computeIfAbsent(target, k -> new ArrayList<>());
+        source_edges.add(edge);         // Add the edge to both the source and target
+        target_edges.add(reverse_edge);
+        source.add_neighbour(target); // Add the source / target as neighbours to each other
         target.add_neighbour(source);
     }
 
@@ -127,7 +162,7 @@ public class Graph {
     }
 
     // Clear the adj list and reset next node id and free ids to start over
-    public static void clear(){
+    public static void clear() {
         adj_list.clear();
         free_IDs.clear();
         next_node_ID = 0;
@@ -135,7 +170,7 @@ public class Graph {
 
     // Check to see if a traversal is already in progress to prevent the graph being altered,
     // preventing null data being fed into traversal algorithms
-    private static boolean traversal_in_progress_check(Runtime_Data data){
+    private static boolean traversal_in_progress_check(Runtime_Data data) {
         if (data.isTraversal_in_progress()) {
             data.getError_popup_label().setText("You cannot edit the graph at this \ntime, a traversal is in progress.");
             data.getError_popup_label().setVisible(true);

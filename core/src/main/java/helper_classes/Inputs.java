@@ -20,7 +20,7 @@ public class Inputs {
 
     // Code specifically related to menu hotkeys
     private static void menu() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             System.exit(0); // Exit the java program
         }
     }
@@ -55,14 +55,14 @@ public class Inputs {
                 mouse_y = data.getNode_radius(); // Place node fully on screen if clicked in a position where it would be obscured
             }
 
-            for (Node node: data.getGraph().get_nodes()){
+            for (Node node: data.getGraph().get_nodes()) {
                 if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) < 4 * data.getNode_radius()) {
                     return; // Do not allow the new node to be placed too close to an already existing node
                 }
             }
 
-            if (data.getChange_edge_weight_popup().isVisible()){
-                if (distance_check((int) data.getChange_edge_weight_popup().getX(), (int) data.getChange_edge_weight_popup().getY(), mouse_x, mouse_y, data) < 2 * data.getChange_edge_weight_label().getWidth()){
+            if (data.getChange_edge_weight_popup().isVisible()) {
+                if (distance_check((int) data.getChange_edge_weight_popup().getX(), (int) data.getChange_edge_weight_popup().getY(), mouse_x, mouse_y, data) < 2 * data.getChange_edge_weight_label().getWidth()) {
                     return; // Do not allow the new node to be placed if it is too close to the change edge weight popup, allowing the user to select the text field without accidentally editing the graph
                 }
             }
@@ -73,10 +73,10 @@ public class Inputs {
 
     // Code for selecting nodes / edges to create an edge / edit an edge's weight when right-clicking
     private static void right_click(int mouse_x, int mouse_y, Runtime_Data data) {
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)){
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
                 if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
-                    if (first_node_selected == null){ // Checks if a node has already been selected
+                    if (first_node_selected == null) { // Checks if a node has already been selected
                         first_node_selected = node; // Assigns the clicked node to the first one selected
                         node.setColour(Color.GREEN);
                     } else if (first_node_selected != node) {
@@ -88,7 +88,7 @@ public class Inputs {
                 }
             }
 
-            if (first_node_selected != null){
+            if (first_node_selected != null) {
                 first_node_selected.setColour(Color.WHITE);
                 first_node_selected = null; // Set to null if not right-clicked on a node
             }
@@ -98,7 +98,7 @@ public class Inputs {
     // Code for deleting a node / edge when middle-clicking
     private static void middle_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && data.getChange_edge_weight_popup().isVisible()){
+            if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && data.getChange_edge_weight_popup().isVisible()) {
                 return; // Prevent accidental deletion of nodes while typing in new edge weight
             }
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
@@ -118,7 +118,7 @@ public class Inputs {
                     return;
                 }
             }
-            if (first_node_selected != null){ // Reset selected node if node selected then user clicks again not on a different node
+            if (first_node_selected != null) { // Reset selected node if node selected then user clicks again not on a different node
                 first_node_selected.setColour(Color.WHITE);
                 first_node_selected = null;
             }
@@ -126,16 +126,16 @@ public class Inputs {
     }
 
     // Code for updating the edge's weight after it has been inputted
-    private static void enter_key_input(Runtime_Data data){
-        if (!data.getChange_edge_weight_popup().isVisible()){
+    private static void enter_key_input(Runtime_Data data) {
+        if (!data.getChange_edge_weight_popup().isVisible()) {
             return; // Do not run if edge weight is not being changed
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             data.getEdge_to_edit().setWeight(data.getNew_edge_weight()); // Set forward edge to have the new weight
-            for (Node node: data.getEdge_to_edit().getSource().getNeighbours()){
-                if (node == data.getEdge_to_edit().getTarget()){
-                    for (Edge edge: data.getGraph().get_edges(node)){
-                        if (edge.getTarget().equals(data.getEdge_to_edit().getSource())){
+            for (Node node: data.getEdge_to_edit().getSource().getNeighbours()) {
+                if (node == data.getEdge_to_edit().getTarget()) {
+                    for (Edge edge: data.getGraph().get_edges(node)) {
+                        if (edge.getTarget().equals(data.getEdge_to_edit().getSource())) {
                             edge.setWeight(data.getNew_edge_weight()); // Find the reverse edge and set it to have the new weight as well
                         }
                     }
@@ -149,7 +149,7 @@ public class Inputs {
     // Check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
     private static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y, Runtime_Data data) {
         float offset_multiplier = 1;
-        if (data.getChange_edge_weight_popup().isVisible()){
+        if (data.getChange_edge_weight_popup().isVisible()) {
             offset_multiplier = 1.5f; // Bounds check for the change edge weight popup specifically
         }
         if (pos_x > mouse_x + 100 * offset_multiplier || pos_x < mouse_x - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY;

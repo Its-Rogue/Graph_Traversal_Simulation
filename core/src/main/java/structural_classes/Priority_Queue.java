@@ -46,6 +46,58 @@ public class Priority_Queue {
         heap.clear();
     }
 
+    public boolean remove(int value) {
+        int index = find_index(value);
+        if (index == -1) {
+            return false;
+        }
+
+        if (index == heap.size() - 1) {
+            heap.remove(index);
+            return true;
+        }
+
+        int last_element = heap.remove(heap.size() - 1);
+        heap.set(index, last_element);
+
+        bubble_up(index);
+        bubble_down_from(index);
+
+        return true;
+    }
+
+    private int find_index(int value) {
+        for (int i = 0; i < heap.size(); i++) {
+            if (heap.get(i) == value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void bubble_down_from(int index) {
+        int current = index;
+        int size = heap.size();
+
+        while (true) {
+            int left = 2 * current + 1;
+            int right = 2 * current + 2;
+            int smallest = current;
+
+            if (left < size && heap.get(left) < heap.get(smallest)) {
+                smallest = left;
+            }
+            if (right < size && heap.get(right) < heap.get(smallest)) {
+                smallest = right;
+            }
+            if (smallest == current) {
+                break;
+            }
+            swap(current, smallest);
+            current = smallest;
+        }
+    }
+
     private void bubble_up(int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
@@ -56,25 +108,7 @@ public class Priority_Queue {
     }
 
     private void bubble_down() {
-        int index = 0;
-        int size = heap.size();
-        while (true) {
-            int left = 2 * index + 1;
-            int right = 2 * index + 2;
-            int smallest = index;
-
-            if (left < size && heap.get(left) < heap.get(smallest)) {
-                smallest = left;
-            }
-            if (right < size && heap.get(right) < heap.get(smallest)) {
-                smallest = right;
-            }
-            if (smallest == index) {
-                break;
-            }
-            swap(index, smallest);
-            index = smallest;
-        }
+        bubble_down_from(0);
     }
 
     private void swap(int i, int j) {

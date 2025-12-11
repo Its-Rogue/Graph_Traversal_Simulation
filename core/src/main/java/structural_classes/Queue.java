@@ -6,7 +6,7 @@ public class Queue {
     private int length = 0;
     private Node[] q;
 
-    public Queue(int size){
+    public Queue(int size) {
         q = new Node[size];
     }
 
@@ -30,22 +30,22 @@ public class Queue {
         return rear_of_stack;
     }
 
-    public void enQueue(Node node){
+    public void enQueue(Node node) {
         q[rear_of_stack] = node;
         rear_of_stack++;
         length++;
     }
 
-    public Node deQueue(){
+    public Node deQueue() {
         length--;
         return q[front_of_stack--];
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return length == 0;
     }
 
-    public boolean isFull(){
+    public boolean isFull() {
         return length == q.length;
     }
 }
