@@ -160,6 +160,10 @@ public class Inputs {
         if (mouse_y < 50) {
             data.getColour_hint_label().setText("hello world");
         }
+
+        if (mouse_y > 50 && mouse_y < 85){
+            data.getColour_hint_label().setText("test");
+        }
     }
 
     // Check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
