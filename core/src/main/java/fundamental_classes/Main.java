@@ -67,6 +67,7 @@ public class Main extends ApplicationAdapter {
         data.getError_popup().setFillParent(true);
         data.getError_popup().setVisible(false);
         data.getChange_edge_weight_popup().setVisible(false);
+        data.getColour_hint_popup().setVisible(false);
 
         // Initialise all the different elements for the UI
         quit_button = new TextButton("Quit", data.getSkin());
@@ -216,16 +217,21 @@ public class Main extends ApplicationAdapter {
         data.getChange_edge_weight_popup().add(data.getChange_edge_weight_input()).row();
         data.getChange_edge_weight_popup().add(data.getChange_edge_weight_label()).pad(2).row();
 
+        // Colour key hint label
+        data.getColour_hint_popup().add(data.getColour_hint_label()).row();
+
         // Align the UI to the top left and offset it so it does not render off the screen bounds
         table.align(Align.topLeft);
         data.getError_popup().align(Align.topLeft);
         table.setPosition(15,0);
         data.getError_popup().setPosition(15,-600);
+        data.getColour_hint_popup().setPosition(300, 250);
 
         // Add the table, and subsequent buttons, to the GUI stage
         GUI.addActor(table);
         GUI.addActor(data.getError_popup());
         GUI.addActor(data.getChange_edge_weight_popup());
+        GUI.addActor(data.getColour_hint_popup());
     }
 
     // Render loop
@@ -239,7 +245,6 @@ public class Main extends ApplicationAdapter {
         sr.begin(ShapeRenderer.ShapeType.Filled);
             edge_render();
             node_render(); // Render the nodes after the edges so that they are drawn on top of the edge lines
-            colour_key_render();
             shape_render(); // Render simple shapes provided by LibGDX
         sr.end();
 
@@ -252,6 +257,7 @@ public class Main extends ApplicationAdapter {
 
     // Shape render loop
     public void shape_render() {
+        colour_key_render(); // Render the coloured squares in the bottom left for the key
         sr.setColor(Color.WHITE);
         sr.rect(250,0,10,1440); // Margin for UI
 
@@ -326,8 +332,7 @@ public class Main extends ApplicationAdapter {
             font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
 
             // Draw edge weights centered on edges, offset for legibility
-            if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") ||
-                data.getSelected_traversal().equals("Bidirectional Search"))) {
+            if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") || data.getSelected_traversal().equals("Bidirectional Search"))) {
                 for (Edge edge: data.getGraph().get_edges(node)) {
                     if (edge.getDirection().equals("reverse")) {
                         continue;

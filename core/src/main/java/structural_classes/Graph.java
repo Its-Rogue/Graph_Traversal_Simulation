@@ -94,7 +94,7 @@ public class Graph {
 
         List<Edge> source_edges = adj_list.computeIfAbsent(source, k -> new ArrayList<>()); // Get or create edge lists for both nodes
         List<Edge> target_edges = adj_list.computeIfAbsent(target, k -> new ArrayList<>());
-        source_edges.add(edge);         // Add the edge to both the source and target
+        source_edges.add(edge); // Add the edge to both the source and target
         target_edges.add(reverse_edge);
         source.add_neighbour(target); // Add the source / target as neighbours to each other
         target.add_neighbour(source);

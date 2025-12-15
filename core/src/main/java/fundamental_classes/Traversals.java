@@ -3,7 +3,6 @@ package fundamental_classes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
-import structural_classes.Graph;
 import structural_classes.Node;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +57,14 @@ public class Traversals{
                         discovered.add(neighbour);
 
                         Gdx.app.postRunnable(() ->{
-                            highlight_edge(data.getGraph(), current_node, neighbour, Color.YELLOW);
+                            highlight_edge(data, current_node, neighbour, Color.YELLOW);
                             if(neighbour != start && neighbour != end){
                                 neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
                             }
                         });
 
                         if (neighbour.equals(end)){                                               // Highlight edge between current node and end
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED)); // To show the path
+                            Gdx.app.postRunnable(() -> highlight_edge(data, current_node, neighbour, Color.RED)); // To show the path
                             found[0] = true;
                             data.setTraversal_in_progress(false);
                             return;
@@ -131,14 +130,14 @@ public class Traversals{
                         queue.add(neighbour);
 
                         Gdx.app.postRunnable(() ->{
-                            highlight_edge(data.getGraph(), current_node, neighbour, Color.YELLOW);
+                            highlight_edge(data, current_node, neighbour, Color.YELLOW);
                             if(neighbour != start && neighbour != end){
                                 neighbour.setColour(Color.YELLOW);
                             }
                         });
 
                         if (neighbour.equals(end)){
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), current_node, neighbour, Color.RED));
+                            Gdx.app.postRunnable(() -> highlight_edge(data, current_node, neighbour, Color.RED));
                             found[0] = true; // Update to true if neighbour is the desired end node, and immediately break from loop
                             data.setTraversal_in_progress(false);                              // To prevent unnecessary computation
                             return;
@@ -213,17 +212,18 @@ public class Traversals{
                         forward_queue.add(neighbour);
 
                         Gdx.app.postRunnable(() ->{
-                            highlight_edge(data.getGraph(), forward_current_node, neighbour, Color.YELLOW);
+                            highlight_edge(data, forward_current_node, neighbour, Color.YELLOW);
                             if(neighbour != forward_start && neighbour != reverse_start){
                                 neighbour.setColour(Color.YELLOW);
                             }
                         });
 
                         for (Node forward_node: reverse_discovered){
-                            for (Node reverse_node: forward_queue){
+                            for (Node reverse_node: forward_discovered){
                                 if (forward_node.equals(reverse_node)){
                                     found[0] = true;
                                     data.setTraversal_in_progress(false);
+                                    Gdx.app.postRunnable(() -> highlight_edge(data, forward_node, reverse_node, Color.SKY));
                                     forward_current_node.setColour(Color.SKY);
                                     reverse_current_node.setColour(Color.SKY);
                                     return;
@@ -232,7 +232,7 @@ public class Traversals{
                         }
 
                         if (neighbour.equals(reverse_start)){
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), forward_current_node, neighbour, Color.RED));
+                            Gdx.app.postRunnable(() -> highlight_edge(data, forward_current_node, neighbour, Color.RED));
                             found[0] = true; // Update to true if neighbour is the desired reverse start node, and immediately break from loop
                             data.setTraversal_in_progress(false);                                        // To prevent unnecessary computation
                             return;
@@ -256,26 +256,27 @@ public class Traversals{
                         reverse_queue.add(neighbour);
 
                         Gdx.app.postRunnable(() ->{
-                            highlight_edge(data.getGraph(), reverse_current_node, neighbour, Color.YELLOW);
+                            highlight_edge(data, reverse_current_node, neighbour, Color.YELLOW);
                             if(neighbour != reverse_start && neighbour != forward_start){
                                 neighbour.setColour(Color.YELLOW);
                             }
                         });
 
                         for (Node reverse_node: reverse_discovered){
-                            for (Node forward_node: forward_queue){
+                            for (Node forward_node: forward_discovered){
                                 if (reverse_node.equals(forward_node)){
                                     found[0] = true;
                                     data.setTraversal_in_progress(false);
-                                    forward_current_node.setColour(Color.SKY);
-                                    reverse_current_node.setColour(Color.SKY);
+                                    Gdx.app.postRunnable(() -> highlight_edge(data, forward_node, reverse_node, Color.SKY));
+                                    forward_node.setColour(Color.SKY);
+                                    reverse_node.setColour(Color.SKY);
                                     return;
                                 }
                             }
                         }
 
                         if (neighbour.equals(forward_start)){
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), reverse_current_node, neighbour, Color.RED));
+                            Gdx.app.postRunnable(() -> highlight_edge(data, reverse_current_node, neighbour, Color.RED));
                             found[0] = true; // Update to true if neighbour is the desired forward start node, and immediately break from loop
                             data.setTraversal_in_progress(false);                                        // To prevent unnecessary computation
                             return;
@@ -322,7 +323,7 @@ public class Traversals{
                     Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
                     if (visited.contains(node) && discovered.contains(node)){
                         for (Node neighbour: node.getNeighbours()){
-                            Gdx.app.postRunnable(() -> highlight_edge(data.getGraph(), node, neighbour, Color.PURPLE));
+                            Gdx.app.postRunnable(() -> highlight_edge(data, node, neighbour, Color.PURPLE));
                         }
                     }
                 } else{
@@ -341,16 +342,16 @@ public class Traversals{
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private static void highlight_edge(Graph graph, Node node, Node neighbour, Color colour){
-        List<Edge> edge = graph.get_edges(node);
-        for (Edge e: edge){
+    private static void highlight_edge(Runtime_Data data, Node node, Node neighbour, Color colour){
+        List<Edge> edge = data.getGraph().get_edges(node);
+        for (Edge e: edge){ // Get forward edge and set its colour to the inputted colour
             if (e.getTarget().equals(neighbour)){
                 e.setColour(colour);
                 break;
             }
         }
-        edge = graph.get_edges(neighbour);
-        for (Edge e: edge){
+        edge = data.getGraph().get_edges(neighbour);
+        for (Edge e: edge){ // Get reverse edge and sets its colour to the inputted colour
             if (e.getTarget().equals(node)){
                 e.setColour(colour);
                 break;

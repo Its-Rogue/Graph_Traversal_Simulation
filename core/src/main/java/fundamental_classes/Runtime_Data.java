@@ -18,6 +18,7 @@ public class Runtime_Data {
 
     private final Table error_popup = new Table();
     private final Table change_edge_weight_popup = new Table();
+    private final Table colour_hint_popup = new Table();
 
     private final TextField start_node_input = new TextField("", skin);
     private final TextField end_node_input = new TextField("", skin);
@@ -30,6 +31,7 @@ public class Runtime_Data {
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
     private final Label change_edge_weight_label = new Label("Press ENTER to confirm change", skin);
+    private final Label colour_hint_label = new Label("Test", skin);
 
     private int start_node, end_node;
     private int new_edge_weight;
@@ -167,5 +169,13 @@ public class Runtime_Data {
 
     public void setEdge_to_edit(Edge edge_to_edit) {
         this.edge_to_edit = edge_to_edit;
+    }
+
+    public Table getColour_hint_popup() {
+        return colour_hint_popup;
+    }
+
+    public Label getColour_hint_label() {
+        return colour_hint_label;
     }
 }

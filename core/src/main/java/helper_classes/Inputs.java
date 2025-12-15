@@ -33,7 +33,8 @@ public class Inputs {
         left_click(mouse_x, mouse_y, data); // Left click detection and code
         right_click(mouse_x, mouse_y, data); // Right click detection and code for edge creation
         middle_click(mouse_x, mouse_y, data); // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
-        enter_key_input(data);
+        enter_key_input(data); // Check each frame to see if the enter key has been pressed while the change edge weight popup is visible
+        mouse_position_check(data, mouse_x, mouse_y); // Check each frame to see if the mouse is in the bottom left corner of the screen, where the colour key is
     }
 
     // Code for adding nodes upon left-clicking
@@ -143,6 +144,21 @@ public class Inputs {
             }
             data.getChange_edge_weight_popup().setVisible(false);
             data.getChange_edge_weight_input().setText(""); // Reset inputted text and hide the input field / popup
+        }
+    }
+
+    private static void mouse_position_check(Runtime_Data data, int mouse_x, int mouse_y){
+        if (mouse_x > 250 || mouse_y > 250){
+            data.getColour_hint_popup().setVisible(false);
+            return;
+        }
+
+        if (!data.getColour_hint_popup().isVisible()){
+            data.getColour_hint_popup().setVisible(true);
+        }
+
+        if (mouse_y < 50) {
+            data.getColour_hint_label().setText("hello world");
         }
     }
 
