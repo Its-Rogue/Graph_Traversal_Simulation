@@ -148,7 +148,7 @@ public class Inputs {
     }
 
     private static void mouse_position_check(Runtime_Data data, int mouse_x, int mouse_y){
-        if (mouse_x > 250 || mouse_y > 250){
+        if (mouse_x > 250 || mouse_y > 225){
             data.getColour_hint_popup().setVisible(false);
             return;
         }
@@ -158,11 +158,33 @@ public class Inputs {
         }
 
         if (mouse_y < 50) {
-            data.getColour_hint_label().setText("hello world");
+            data.getColour_hint_popup().setPosition(355,204);
+            data.getColour_hint_label().setText(get_hint("fully explored"));
         }
 
-        if (mouse_y > 50 && mouse_y < 85){
-            data.getColour_hint_label().setText("test");
+        if (mouse_y > 50 && mouse_y < 85) {
+            data.getColour_hint_popup().setPosition(373, 197); // TODO: Add new thing in data that stores a colour for the background of the popup
+            data.getColour_hint_label().setText(get_hint("discovered"));
+        }
+
+        if (mouse_y > 85 && mouse_y < 120) {
+            data.getColour_hint_popup().setPosition(549, 219);
+            data.getColour_hint_label().setText(get_hint("current"));
+        }
+
+        if (mouse_y > 120 && mouse_y < 155) {
+            data.getColour_hint_popup().setPosition(576, 219);
+            data.getColour_hint_label().setText(get_hint("visited"));
+        }
+
+        if (mouse_y > 155 && mouse_y < 190) {
+            data.getColour_hint_popup().setPosition(796,219);
+            data.getColour_hint_label().setText(get_hint("end"));
+        }
+
+        if (mouse_y > 190 && mouse_y < 225) {
+            data.getColour_hint_popup().setPosition(540, 219);
+            data.getColour_hint_label().setText(get_hint("start"));
         }
     }
 
@@ -207,6 +229,32 @@ public class Inputs {
                 clear_error_display(data);
                 break;
         }
+    }
+
+    // Switch case the different hints for the mouse over portion of the colour key
+    private static String get_hint(String hint_type){
+        String hint = "";
+        switch (hint_type){
+            case "fully explored":
+                hint = "This node, as well as all its\nneighbours, have been a\ncurrent node";
+                break;
+            case "discovered":
+                hint = "This node is the neighbour of a\nnode that has been a current\nnode, but has not been a\ncurrent node itself";
+                break;
+            case "current":
+                hint = "This is the node the chosen\ntraversal algorithm currently has selected and is examining";
+                break;
+            case "visited":
+                hint = "This node has been the current\nnode previously, but all its neighbours haven't been visited yet";
+                break;
+            case "end":
+                hint = "This is the end node chosen by\nthe user where the chosen traversal will attempt to reach. In the case of the bidirectional search this is also the reverse start node";
+                break;
+            case "start":
+                hint = "This is the start node chosen by\nthe user where the chosen traversal will begin from";
+                break;
+        }
+        return hint;
     }
 
     // Clear any error messages that the user may have caused upon the completion / termination of a traversal

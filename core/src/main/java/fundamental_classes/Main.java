@@ -38,7 +38,8 @@ public class Main extends ApplicationAdapter {
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
-    TextButton recreate_test_elements_button;
+    TextButton create_random_graph_button;     // TODO: Random gen travelling salesman like scenario, no sleep between steps
+    TextButton recreate_test_elements_button;  // TODO: step between steps of the traversal algorithms
 
     Label fps_counter;
     Label node_counter;
@@ -76,6 +77,7 @@ public class Main extends ApplicationAdapter {
         reset_button = new TextButton("Reset Graph", data.getSkin());
         start_traversal_button = new TextButton("Start Traversal", data.getSkin());
         reset_traversal_button = new TextButton("Reset Traversal", data.getSkin());
+        create_random_graph_button = new TextButton("Create a random graph", data.getSkin());
         recreate_test_elements_button = new TextButton("Recreate Test Elements", data.getSkin());
 
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
@@ -225,7 +227,7 @@ public class Main extends ApplicationAdapter {
         data.getError_popup().align(Align.topLeft);
         table.setPosition(15,0);
         data.getError_popup().setPosition(15,-600);
-        data.getColour_hint_popup().setPosition(300, 250);
+        data.getColour_hint_popup().setPosition(300, 200);
 
         // Add the table, and subsequent buttons, to the GUI stage
         GUI.addActor(table);
@@ -288,13 +290,17 @@ public class Main extends ApplicationAdapter {
     }
 
     public void colour_key_render() {
-        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);  // Visited node / edge
+        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);  // Fully explored node / edge
         sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);  // Discovered node / edge
-        sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);          // Explored node / edge
-        sr.rect(10,130, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Current node / edge
+        sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);          // Current node / edge
+        sr.rect(10,130, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Visited node / edge
         sr.rect(10,165, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);             // End node / edge
         sr.rect(10,200, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);     // Start node / edge
         sr.rect(10,228, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);      // Header underlining
+
+        if (data.getColour_hint_popup().isVisible()) {
+            sr.rect(268, 135, 210, 90, Color.RED, Color.RED, Color.RED, Color.RED);
+        }
     }
 
     // GUI render

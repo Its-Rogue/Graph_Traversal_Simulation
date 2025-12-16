@@ -31,7 +31,7 @@ public class Runtime_Data {
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
     private final Label change_edge_weight_label = new Label("Press ENTER to confirm change", skin);
-    private final Label colour_hint_label = new Label("Test", skin);
+    private final Label colour_hint_label = new Label("", skin);
 
     private int start_node, end_node;
     private int new_edge_weight;
