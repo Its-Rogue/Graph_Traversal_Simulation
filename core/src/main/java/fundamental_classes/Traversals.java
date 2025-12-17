@@ -47,6 +47,7 @@ public class Traversals{
 
                 for (Node neighbour: neighbours){
                     if (data.isTraversal_canceled()){
+                        data.setTraversal_in_progress(false);
                         return; // Stop traversal if the user has pressed the reset traversal button
                     }
 
@@ -67,7 +68,6 @@ public class Traversals{
                             Gdx.app.postRunnable(() -> highlight_edge(data, current_node, neighbour, Color.RED)); // To show the path
                             found[0] = true;
                             data.setTraversal_in_progress(false);
-                            return;
                         }
                     }
                 }
@@ -77,6 +77,10 @@ public class Traversals{
                 }
 
                 element_highlight(data, visited, discovered, current_node, start, end);
+
+                if (found[0]) {
+                    break;
+                }
             }
         }).start();
         data.setTraversal_in_progress(false);  // Allow a new traversal to be run after this one has completed
@@ -120,6 +124,7 @@ public class Traversals{
 
                 for (Node neighbour: current_node.getNeighbours()){ // Check each neighbour of the current node
                     if (data.isTraversal_canceled()){
+                        data.setTraversal_in_progress(false);
                         return;
                     }
 
@@ -138,9 +143,8 @@ public class Traversals{
 
                         if (neighbour.equals(end)){
                             Gdx.app.postRunnable(() -> highlight_edge(data, current_node, neighbour, Color.RED));
-                            found[0] = true; // Update to true if neighbour is the desired end node, and immediately break from loop
-                            data.setTraversal_in_progress(false);                              // To prevent unnecessary computation
-                            return;
+                            found[0] = true; // Update to true if neighbour is the desired end node
+                            data.setTraversal_in_progress(false);
                         }
                     }
                 }
@@ -150,6 +154,10 @@ public class Traversals{
                 }
 
                 element_highlight(data, visited, discovered, current_node, start, end);
+
+                if (found[0]) {
+                    break;
+                }
             }
 
         }).start(); // Ensure the thread is switched to, instead of main render thread
@@ -205,7 +213,10 @@ public class Traversals{
                         return;
                     }
 
-                    sleep(operation_speed);
+                    if (data.isShould_sleep()){
+                        sleep(operation_speed);
+                    }
+
 
                     if (!forward_discovered.contains(neighbour) && !data.isTraversal_canceled()){
                         forward_discovered.add(neighbour); // Add the neighbour to the forward queue if not already discovered
@@ -249,7 +260,9 @@ public class Traversals{
                         return;
                     }
 
-                    sleep(operation_speed);
+                    if (data.isShould_sleep()) {
+                        sleep(operation_speed);
+                    }
 
                     if (!reverse_discovered.contains(neighbour) && !data.isTraversal_canceled()){
                         reverse_discovered.add(neighbour); // Add the neighbour to the reverse queue if not already discovered

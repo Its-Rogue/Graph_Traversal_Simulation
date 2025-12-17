@@ -1,6 +1,7 @@
 package fundamental_classes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
@@ -15,6 +16,8 @@ public class Runtime_Data {
 
     private Graph graph = new Graph();
     private Edge edge_to_edit;
+
+    private Color colour_hint_label_background = Color.WHITE;
 
     private final Table error_popup = new Table();
     private final Table change_edge_weight_popup = new Table();
@@ -40,6 +43,9 @@ public class Runtime_Data {
     private boolean valid_setup = false;
     private boolean traversal_in_progress = false;
     private volatile boolean traversal_canceled = false;
+    private boolean should_step = false;
+    private boolean step_button_pressed = false;
+    private boolean should_sleep = false;
 
     private String selected_traversal = "Depth-First Search";
 
@@ -177,5 +183,37 @@ public class Runtime_Data {
 
     public Label getColour_hint_label() {
         return colour_hint_label;
+    }
+
+    public boolean isShould_sleep() {
+        return should_sleep;
+    }
+
+    public void setShould_sleep(boolean should_sleep) {
+        this.should_sleep = should_sleep;
+    }
+
+    public boolean isShould_step() {
+        return should_step;
+    }
+
+    public void setShould_step(boolean should_step) {
+        this.should_step = should_step;
+    }
+
+    public boolean isStep_button_pressed() {
+        return step_button_pressed;
+    }
+
+    public void setStep_button_pressed(boolean step_button_pressed) {
+        this.step_button_pressed = step_button_pressed;
+    }
+
+    public Color getColour_hint_label_background() {
+        return colour_hint_label_background;
+    }
+
+    public void setColour_hint_label_background(Color colour_hint_label_background) {
+        this.colour_hint_label_background = colour_hint_label_background;
     }
 }

@@ -68,8 +68,12 @@ public class UI {
         }
     }
 
-    public static void recreate_test_elements_button_function(Runtime_Data data) {
-        Testing_Functions.create(data); // Create testing node grid
+    public static void generate_grid_button_function(Runtime_Data data) {
+        Generate_Graphs.generate_grid(data);
+    }
+
+    public static void generate_random_graph_button_function(Runtime_Data data) {
+        Generate_Graphs.generate_random_graph(data);
     }
 
     public static void traversal_speed_input_function(Runtime_Data data) {

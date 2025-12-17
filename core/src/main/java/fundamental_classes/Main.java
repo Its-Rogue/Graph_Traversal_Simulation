@@ -38,8 +38,8 @@ public class Main extends ApplicationAdapter {
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
-    TextButton create_random_graph_button;     // TODO: Random gen travelling salesman like scenario, no sleep between steps
-    TextButton recreate_test_elements_button;  // TODO: step between steps of the traversal algorithms
+    TextButton generate_random_graph_button;     // TODO: Add option for no sleep between steps
+    TextButton generate_grid_button;             // TODO: step between steps of the traversal algorithms
 
     Label fps_counter;
     Label node_counter;
@@ -77,8 +77,8 @@ public class Main extends ApplicationAdapter {
         reset_button = new TextButton("Reset Graph", data.getSkin());
         start_traversal_button = new TextButton("Start Traversal", data.getSkin());
         reset_traversal_button = new TextButton("Reset Traversal", data.getSkin());
-        create_random_graph_button = new TextButton("Create a random graph", data.getSkin());
-        recreate_test_elements_button = new TextButton("Recreate Test Elements", data.getSkin());
+        generate_random_graph_button = new TextButton("Create a random graph", data.getSkin());
+        generate_grid_button = new TextButton("Create a gridded graph", data.getSkin());
 
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
         data.getStart_node_input().setMessageText("Enter the start node");
@@ -145,11 +145,19 @@ public class Main extends ApplicationAdapter {
             }
         });
 
-        // Create testing grid of nodes and edges to test rendering
-        recreate_test_elements_button.addListener(new ChangeListener() {
+        // Create a 10 by 10 grid of nodes for structured traversal viewing
+        generate_grid_button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                UI.recreate_test_elements_button_function(data);
+                UI.generate_grid_button_function(data);
+            }
+        });
+
+        // Create a randomly laid out set of nodes
+        generate_random_graph_button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                UI.generate_random_graph_button_function(data);
             }
         });
 
@@ -200,6 +208,8 @@ public class Main extends ApplicationAdapter {
         table.add(edge_counter).pad(5).row();
         table.add(save_current_layout_button).pad(5).row();
         table.add(load_saved_layout_button).pad(5).row();
+        table.add(generate_grid_button).pad(5).row();
+        table.add(generate_random_graph_button).pad(5).row();
         table.add(reset_button).pad(5).row();
         table.add(data.getTraversal_speed_slider()).pad(5).row();
         table.add(data.getTraversal_speed_label()).pad(5).row();
@@ -208,9 +218,6 @@ public class Main extends ApplicationAdapter {
         table.add(data.getEnd_node_input()).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
         table.add(reset_traversal_button).pad(5).row();
-
-        // Testing elements
-        table.add(recreate_test_elements_button).pad(5).row();
 
         // Error message label
         data.getError_popup().add(data.getError_popup_label());
@@ -299,7 +306,9 @@ public class Main extends ApplicationAdapter {
         sr.rect(10,228, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);      // Header underlining
 
         if (data.getColour_hint_popup().isVisible()) {
-            sr.rect(268, 135, 210, 90, Color.RED, Color.RED, Color.RED, Color.RED);
+            Color colour = data.getColour_hint_label_background();
+            sr.rect(268, 25, 210, 90, colour, colour, colour, colour);
+            sr.rect(269, 26, 208, 88, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK);
         }
     }
 
