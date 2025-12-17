@@ -3,20 +3,23 @@
 This is a Graph Traversal Simulator, that uses LibGDX as a framework for visualising the graph.
 
 The simulator allows for the creation of a custom graph with weighted edges, and a series of different traversal algorithms. These include: 
-- Depth First
-- Breadth First
-- Bidirectional
-- Dijkstra's
-- A*
-- Bellman-Ford
+- Depth First Search
+- Breadth First Search
+- Bidirectional Search
+- Dijkstra's Algorithm
+- A* Traversal
+- Bellman-Ford Traversal
 
 ## UI
 
 On the left hand side of the screen, using Scene2D, there is a variety of elements. There are buttons to control the simulation in the following ways:
 - Clear the graph
 - Save or load a layout of nodes and edges
+- Choose whether to automatically run the traversals or step through them
+- Choose the speed at which the traversals will be automatically run
 - Choose the type of graph traversal
 - Choose the start and end node for finding the shortest path
+- Generate either a random graph or a set graph for ease of viewing the traversal algorithms
 - Quit the program
 
 Additionally, at the top of the UI, there are some statistics about the scene, such as node and edge count.
@@ -40,8 +43,7 @@ If an error is made in any of the options, a suitable error message will be disp
 
 ## Notes
 
-This program has been created as a project for my A-Level Computer Science NEA. As such, it may not visually be appealing, however it is meant to be used<br>
-as such is more technically advanced rather than graphically. The colour choices are explained via a key in the bottom left of the screen.
+This program has been created as a project for my A-Level Computer Science NEA. As such, it may not visually be appealing, however this means that it is much more technically advanced in its algorithms and the overall codebase. The colour choices are explained via a key in the bottom left of the screen, which you can mouse over to get a more in depth tooltip.
 
 For the UI I have used a [skin](https://github.com/czyzby/gdx-skins/tree/master/shade) created by [Raymond "Raeleus" Buckley](http://www.badlogicgames.com/forum/viewtopic.php?f=22&t=21568), which can be freely used under the CC BY license.
 
