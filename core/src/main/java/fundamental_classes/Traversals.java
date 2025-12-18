@@ -213,7 +213,7 @@ public class Traversals{
                         return;
                     }
 
-                    if (data.isShould_sleep()){
+                    if (data.Should_sleep()){
                         sleep(operation_speed);
                     }
 
@@ -260,7 +260,7 @@ public class Traversals{
                         return;
                     }
 
-                    if (data.isShould_sleep()) {
+                    if (data.Should_sleep()) {
                         sleep(operation_speed);
                     }
 

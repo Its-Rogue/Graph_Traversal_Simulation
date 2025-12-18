@@ -14,11 +14,11 @@ public class UI {
     }
 
     public static void save_current_layout_button_function(Runtime_Data data) {
-        Save_Handling.save_current_layout(data);
+        Save_Handling.save_current_layout(data); // Save the layout of nodes and edges in the current graph
     }
 
     public static void load_saved_layout_button_function(Runtime_Data data) {
-        Save_Handling.load_saved_layout(data);
+        Save_Handling.load_saved_layout(data); // Load a previously saved layout, opening a file browser window to select the file
     }
 
     public static void reset_button_function(Runtime_Data data) {
@@ -49,6 +49,10 @@ public class UI {
         }
     }
 
+    public static void step_traversal_button_function(Runtime_Data data) {
+        System.out.println("Test");
+    }
+
     public static void reset_traversal_button_function(Runtime_Data data) {
         data.setTraversal_canceled(true); // Stop the current traversal from running
         data.setTraversal_in_progress(false); // Allow a new traversal to be run
@@ -69,11 +73,11 @@ public class UI {
     }
 
     public static void generate_grid_button_function(Runtime_Data data) {
-        Generate_Graphs.generate_grid(data);
+        Generate_Graphs.generate_grid(data); // Generate a predetermined 10 * 10 grid where the 2-4 nodes adjacent are neighbours
     }
 
     public static void generate_random_graph_button_function(Runtime_Data data) {
-        Generate_Graphs.generate_random_graph(data);
+        Generate_Graphs.generate_random_graph(data); // Generate a random graph based on set regions and generate sensible edges between them
     }
 
     public static void traversal_speed_input_function(Runtime_Data data) {
@@ -150,6 +154,31 @@ public class UI {
             data.getChange_edge_weight_input().setTextFieldFilter(((text_field, c) -> Character.isDigit(c) || Character.toString(c).equals("-")));
         } else {
             data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
+        }
+    }
+
+    public static void traversal_progress_options_function(Runtime_Data data) {
+        data.setSelected_traversal_progress(data.getTraversal_progress_options().getSelected()); // Update selected traversal progress based on option from drop down menu
+
+        switch (data.getSelected_traversal_progress()) { // Switch case the different options and update booleans in data accordingly
+            case "Automatic":
+                data.setShould_sleep(true);
+                data.setShould_step(false);
+                data.getStep_traversal_button().setVisible(false);
+                data.getStep_traversal_label().setVisible(false);
+                break;
+            case "Stepped":
+                data.setShould_step(true);
+                data.setShould_sleep(false);
+                data.getStep_traversal_button().setVisible(true);
+                data.getStep_traversal_label().setVisible(true);
+                break;
+            case "No delay":
+                data.setShould_step(false);
+                data.setShould_sleep(false);
+                data.getStep_traversal_button().setVisible(false);
+                data.getStep_traversal_label().setVisible(false);
+                break;
         }
     }
 }

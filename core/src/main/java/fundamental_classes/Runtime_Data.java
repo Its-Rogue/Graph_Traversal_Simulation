@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import structural_classes.Edge;
 import structural_classes.Graph;
 
@@ -27,14 +28,18 @@ public class Runtime_Data {
     private final TextField end_node_input = new TextField("", skin);
     private final TextField change_edge_weight_input = new TextField("", skin);
 
+    private final Button step_traversal_button = new Button(skin, "right");
+
     private final Slider traversal_speed_slider = new Slider(0.1f,10.0f,0.1f,false, skin);
 
     private final SelectBox<String> traversal_options = new SelectBox<>(skin);
+    private final SelectBox<String> traversal_progress_options = new SelectBox<>(skin);
 
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal speed: %.1f", 1.0f), skin);
     private final Label change_edge_weight_label = new Label("Press ENTER to confirm change", skin);
     private final Label colour_hint_label = new Label("", skin);
+    private final Label step_traversal_label = new Label("Step traversal", skin);
 
     private int start_node, end_node;
     private int new_edge_weight;
@@ -48,6 +53,7 @@ public class Runtime_Data {
     private boolean should_sleep = false;
 
     private String selected_traversal = "Depth-First Search";
+    private String selected_traversal_progress = "Automatic";
 
     public int getEnd_node() {
         return end_node;
@@ -185,7 +191,7 @@ public class Runtime_Data {
         return colour_hint_label;
     }
 
-    public boolean isShould_sleep() {
+    public boolean Should_sleep() {
         return should_sleep;
     }
 
@@ -193,7 +199,7 @@ public class Runtime_Data {
         this.should_sleep = should_sleep;
     }
 
-    public boolean isShould_step() {
+    public boolean Should_step() {
         return should_step;
     }
 
@@ -215,5 +221,25 @@ public class Runtime_Data {
 
     public void setColour_hint_label_background(Color colour_hint_label_background) {
         this.colour_hint_label_background = colour_hint_label_background;
+    }
+
+    public SelectBox<String> getTraversal_progress_options() {
+        return traversal_progress_options;
+    }
+
+    public String getSelected_traversal_progress() {
+        return selected_traversal_progress;
+    }
+
+    public void setSelected_traversal_progress(String selected_traversal_progress) {
+        this.selected_traversal_progress = selected_traversal_progress;
+    }
+
+    public Label getStep_traversal_label() {
+        return step_traversal_label;
+    }
+
+    public Button getStep_traversal_button() {
+        return step_traversal_button;
     }
 }

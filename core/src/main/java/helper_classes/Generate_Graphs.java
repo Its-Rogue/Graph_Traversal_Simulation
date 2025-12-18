@@ -2,8 +2,10 @@ package helper_classes;
 
 import fundamental_classes.Runtime_Data;
 import structural_classes.Graph;
-
-import java.awt.*;
+import structural_classes.Region;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Generate_Graphs {
     public static void generate_grid(Runtime_Data data) {
@@ -49,7 +51,22 @@ public class Generate_Graphs {
 
     public static void generate_random_graph(Runtime_Data data) {
         Graph.clear();
-        data.getGraph().add_node(data.getNode_radius(), 400, 400, data);
         // TODO: Finish this function, random gen a graph for a travelling salesman like scenario
+        List<Region> regions = new ArrayList<>();
+
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                regions.add(new Region(270 + data.getNode_radius() + 115 * j, 270 + data.getNode_radius() + 115 + 115 * j, data.getNode_radius() + 50 + 320 * i, data.getNode_radius() + 122 + 320 * i));
+            }
+        }
+
+        for (Region r: regions) {
+            if (ThreadLocalRandom.current().nextInt(0,100) < 20 && data.getGraph().get_total_edges() < 100) {
+                int rand_x = ThreadLocalRandom.current().nextInt(r.getX1(), r.getX2());
+                int rand_y = ThreadLocalRandom.current().nextInt(r.getY1(), r.getY2());
+
+                data.getGraph().add_node(data.getNode_radius(), rand_x, rand_y, data);
+            }
+        }
     }
 }

@@ -242,22 +242,22 @@ public class Inputs {
         String hint = "";
         switch (hint_type){
             case "fully explored":
-                hint = "This node, as well as all its\nneighbours, have been a\ncurrent node";
+                hint = "This node, as well as all its\nneighbours, have been a\ncurrent node.";
                 break;
             case "discovered":
-                hint = "This node is the neighbour of a\nnode that has been a current\nnode, but has not been a\ncurrent node itself";
+                hint = "This node is the neighbour of a\nnode that has been a current\nnode, but has not been a\ncurrent node itself.";
                 break;
             case "current":
-                hint = "This is the node the chosen\ntraversal algorithm currently\n has selected and is examining";
+                hint = "This is the node the chosen\ntraversal algorithm currently\n has selected and is examining.";
                 break;
             case "visited":
-                hint = "This node has been the current\nnode previously, but all its\nneighbours haven't been\nvisited yet";
+                hint = "This node has been the current\nnode previously, but all its\nneighbours haven't been\nthe current node yet.";
                 break;
             case "end":
-                hint = "This is the end node chosen by\nthe user where the chosen\ntraversal will attempt to reach.\nAlso the reverse start node for\na bidirectional search";
+                hint = "This is the end node chosen by\nthe user, where the chosen\ntraversal will attempt to reach.\nAlso the reverse start node for\na bidirectional search.";
                 break;
             case "start":
-                hint = "This is the start node chosen by\nthe user where the chosen\ntraversal will begin from";
+                hint = "This is the start node chosen by\nthe user, where the chosen\ntraversal will begin from.";
                 break;
         }
         return hint;

@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -79,6 +79,7 @@ public class Main extends ApplicationAdapter {
         reset_traversal_button = new TextButton("Reset Traversal", data.getSkin());
         generate_random_graph_button = new TextButton("Create a random graph", data.getSkin());
         generate_grid_button = new TextButton("Create a gridded graph", data.getSkin());
+        data.getStep_traversal_button().setVisible(false);
 
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
         data.getStart_node_input().setMessageText("Enter the start node");
@@ -92,8 +93,10 @@ public class Main extends ApplicationAdapter {
         node_counter = new Label("Nodes: ", data.getSkin());
         edge_counter = new Label("Edges: ", data.getSkin());
         data.getError_popup_label().setColor(1,0,0,1); // Set colour to red
+        data.getStep_traversal_label().setVisible(false);
 
         data.getTraversal_options().setItems("Depth-First Search", "Breadth-First Search", "Bidirectional Search", "Dijkstra's", "A*", "Bellman-Ford");
+        data.getTraversal_progress_options().setItems("Automatic", "Stepped", "No delay");
 
         // Create the listeners for the UI button presses
 
@@ -134,6 +137,14 @@ public class Main extends ApplicationAdapter {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 UI.start_traversal_button_function(data);
+            }
+        });
+
+        // Button to step through each step of a traversal
+        data.getStep_traversal_button().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                UI.step_traversal_button_function(data);
             }
         });
 
@@ -201,6 +212,14 @@ public class Main extends ApplicationAdapter {
             }
         });
 
+        // Drop down GUI options for graph traversal progress types
+        data.getTraversal_progress_options().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                UI.traversal_progress_options_function(data);
+            }
+        });
+
         // Add the various actors to the tables
         table.add(quit_button).row();
         table.add(fps_counter).pad(5).row();
@@ -214,10 +233,13 @@ public class Main extends ApplicationAdapter {
         table.add(data.getTraversal_speed_slider()).pad(5).row();
         table.add(data.getTraversal_speed_label()).pad(5).row();
         table.add(data.getTraversal_options()).pad(5).row();
+        table.add(data.getTraversal_progress_options()).pad(5).row();
         table.add(data.getStart_node_input()).pad(5).row();
         table.add(data.getEnd_node_input()).pad(5).row();
         table.add(start_traversal_button).pad(5).row();
         table.add(reset_traversal_button).pad(5).row();
+        table.add(data.getStep_traversal_label()).pad(5).row();
+        table.add(data.getStep_traversal_button());
 
         // Error message label
         data.getError_popup().add(data.getError_popup_label());
@@ -269,6 +291,11 @@ public class Main extends ApplicationAdapter {
         colour_key_render(); // Render the coloured squares in the bottom left for the key
         sr.setColor(Color.WHITE);
         sr.rect(250,0,10,1440); // Margin for UI
+
+        if (data.Should_step()) { // Background for button to step the traversal
+            sr.rect(62, 787, 100, 50);
+            sr.rect(63, 788, 98, 48, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY);
+        }
 
         if (data.getChange_edge_weight_popup().isVisible()) { // Add a rectangle behind the popup to increase the legibility of the text hint
             sr.setColor(Color.RED); // Border shape
