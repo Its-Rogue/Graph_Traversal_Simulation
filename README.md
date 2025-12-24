@@ -53,6 +53,6 @@ This program has been created as a project for my A-Level Computer Science NEA. 
 For the UI I have used a [skin](https://github.com/czyzby/gdx-skins/tree/master/shade) created by [Raymond "Raeleus" Buckley](http://www.badlogicgames.com/forum/viewtopic.php?f=22&t=21568), which can be freely used under the CC BY licence.
 
 
-1:  The traversals can either run automatically with a delay between each step, be stepped manually or will process with no delay.
-2:  In the case of the bidirectional search, the end node is the secondary or reverse start node.
+1:  The traversals can either run automatically with a delay between each step, be stepped manually or will process with no delay.</br>
+2:  In the case of the bidirectional search, the end node is the secondary or reverse start node.</br>
 3:  The suitable algorithms aforementioned are Dijkstra's, A*, and Bellman-Ford.
