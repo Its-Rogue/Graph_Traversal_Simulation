@@ -21,9 +21,9 @@ On the left hand side of the screen, using Scene2D, there is a variety of elemen
 - Reset the current layout of nodes and edges 
 - Alter the speed at which the traversals occur
 - Change the type of traversal algorithm used
-- Change how the traversal occurs<sup>1</sup>
+- Change how the traversal occurs <sup>1</sup>
 - Enter the start node for the traversals
-- Enter the end node for the traversals<sup>2</sup>
+- Enter the end node for the traversals <sup>2</sup>
 - Start the traversal
 - Reset the colouring caused by the last traversal run
 
@@ -39,7 +39,7 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `Right Click` to select 2 different nodes and create an edge between them
 
-`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm<sup>3</sup> be presently selected
+`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm <sup>3</sup> be presently selected
 
 `Right Click` then `Middle Click` or press `Backspace` to delete an edge
 
