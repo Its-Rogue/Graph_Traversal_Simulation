@@ -2,7 +2,7 @@ package helper_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import fundamental_classes.Runtime_Data;
+import essential_classes.Runtime_Data;
 import structural_classes.Node;
 import structural_classes.Edge;
 import structural_classes.Graph;

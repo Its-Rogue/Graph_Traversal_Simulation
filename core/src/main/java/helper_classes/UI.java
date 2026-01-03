@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Graph;
 import structural_classes.Node;
-import fundamental_classes.Runtime_Data;
+import essential_classes.Runtime_Data;
 
 public class UI {
     public static void quit_button_function() {
@@ -88,20 +88,20 @@ public class UI {
     public static void start_node_input_function(Runtime_Data data) {
         data.getError_popup().setVisible(true); // Ensure error label displays regardless of status
         try {
-            int user_start_node = Integer.parseInt(data.getStart_node_input().getText()); // Ensure only integer values can be inputted
+            int user_start_node_id = Integer.parseInt(data.getStart_node_input().getText()); // Ensure only integer values can be inputted
 
-            if (user_start_node == data.getEnd_node()) {
+            if (user_start_node_id == data.getEnd_node()) {
                 data.getError_popup_label().setText("Start node cannot be the same \nas the end node"); // Make sure inputted nodes are unique
                 data.setValid_setup(false);
                 return;
             }
-            if (data.getGraph().get_node_id(user_start_node) == null) {
+            if (data.getGraph().get_node_from_id(user_start_node_id) == null) {
                 data.getError_popup_label().setText("Desired start node does not exist"); // Make sure node exists
                 data.setValid_setup(false);
                 return;
             }
 
-            data.setStart_node(user_start_node);
+            data.setStart_node(user_start_node_id);
             data.getError_popup_label().setText(""); // Clear errors if valid
             data.setValid_setup(true);
         } catch (NumberFormatException e) {
@@ -113,20 +113,20 @@ public class UI {
     public static void end_node_input_function(Runtime_Data data) {
         data.getError_popup().setVisible(true);
         try {
-            int user_end_node = Integer.parseInt(data.getEnd_node_input().getText()); // Ensure only integer values can be inputted
+            int user_end_node_id = Integer.parseInt(data.getEnd_node_input().getText()); // Ensure only integer values can be inputted
 
-            if (user_end_node == data.getStart_node()) {
+            if (user_end_node_id == data.getStart_node()) {
                 data.getError_popup_label().setText("End node cannot be the same \nas the start node"); // Make sure inputted nodes are unique
                 data.setValid_setup(false);
                 return;
             }
-            if (data.getGraph().get_node_id(user_end_node) == null) {
+            if (data.getGraph().get_node_from_id(user_end_node_id) == null) {
                 data.getError_popup_label().setText("Desired end node does not exist"); // Make sure node exists
                 data.setValid_setup(false);
                 return;
             }
 
-            data.setEnd_node(user_end_node);
+            data.setEnd_node(user_end_node_id);
             data.getError_popup_label().setText(""); // Clear errors if valid
             data.setValid_setup(true);
         } catch (NumberFormatException e) {
@@ -179,6 +179,12 @@ public class UI {
                 data.getStep_traversal_button().setVisible(false);
                 data.getStep_traversal_label().setVisible(false);
                 break;
+        }
+
+        if (data.getStep_traversal_button().isVisible()) {
+            data.getError_popup().setY(-660);
+        } else {
+            data.getError_popup().setY(-600);
         }
     }
 }

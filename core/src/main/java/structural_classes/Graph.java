@@ -1,7 +1,7 @@
 package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
-import fundamental_classes.Runtime_Data;
+import essential_classes.Runtime_Data;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -57,8 +57,8 @@ public class Graph {
     public void add_edge(int source_id, int target_id, int weight, Runtime_Data data) {
         if (traversal_in_progress_check(data)) return;
 
-        Node source = get_node_id(source_id);
-        Node target = get_node_id(target_id);
+        Node source = get_node_from_id(source_id);
+        Node target = get_node_from_id(target_id);
         if (source == null || target == null) return;
 
         for (Edge edge: adj_list.get(source)) {
@@ -104,7 +104,7 @@ public class Graph {
     // before remove the node itself and adding its ID back to the list of available IDs
     public void remove_node(int node_id, Runtime_Data data) {
         if (traversal_in_progress_check(data)) return;
-        Node node = get_node_id(node_id);
+        Node node = get_node_from_id(node_id);
         if (node == null) return;
         for (List<Edge> edges : adj_list.values()) {
             edges.removeIf(edge -> edge.getTarget().getId() == node_id);
@@ -122,8 +122,8 @@ public class Graph {
     // the forward and reverse edges for the pair
     public void remove_edge(int source_id, int target_id, Runtime_Data data) {
         if (traversal_in_progress_check(data)) return;
-        Node source = get_node_id(source_id);
-        Node target = get_node_id(target_id);
+        Node source = get_node_from_id(source_id);
+        Node target = get_node_from_id(target_id);
         if (source == null || target == null) return;
 
         adj_list.get(source).removeIf(e -> e.getTarget().getId() == target_id);
@@ -133,7 +133,7 @@ public class Graph {
     }
 
     // Checks the adj list and returns the node from its ID
-    public Node get_node_id(int node_id) {
+    public Node get_node_from_id(int node_id) {
         for (Node node : adj_list.keySet()) {
             if (node.getId() == node_id) {
                 return node;

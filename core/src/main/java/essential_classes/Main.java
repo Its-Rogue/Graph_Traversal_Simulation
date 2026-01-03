@@ -1,4 +1,4 @@
-package fundamental_classes;
+package essential_classes;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -38,8 +38,8 @@ public class Main extends ApplicationAdapter {
     TextButton reset_button;
     TextButton reset_traversal_button;
     TextButton start_traversal_button;
-    TextButton generate_random_graph_button;     // TODO: Add option for no sleep between steps
-    TextButton generate_grid_button;             // TODO: step between steps of the traversal algorithms
+    TextButton generate_random_graph_button;
+    TextButton generate_grid_button;
 
     Label fps_counter;
     Label node_counter;

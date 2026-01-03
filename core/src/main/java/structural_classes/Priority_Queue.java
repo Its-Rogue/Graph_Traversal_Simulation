@@ -2,16 +2,25 @@ package structural_classes;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Priority_Queue {
     private final ArrayList<Integer> heap;
+    private final Map<Integer, Integer> priorities; // New: store priorities separately
 
     public Priority_Queue() {
         heap = new ArrayList<>();
+        priorities = new HashMap<>();
     }
 
     public void add(int value) {
+        add(value, value);
+    }
+
+    public void add(int value, int priority) {
         heap.add(value);
+        priorities.put(value, priority);
         bubble_up(heap.size() - 1);
     }
 
@@ -22,6 +31,8 @@ public class Priority_Queue {
 
         int min = heap.get(0);
         int last = heap.remove(heap.size() - 1);
+
+        priorities.remove(min);
 
         if (!heap.isEmpty()) {
             heap.set(0, last);
@@ -44,6 +55,7 @@ public class Priority_Queue {
 
     public void clear() {
         heap.clear();
+        priorities.clear();
     }
 
     public boolean remove(int value) {
@@ -54,11 +66,13 @@ public class Priority_Queue {
 
         if (index == heap.size() - 1) {
             heap.remove(index);
+            priorities.remove(value);
             return true;
         }
 
         int last_element = heap.remove(heap.size() - 1);
         heap.set(index, last_element);
+        priorities.remove(value);
 
         bubble_up(index);
         bubble_down_from(index);
@@ -84,10 +98,10 @@ public class Priority_Queue {
             int right = 2 * current + 2;
             int smallest = current;
 
-            if (left < size && heap.get(left) < heap.get(smallest)) {
+            if (left < size && priorities.get(heap.get(left)) < priorities.get(heap.get(smallest))) {
                 smallest = left;
             }
-            if (right < size && heap.get(right) < heap.get(smallest)) {
+            if (right < size && priorities.get(heap.get(right)) < priorities.get(heap.get(smallest))) {
                 smallest = right;
             }
             if (smallest == current) {
@@ -101,7 +115,7 @@ public class Priority_Queue {
     private void bubble_up(int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
-            if (heap.get(index) >= heap.get(parent)) break;
+            if (priorities.get(heap.get(index)) >= priorities.get(heap.get(parent))) break;
             swap(index, parent);
             index = parent;
         }

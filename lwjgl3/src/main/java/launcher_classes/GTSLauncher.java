@@ -3,7 +3,7 @@ package launcher_classes;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import fundamental_classes.Main;
+import essential_classes.Main;
 
 public class GTSLauncher {
     public static void main(String[] args) {

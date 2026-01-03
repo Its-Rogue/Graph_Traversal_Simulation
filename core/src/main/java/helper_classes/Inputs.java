@@ -5,8 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Node;
-import fundamental_classes.Runtime_Data;
-import fundamental_classes.Traversals;
+import essential_classes.Runtime_Data;
+import essential_classes.Traversals;
 
 public class Inputs {
     private static Node first_node_selected = null;

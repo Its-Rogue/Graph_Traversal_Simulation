@@ -1,21 +1,26 @@
-package fundamental_classes;
+package essential_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Node;
+import structural_classes.Priority_Queue;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.List;
 
 public class Traversals{
     private final static long operation_speed_base = 200;
 
-    public static void dfs(Runtime_Data data){
+    public static void dfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
         long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
 
-        Node start = data.getGraph().get_node_id(data.getStart_node()); // Cache start and end node to update colour at the end
-        Node end = data.getGraph().get_node_id(data.getEnd_node());     // in the case they are overwritten
+        Node start = data.getGraph().get_node_from_id(data.getStart_node()); // Cache start and end node to update colour at the end
+        Node end = data.getGraph().get_node_from_id(data.getEnd_node());     // in the case they are overwritten
 
         ArrayList<Node> stack = new ArrayList<>();
         ArrayList<Node> discovered = new ArrayList<>();
@@ -91,8 +96,8 @@ public class Traversals{
         data.setTraversal_in_progress(true);
         long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
 
-        Node start = data.getGraph().get_node_id(data.getStart_node());   // Cache start and end node to update colour at the end
-        Node end = data.getGraph().get_node_id(data.getEnd_node());       // in the case they are overwritten
+        Node start = data.getGraph().get_node_from_id(data.getStart_node());   // Cache start and end node to update colour at the end
+        Node end = data.getGraph().get_node_from_id(data.getEnd_node());       // in the case they are overwritten
 
         ArrayList<Node> queue = new ArrayList<>(); // Initialise the various lists
         ArrayList<Node> discovered = new ArrayList<>();
@@ -169,8 +174,8 @@ public class Traversals{
         data.setTraversal_in_progress(true);
         long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
 
-        Node forward_start = data.getGraph().get_node_id(data.getStart_node());
-        Node reverse_start = data.getGraph().get_node_id(data.getEnd_node());
+        Node forward_start = data.getGraph().get_node_from_id(data.getStart_node());
+        Node reverse_start = data.getGraph().get_node_from_id(data.getEnd_node());
 
         ArrayList<Node> forward_queue = new ArrayList<>();
         ArrayList<Node> reverse_queue = new ArrayList<>();
@@ -309,15 +314,69 @@ public class Traversals{
         data.setTraversal_canceled(false);
     }
 
-    public static void dijkstra(Runtime_Data data){
+    public static void dijkstra(Runtime_Data data) {
+        Map<Node, Integer> distances = new HashMap<>();
+        Map<Node, Node> previous = new HashMap<>();
+        Set<Node> visited = new HashSet<>();
+
+        Priority_Queue pq = new Priority_Queue();
+        Node start = data.getGraph().get_node_from_id(data.getStart_node());
+        Node end = data.getGraph().get_node_from_id(data.getEnd_node());
+
+        for (Node n: data.getGraph().get_nodes()) {
+            distances.put(n, Integer.MAX_VALUE);
+            previous.put(n, null);
+        }
+
+        distances.put(start, 0);
+        pq.add(start.getId(), 0);
+
+        while (!pq.isEmpty()) {
+            Node current = data.getGraph().get_node_from_id(pq.poll());
+
+            if (visited.contains(current)) {
+                continue;
+            }
+
+            visited.add(current);
+
+            if (current.equals(end)) {
+                break;
+            }
+
+            for (Edge e: data.getGraph().get_edges(current)) {
+                Node neighbour = e.getTarget();
+                if (visited.contains(neighbour)) {
+                    continue;
+                }
+                int alt = distances.get(current) + e.getWeight();
+
+                if (alt < distances.get(neighbour)) {
+                    distances.put(neighbour, alt);
+                    previous.put(neighbour, current);
+                    pq.add(neighbour.getId(), alt);
+                }
+            }
+        }
+
+        List<Node> path = reconstruct_path(previous, start, end);
+        final Node[] prev = {null};
+        new Thread(() -> {
+            for (Node n: path) {
+                Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                if (prev[0] != null) {
+                    Gdx.app.postRunnable(() -> highlight_edge(data, n, prev[0], Color.SKY));
+                }
+                prev[0] = n;
+            }
+        }).start();
+    }
+
+    public static void A_star(Runtime_Data data) {
 
     }
 
-    public static void A_star(Runtime_Data data){
-
-    }
-
-    public static void Bellman_Ford(Runtime_Data data){
+    public static void Bellman_Ford(Runtime_Data data) {
 
     }
 
@@ -353,6 +412,22 @@ public class Traversals{
         int dx = target_x - source_x;
         int dy = target_y - source_y;
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    private static List<Node> reconstruct_path(Map<Node, Node> previous, Node start, Node end) {
+        List<Node> path = new ArrayList<>();
+        Node current = end;
+
+        while (current != null) {
+            path.add(0, current); // Add the current node to the front of the list
+            current = previous.get(current); // Set current to the node that discovered the original current node
+        }
+
+        if (path.isEmpty() || !path.get(0).equals(start)) {
+            return new ArrayList<>(); // Return a blank path if an invalid or no path is found
+        }
+
+        return path;
     }
 
     private static void highlight_edge(Runtime_Data data, Node node, Node neighbour, Color colour){

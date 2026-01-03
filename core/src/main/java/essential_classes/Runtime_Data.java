@@ -1,4 +1,4 @@
-package fundamental_classes;
+package essential_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -50,7 +50,7 @@ public class Runtime_Data {
     private volatile boolean traversal_canceled = false;
     private boolean should_step = false;
     private boolean step_button_pressed = false;
-    private boolean should_sleep = false;
+    private boolean should_sleep = true;
 
     private String selected_traversal = "Depth-First Search";
     private String selected_traversal_progress = "Automatic";
