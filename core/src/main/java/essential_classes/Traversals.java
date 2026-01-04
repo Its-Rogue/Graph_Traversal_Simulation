@@ -318,8 +318,8 @@ public class Traversals{
         Map<Node, Integer> distances = new HashMap<>();
         Map<Node, Node> previous = new HashMap<>();
         Set<Node> visited = new HashSet<>();
-
         Priority_Queue pq = new Priority_Queue();
+
         Node start = data.getGraph().get_node_from_id(data.getStart_node());
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());
 
@@ -360,24 +360,122 @@ public class Traversals{
         }
 
         List<Node> path = reconstruct_path(previous, start, end);
-        final Node[] prev = {null};
         new Thread(() -> {
             for (Node n: path) {
                 Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                if (prev[0] != null) {
-                    Gdx.app.postRunnable(() -> highlight_edge(data, n, prev[0], Color.SKY));
-                }
-                prev[0] = n;
             }
         }).start();
     }
 
     public static void A_star(Runtime_Data data) {
+        Map<Node, Integer> g_score = new HashMap<>();
+        Map<Node, Double> f_score = new HashMap<>();
+        Map<Node, Node> previous = new HashMap<>();
+        Priority_Queue pq = new Priority_Queue();
 
+        Node start = data.getGraph().get_node_from_id(data.getStart_node());
+        Node end = data.getGraph().get_node_from_id(data.getEnd_node());
+
+        for (Node n: data.getGraph().get_nodes()) {
+            g_score.put(n, Integer.MAX_VALUE);
+            f_score.put(n, Double.MAX_VALUE);
+            previous.put(n, null);
+        }
+
+        g_score.put(start, 0);
+        f_score.put(start, euclidean_heuristic(start.getPosition().getX(), start.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY()));
+        pq.add(start.getId(), (int) f_score.get(start).doubleValue());
+
+        while (!pq.isEmpty()) {
+            Node current  = data.getGraph().get_node_from_id(pq.poll());
+
+            if (current.equals(end)) {
+                break;
+            }
+
+            for (Edge e: data.getGraph().get_edges(current)) {
+                Node neighbour = e.getTarget();
+                int intermediate_g_score = g_score.get(current) + e.getWeight();
+
+                if (intermediate_g_score < g_score.get(neighbour)) {
+                    previous.put(neighbour, current);
+                    g_score.put(neighbour, intermediate_g_score);
+                    double intermediate_f_score = intermediate_g_score + euclidean_heuristic(neighbour.getPosition().getX(), neighbour.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY());
+                    f_score.put(neighbour, intermediate_f_score);
+                    pq.add(neighbour.getId(), (int) intermediate_f_score);
+                }
+            }
+        }
+
+        List<Node> path = reconstruct_path(previous, start, end);
+        new Thread(() -> {
+            for(Node n: path) {
+                Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+            }
+        }).start();
     }
 
     public static void Bellman_Ford(Runtime_Data data) {
+        Map<Node, Integer> distances = new HashMap<>();
+        Map<Node, Node> previous = new HashMap<>();
 
+        Node start = data.getGraph().get_node_from_id(data.getStart_node());
+        Node end = data.getGraph().get_node_from_id(data.getEnd_node());
+
+        boolean negative_cycle_detected = false;
+
+        for (Node n: data.getGraph().get_nodes()) {
+            distances.put(n, Integer.MAX_VALUE);
+            previous.put(n, null);
+        }
+
+        distances.put(start, 0);
+        int num_nodes = data.getGraph().get_nodes().size();
+
+        for (int i = 0; i < num_nodes - 1; i++) {
+            for (Node n: data.getGraph().get_nodes()) {
+                if (distances.get(n) == Integer.MAX_VALUE) {
+                    continue;
+                }
+                for (Edge e: data.getGraph().get_edges(n)) {
+                    Node neighbour = e.getTarget();
+                    int weight = e.getWeight();
+                    int alt = distances.get(n) + weight;
+
+                    if (alt < distances.get(neighbour)) {
+                        distances.put(neighbour, alt);
+                        previous.put(neighbour, n);
+                    }
+                }
+            }
+        }
+
+        outer:
+        for (Node n: data.getGraph().get_nodes()) {
+            if (distances.get(n) == Integer.MAX_VALUE) {
+                continue;
+            }
+
+            for (Edge e: data.getGraph().get_edges(n)) {
+                Node neighbour = e.getTarget();
+                int weight = e.getWeight();
+
+                if (distances.get(n) + weight < distances.get(neighbour)) {
+                    negative_cycle_detected = true;
+                    break outer;
+                }
+            }
+        }
+
+        final boolean path_found = !negative_cycle_detected;
+        if (path_found) {
+            List<Node> path = reconstruct_path(previous, start, end);
+            new Thread(() -> {
+                for (Node n: path) {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                }
+            }).start();
+        }
     }
 
     private static void element_highlight(Runtime_Data data, ArrayList<Node> visited, ArrayList<Node> discovered, Node current_node, Node start, Node end){
