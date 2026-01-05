@@ -315,10 +315,15 @@ public class Traversals{
     }
 
     public static void dijkstra(Runtime_Data data) {
+        data.setTraversal_in_progress(true);
+        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+
         Map<Node, Integer> distances = new HashMap<>();
         Map<Node, Node> previous = new HashMap<>();
         Set<Node> visited = new HashSet<>();
         Priority_Queue pq = new Priority_Queue();
+
+        ArrayList<Node> discovered = new ArrayList<>();
 
         Node start = data.getGraph().get_node_from_id(data.getStart_node());
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());
@@ -331,47 +336,96 @@ public class Traversals{
         distances.put(start, 0);
         pq.add(start.getId(), 0);
 
-        while (!pq.isEmpty()) {
-            Node current = data.getGraph().get_node_from_id(pq.poll());
+        new Thread(() -> {
+            Gdx.app.postRunnable(() -> {
+                start.setColour(Color.GREEN);
+                end.setColour(Color.RED);
+            });
 
-            if (visited.contains(current)) {
-                continue;
-            }
+            while (!pq.isEmpty()) {
+                if (data.isTraversal_canceled()) {
+                    return;
+                }
 
-            visited.add(current);
+                Node current = data.getGraph().get_node_from_id(pq.poll());
 
-            if (current.equals(end)) {
-                break;
-            }
-
-            for (Edge e: data.getGraph().get_edges(current)) {
-                Node neighbour = e.getTarget();
-                if (visited.contains(neighbour)) {
+                if (visited.contains(current)) {
                     continue;
                 }
-                int alt = distances.get(current) + e.getWeight();
 
-                if (alt < distances.get(neighbour)) {
-                    distances.put(neighbour, alt);
-                    previous.put(neighbour, current);
-                    pq.add(neighbour.getId(), alt);
+                if (current != start && current != end) {
+                    Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE));
+                }
+
+                visited.add(current);
+
+                if (data.Should_sleep()) {
+                    sleep(operation_speed);
+                }
+
+                for (Edge e: data.getGraph().get_edges(current)) {
+                    Node neighbour = e.getTarget();
+                    if (visited.contains(neighbour)) {
+                        continue;
+                    }
+                    if (!discovered.contains(neighbour)) {
+                        discovered.add(neighbour);
+                    }
+                    Gdx.app.postRunnable(() -> neighbour.setColour(Color.YELLOW));
+                    int alt = distances.get(current) + e.getWeight();
+
+                    if (alt < distances.get(neighbour)) {
+                        distances.put(neighbour, alt);
+                        previous.put(neighbour, current);
+                        pq.add(neighbour.getId(), alt);
+                    }
+
+                    if (data.Should_sleep()) {
+                        sleep(operation_speed);
+                    }
+                }
+
+                ArrayList<Node> visited_list = new ArrayList<>(visited);
+                element_highlight(data, visited_list, discovered, current, start, end);
+
+                if (current.equals(end)) {
+                    break;
                 }
             }
-        }
 
-        List<Node> path = reconstruct_path(previous, start, end);
-        new Thread(() -> {
-            for (Node n: path) {
-                Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+            List<Node> path = reconstruct_path(previous, start, end);
+            Node last_node = null;
+            for(Node n: path) {
+                if (n.equals(start)) {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.GREEN));
+                } else if (n.equals(end)) {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+                } else {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                }
+
+                if (last_node != null) {
+                    Node final_last_node = last_node;
+                    Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY));
+                }
+
+                last_node = n;
             }
         }).start();
+        data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
     }
 
     public static void A_star(Runtime_Data data) {
+        data.setTraversal_in_progress(true);
+        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+
         Map<Node, Integer> g_score = new HashMap<>();
         Map<Node, Double> f_score = new HashMap<>();
         Map<Node, Node> previous = new HashMap<>();
         Priority_Queue pq = new Priority_Queue();
+
+        ArrayList<Node> discovered = new ArrayList<>();
 
         Node start = data.getGraph().get_node_from_id(data.getStart_node());
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());
@@ -386,36 +440,74 @@ public class Traversals{
         f_score.put(start, euclidean_heuristic(start.getPosition().getX(), start.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY()));
         pq.add(start.getId(), (int) f_score.get(start).doubleValue());
 
-        while (!pq.isEmpty()) {
-            Node current  = data.getGraph().get_node_from_id(pq.poll());
+        new Thread(() -> {
+            Gdx.app.postRunnable(() -> {
+                start.setColour(Color.GREEN);
+                end.setColour(Color.RED);
+            });
 
-            if (current.equals(end)) {
-                break;
-            }
+            while (!pq.isEmpty()) {
+                Node current  = data.getGraph().get_node_from_id(pq.poll());
 
-            for (Edge e: data.getGraph().get_edges(current)) {
-                Node neighbour = e.getTarget();
-                int intermediate_g_score = g_score.get(current) + e.getWeight();
+                if (current != start && current != end) {
+                    Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE));
+                }
 
-                if (intermediate_g_score < g_score.get(neighbour)) {
-                    previous.put(neighbour, current);
-                    g_score.put(neighbour, intermediate_g_score);
-                    double intermediate_f_score = intermediate_g_score + euclidean_heuristic(neighbour.getPosition().getX(), neighbour.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY());
-                    f_score.put(neighbour, intermediate_f_score);
-                    pq.add(neighbour.getId(), (int) intermediate_f_score);
+                if (data.Should_sleep()) {
+                    sleep(operation_speed);
+                }
+
+                for (Edge e: data.getGraph().get_edges(current)) {
+                    Node neighbour = e.getTarget();
+                    Gdx.app.postRunnable(() -> neighbour.setColour(Color.YELLOW));
+                    int intermediate_g_score = g_score.get(current) + e.getWeight();
+
+                    if (!discovered.contains(neighbour)) {
+                        discovered.add(neighbour);
+                    }
+
+                    if (intermediate_g_score < g_score.get(neighbour)) {
+                        previous.put(neighbour, current);
+                        g_score.put(neighbour, intermediate_g_score);
+                        double intermediate_f_score = intermediate_g_score + euclidean_heuristic(neighbour.getPosition().getX(), neighbour.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY());
+                        f_score.put(neighbour, intermediate_f_score);
+                        pq.add(neighbour.getId(), (int) intermediate_f_score);
+                    }
+                }
+
+                if (current.equals(end)) {
+                    break;
                 }
             }
-        }
 
-        List<Node> path = reconstruct_path(previous, start, end);
-        new Thread(() -> {
+            List<Node> path = reconstruct_path(previous, start, end);
+            Node last_node = null;
             for(Node n: path) {
-                Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                if (n.equals(start)) {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.GREEN));
+                } else if (n.equals(end)) {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+                } else {
+                    Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                }
+
+                if (last_node != null) {
+                    Node final_last_node = last_node;
+                    Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY));
+                }
+
+                last_node = n;
             }
         }).start();
+
+        data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
     }
 
     public static void Bellman_Ford(Runtime_Data data) {
+        data.setTraversal_in_progress(true);
+        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+
         Map<Node, Integer> distances = new HashMap<>();
         Map<Node, Node> previous = new HashMap<>();
 
@@ -476,6 +568,8 @@ public class Traversals{
                 }
             }).start();
         }
+        data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
+        data.setTraversal_canceled(false);
     }
 
     private static void element_highlight(Runtime_Data data, ArrayList<Node> visited, ArrayList<Node> discovered, Node current_node, Node start, Node end){
