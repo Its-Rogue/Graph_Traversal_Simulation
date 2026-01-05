@@ -148,7 +148,7 @@ public class Inputs {
     }
 
     private static void mouse_position_check(Runtime_Data data, int mouse_x, int mouse_y){
-        if (mouse_x > 250 || mouse_y > 225){
+        if (mouse_x > 250 || mouse_y > 260){
             data.getColour_hint_popup().setVisible(false);
             return;
         }
@@ -158,36 +158,42 @@ public class Inputs {
         }
 
         if (mouse_y < 50) {
-            data.getColour_hint_popup().setPosition(355,93);
+            data.getColour_hint_popup().setPosition(367,86);
+            data.setColour_hint_label_background(Color.SKY);
+            data.getColour_hint_label().setText(get_hint("shortest path"));
+        }
+
+        if (mouse_y > 50 && mouse_y < 85) {
+            data.getColour_hint_popup().setPosition(355, 93);
             data.setColour_hint_label_background(Color.PURPLE);
             data.getColour_hint_label().setText(get_hint("fully explored"));
         }
 
-        if (mouse_y > 50 && mouse_y < 85) {
+        if (mouse_y > 85 && mouse_y < 120) {
             data.getColour_hint_popup().setPosition(373, 86);
             data.setColour_hint_label_background(Color.YELLOW);
             data.getColour_hint_label().setText(get_hint("discovered"));
         }
 
-        if (mouse_y > 85 && mouse_y < 120) {
-            data.getColour_hint_popup().setPosition(371, 93);
+        if (mouse_y > 120 && mouse_y < 155) {
+            data.getColour_hint_popup().setPosition(372, 93);
             data.setColour_hint_label_background(Color.CYAN);
             data.getColour_hint_label().setText(get_hint("current"));
         }
 
-        if (mouse_y > 120 && mouse_y < 155) {
-            data.getColour_hint_popup().setPosition(373, 86);
+        if (mouse_y > 155 && mouse_y < 190) {
+            data.getColour_hint_popup().setPosition(373,86);
             data.setColour_hint_label_background(Color.ORANGE);
             data.getColour_hint_label().setText(get_hint("visited"));
         }
 
-        if (mouse_y > 155 && mouse_y < 190) {
-            data.getColour_hint_popup().setPosition(373,80);
+        if (mouse_y > 190 && mouse_y < 225) {
+            data.getColour_hint_popup().setPosition(373, 80);
             data.setColour_hint_label_background(Color.RED);
             data.getColour_hint_label().setText(get_hint("end"));
         }
 
-        if (mouse_y > 190 && mouse_y < 225) {
+        if (mouse_y > 225 && mouse_y < 260) {
             data.getColour_hint_popup().setPosition(373, 93);
             data.setColour_hint_label_background(Color.GREEN);
             data.getColour_hint_label().setText(get_hint("start"));
@@ -241,6 +247,9 @@ public class Inputs {
     private static String get_hint(String hint_type){
         String hint = "";
         switch (hint_type){
+            case "shortest path":
+                hint = "This node forms a part of the\nshortest path discovered\nby one of the weighted\ntraversal algorithms";
+                break;
             case "fully explored":
                 hint = "This node, as well as all its\nneighbours, have been a\ncurrent node.";
                 break;

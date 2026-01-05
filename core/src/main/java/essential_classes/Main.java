@@ -324,18 +324,19 @@ public class Main extends ApplicationAdapter {
     }
 
     public void colour_key_render() {
-        sr.rect(10,25, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);  // Fully explored node / edge
-        sr.rect(10,60, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);  // Discovered node / edge
-        sr.rect(10,95, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);          // Current node / edge
-        sr.rect(10,130, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Visited node / edge
-        sr.rect(10,165, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);             // End node / edge
-        sr.rect(10,200, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);     // Start node / edge
-        sr.rect(10,228, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);      // Header underlining
+        sr.rect(10, 25, 25, 25, Color.SKY, Color.SKY, Color.SKY, Color.SKY);             // Shortest path node / edge
+        sr.rect(10,60, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);  // Fully explored node / edge
+        sr.rect(10,95, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);  // Discovered node / edge
+        sr.rect(10,130, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);         // Current node / edge
+        sr.rect(10,165, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE); // Visited node / edge
+        sr.rect(10,200, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);             // End node / edge
+        sr.rect(10,235, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);     // Start node / edge
+        sr.rect(10,263, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);      // Header underlining
 
         if (data.getColour_hint_popup().isVisible()) {
             Color colour = data.getColour_hint_label_background();
-            sr.rect(268, 25, 210, 90, colour, colour, colour, colour);
-            sr.rect(269, 26, 208, 88, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK);
+            sr.rect(268, 25, 210, 90, colour, colour, colour, colour); // Colour of the hint
+            sr.rect(269, 26, 208, 88, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK); // Main black background for legibility
         }
     }
 
@@ -353,13 +354,14 @@ public class Main extends ApplicationAdapter {
     public void render_text() {
         // Colour key code
         font.setColor(Color.WHITE);
-        font.draw(batch, "Colour Key", 10, 244);            // Header
-        font.draw(batch, "Start node", 40, 219);            // Green
-        font.draw(batch, "End node", 40, 184);              // Red
-        font.draw(batch, "Visited node", 40, 149);          // Orange
-        font.draw(batch, "Current node", 40, 114);          // Cyan
-        font.draw(batch, "Discovered node", 40, 79);        // Yellow
-        font.draw(batch, "Fully explored node", 40, 44);    // Purple
+        font.draw(batch, "Colour Key", 10, 279);            // Header
+        font.draw(batch, "Start node", 40, 254);            // Green
+        font.draw(batch, "End node", 40, 219);              // Red
+        font.draw(batch, "Visited node", 40, 184);          // Orange
+        font.draw(batch, "Current node", 40, 149);          // Cyan
+        font.draw(batch, "Discovered node", 40, 114);       // Yellow
+        font.draw(batch, "Fully explored node", 40, 79);    // Purple
+        font.draw(batch, "Shortest path node", 40, 44);     // Sky
 
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()) {
