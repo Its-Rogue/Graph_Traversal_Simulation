@@ -67,7 +67,7 @@ public class Generate_Graphs {
         final int cell_width = 115;
         final int cell_height = 320;
         final int max_neighbours = 4;
-        final int node_spawn_percentage = 25;
+        final int node_spawn_percentage = 35;
         final int max_edge_length = 500;
         final int start_x = 270 + 2 * data.getNode_radius();
         final int start_y = 2 * data.getNode_radius();
@@ -77,7 +77,7 @@ public class Generate_Graphs {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if (ThreadLocalRandom.current().nextInt(100) > node_spawn_percentage) { // Only generate a node every 1 in 100/percentage times
+                if (ThreadLocalRandom.current().nextInt(100) < node_spawn_percentage) { // Only generate a node every 1 in 100/percentage times
                     continue;
                 }
 
@@ -155,8 +155,11 @@ public class Generate_Graphs {
         for (Node n: generated_nodes) {
             for (Node neighbour: n.getNeighbours()) {
                 if (n.getNeighbours().contains(neighbour)) {
-                    edges.add(new Edge(n, neighbour, 1, "forward", Color.WHITE)); // Add forward and reverse edges between
-                    edges.add(new Edge(neighbour, n, 1, "reverse", Color.WHITE)); // Neighbouring nodes
+                    int weight_base = Math.round((long) ((calculate_distance(n.getPosition().getX(), neighbour.getPosition().getX(), n.getPosition().getY(), neighbour.getPosition().getY()) / 100)));
+                    int weight = ThreadLocalRandom.current().nextInt(-2 * weight_base, 2 * weight_base);
+                    weight = Math.abs(weight); // Get absolute value of edge weight to prevent errors with Dijkstra's and A*
+                    edges.add(new Edge(n, neighbour, weight, "forward", Color.WHITE)); // Add forward and reverse edges between
+                    edges.add(new Edge(neighbour, n, weight, "reverse", Color.WHITE)); // Neighbouring nodes
                 }
             }
         }

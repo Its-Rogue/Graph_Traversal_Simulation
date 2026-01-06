@@ -12,13 +12,16 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Traversals{
     private final static long operation_speed_base = 200;
 
     public static void dfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+        AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
+        AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
 
         Node start = data.getGraph().get_node_from_id(data.getStart_node()); // Cache start and end node to update colour at the end
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());     // in the case they are overwritten
@@ -42,6 +45,11 @@ public class Traversals{
                 return; // Return if the user cancels the traversal by pressing the reset traversal button
             }
 
+            if (data.getTraversal_speed() != traversal_speed_cache.get()) {
+                operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
+                traversal_speed_cache.set(data.getTraversal_speed());
+            }
+
             while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()){
                 Node current_node = stack.remove(stack.size() - 1);
                 ArrayList<Node> neighbours = new ArrayList<>(current_node.getNeighbours());
@@ -58,7 +66,7 @@ public class Traversals{
                         return; // Stop traversal if the user has pressed the reset traversal button
                     }
 
-                    sleep(operation_speed);
+                    sleep(operation_speed.get());
 
                     if (!discovered.contains(neighbour) && !data.isTraversal_canceled()){
                         stack.add(neighbour); // Add neighbour to stack if not already discovered
@@ -96,7 +104,8 @@ public class Traversals{
 
     public static void bfs(Runtime_Data data){
         data.setTraversal_in_progress(true);
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+        AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
+        AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
 
         Node start = data.getGraph().get_node_from_id(data.getStart_node());   // Cache start and end node to update colour at the end
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());       // in the case they are overwritten
@@ -124,6 +133,11 @@ public class Traversals{
                     return; // Check for cancellation of traversal
                 }
 
+                if (data.getTraversal_speed() != traversal_speed_cache.get()) {
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
+                    traversal_speed_cache.set(data.getTraversal_speed());
+                }
+
                 Gdx.app.postRunnable(() ->{
                     if (current_node != start && current_node != end){
                         current_node.setColour(Color.CYAN); // Highlight the current node if it is not start / end
@@ -136,7 +150,7 @@ public class Traversals{
                         return; // Check for cancellation of traversal
                     }
 
-                    sleep(operation_speed);
+                    sleep(operation_speed.get());
 
                     if (!discovered.contains(neighbour) && !data.isTraversal_canceled()){
                         discovered.add(neighbour); // Add the neighbour to the queue if not already discovered
@@ -175,7 +189,8 @@ public class Traversals{
 
     public static void bidirectional(Runtime_Data data){
         data.setTraversal_in_progress(true);
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+        AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
+        AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
 
         Node forward_start = data.getGraph().get_node_from_id(data.getStart_node());
         Node reverse_start = data.getGraph().get_node_from_id(data.getEnd_node());
@@ -208,6 +223,11 @@ public class Traversals{
                     return; // Check for cancellation of traversal
                 }
 
+                if (data.getTraversal_speed() != traversal_speed_cache.get()) {
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
+                    traversal_speed_cache.set(data.getTraversal_speed());
+                }
+
                 Gdx.app.postRunnable(() ->{
                    if (forward_current_node != forward_start){
                        forward_current_node.setColour(Color.CYAN);
@@ -224,7 +244,7 @@ public class Traversals{
                     }
 
                     if (data.Should_sleep()){
-                        sleep(operation_speed);
+                        sleep(operation_speed.get());
                     }
 
 
@@ -272,7 +292,7 @@ public class Traversals{
                     }
 
                     if (data.Should_sleep()) {
-                        sleep(operation_speed);
+                        sleep(operation_speed.get());
                     }
 
                     if (!reverse_discovered.contains(neighbour) && !data.isTraversal_canceled()){
@@ -322,7 +342,8 @@ public class Traversals{
 
     public static void dijkstra(Runtime_Data data) {
         data.setTraversal_in_progress(true);
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+        AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
+        AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
 
         Map<Node, Integer> distances = new HashMap<>(); // Maps for distances between nodes, and what node was last accessed before itself
         Map<Node, Node> previous = new HashMap<>();
@@ -354,6 +375,12 @@ public class Traversals{
                     return; // Check for cancellation of traversal
                 }
 
+                if (data.getTraversal_speed() != traversal_speed_cache.get()) {
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed())); // Update operation speed if it has been altered by the user using the slider
+                    traversal_speed_cache.set(data.getTraversal_speed());
+                }
+
+
                 Node current = data.getGraph().get_node_from_id(pq.poll());
 
                 if (visited.contains(current)) {
@@ -367,7 +394,7 @@ public class Traversals{
                 visited.add(current);
 
                 if (data.Should_sleep()) {
-                    sleep(operation_speed); // Sleep the determinate amount of time
+                    sleep(operation_speed.get()); // Sleep the determinate amount of time
                 }
 
                 for (Edge e: data.getGraph().get_edges(current)) {
@@ -390,7 +417,7 @@ public class Traversals{
                     }
 
                     if (data.Should_sleep()) {
-                        sleep(operation_speed);
+                        sleep(operation_speed.get());
                     }
 
                     if (data.isTraversal_canceled()) {
@@ -439,7 +466,8 @@ public class Traversals{
 
     public static void A_star(Runtime_Data data) {
         data.setTraversal_in_progress(true);
-        long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+        AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
+        AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
 
         Map<Node, Integer> g_score = new HashMap<>(); // Maps for shortest path based on cost to traverse between nodes
         Map<Node, Double> f_score = new HashMap<>();
@@ -469,6 +497,16 @@ public class Traversals{
             });
 
             while (!pq.isEmpty()) {
+                if (data.isTraversal_canceled()) {
+                    data.setTraversal_in_progress(false);
+                    return; // Check for cancellation of traversal
+                }
+
+                if (data.getTraversal_speed() != traversal_speed_cache.get()) {
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed())); // Update operation speed if it has been altered by the user using the slider
+                    traversal_speed_cache.set(data.getTraversal_speed());
+                }
+
                 Node current  = data.getGraph().get_node_from_id(pq.poll()); // Poll the queue to get the next node
 
                 if (current != start && current != end) {
@@ -480,7 +518,7 @@ public class Traversals{
                 }
 
                 if (data.Should_sleep()) {
-                    sleep(operation_speed); // Sleep if option has been selected
+                    sleep(operation_speed.get()); // Sleep if option has been selected
                 }
 
                 for (Edge e: data.getGraph().get_edges(current)) {
@@ -550,6 +588,7 @@ public class Traversals{
     public static void Bellman_Ford(Runtime_Data data) {
         data.setTraversal_in_progress(true);
         long operation_speed = (long) (operation_speed_base / data.getTraversal_speed());
+        float traversal_speed_cache = data.getTraversal_speed();
 
         Map<Node, Integer> distances = new HashMap<>();
         Map<Node, Node> previous = new HashMap<>();
