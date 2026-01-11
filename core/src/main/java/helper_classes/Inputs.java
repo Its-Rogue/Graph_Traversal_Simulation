@@ -158,7 +158,7 @@ public class Inputs {
         }
 
         if (mouse_y < 50) {
-            data.getColour_hint_popup().setPosition(367, 86);
+            data.getColour_hint_popup().setPosition(369, 86);
             data.setColour_hint_label_background(Color.MAGENTA);
             data.getColour_hint_label().setText(get_hint("negative cycle"));
         }
