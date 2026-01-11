@@ -216,6 +216,8 @@ public class Inputs {
 
     // Switch case the chosen traversal option
     public static void start_traversal(Runtime_Data data) {
+        data.getError_popup_label().setText("");
+        data.getError_popup().setVisible(false);
         switch (data.getSelected_traversal()) {
             case "Depth-First Search":
                 Traversals.dfs(data);

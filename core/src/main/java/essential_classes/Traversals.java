@@ -469,76 +469,96 @@ public class Traversals{
         AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
         AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
 
-        Map<Node, Integer> g_score = new HashMap<>(); // Maps for shortest path based on cost to traverse between nodes
+        Map<Node, Integer> g_score = new HashMap<>();
         Map<Node, Double> f_score = new HashMap<>();
         Map<Node, Node> previous = new HashMap<>();
         Priority_Queue pq = new Priority_Queue();
 
-        ArrayList<Node> visited = new ArrayList<>(); // Helpers for colour visualisation
+        ArrayList<Node> visited = new ArrayList<>();
         ArrayList<Node> discovered = new ArrayList<>();
+        Set<Node> closed_set = new HashSet<>();
 
-        Node start = data.getGraph().get_node_from_id(data.getStart_node()); // Cache start and end in case they are altered in some way
+        Node start = data.getGraph().get_node_from_id(data.getStart_node());
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());
 
-        for (Node n: data.getGraph().get_nodes()) { // Add all nodes with max / min values to each map
+        for (Node n: data.getGraph().get_nodes()) {
             g_score.put(n, Integer.MAX_VALUE);
             f_score.put(n, Double.MAX_VALUE);
             previous.put(n, null);
         }
 
-        g_score.put(start, 0); // Add the start node to the maps, and calculate the f_score for it
+        g_score.put(start, 0);
         f_score.put(start, euclidean_heuristic(start.getPosition().getX(), start.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY()));
         pq.add(start.getId(), (int) f_score.get(start).doubleValue());
 
         new Thread(() -> {
             Gdx.app.postRunnable(() -> {
-                start.setColour(Color.GREEN); // Highlight the start / end node green / red
+                start.setColour(Color.GREEN);
                 end.setColour(Color.RED);
             });
+
+            boolean path_found = false;
 
             while (!pq.isEmpty()) {
                 if (data.isTraversal_canceled()) {
                     data.setTraversal_in_progress(false);
-                    return; // Check for cancellation of traversal
+                    return;
                 }
 
                 if (data.getTraversal_speed() != traversal_speed_cache.get()) {
-                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed())); // Update operation speed if it has been altered by the user using the slider
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
                     traversal_speed_cache.set(data.getTraversal_speed());
                 }
 
-                Node current  = data.getGraph().get_node_from_id(pq.poll()); // Poll the queue to get the next node
+                Node current = data.getGraph().get_node_from_id(pq.poll());
+
+                if (closed_set.contains(current)) {
+                    continue;
+                }
 
                 if (current != start && current != end) {
-                    Gdx.app.postRunnable(() -> current.setColour(Color.CYAN)); // Set it's colour to cyan (current node)
+                    Gdx.app.postRunnable(() -> current.setColour(Color.CYAN));
                 }
 
                 if (!visited.contains(current)) {
-                    visited.add(current); // Add to helper ArrayList
+                    visited.add(current);
                 }
 
                 if (data.Should_sleep()) {
-                    sleep(operation_speed.get()); // Sleep if option has been selected
+                    sleep(operation_speed.get());
                 }
 
+                if (current.equals(end)) {
+                    path_found = true;
+                    break;
+                }
+
+                boolean has_valid_neighbors = false;
+
                 for (Edge e: data.getGraph().get_edges(current)) {
-                    Node neighbour = e.getTarget(); // Get neighbour based on edge of current node
+                    Node neighbour = e.getTarget();
 
                     if (data.isTraversal_canceled()) {
                         data.setTraversal_in_progress(false);
-                        return; // Check for cancellation of traversal
+                        return;
+                    }
+
+                    if (closed_set.contains(neighbour)) {
+                        continue;
                     }
 
                     if (!visited.contains(neighbour) && !discovered.contains(neighbour) && !start.equals(neighbour) && !end.equals(neighbour)) {
-                        Gdx.app.postRunnable(() -> neighbour.setColour(Color.YELLOW)); // Set colour to yellow (discovered) if not analysed yet
+                        Gdx.app.postRunnable(() -> neighbour.setColour(Color.YELLOW));
                     }
-                    int intermediate_g_score = g_score.get(current) + e.getWeight(); // Calculate g_score
+
+                    int intermediate_g_score = g_score.get(current) + e.getWeight();
 
                     if (!discovered.contains(neighbour)) {
-                        discovered.add(neighbour); // Add to helper ArrayList
+                        discovered.add(neighbour);
                     }
 
-                    if (intermediate_g_score < g_score.get(neighbour)) { // Calculate f_score, add it to priority queue, and update g_score / previous maps
+                    if (intermediate_g_score < g_score.get(neighbour)) {
+                        has_valid_neighbors = true;
                         previous.put(neighbour, current);
                         g_score.put(neighbour, intermediate_g_score);
                         double intermediate_f_score = intermediate_g_score + euclidean_heuristic(neighbour.getPosition().getX(), neighbour.getPosition().getY(), end.getPosition().getX(), end.getPosition().getY());
@@ -547,42 +567,51 @@ public class Traversals{
                     }
                 }
 
-                element_highlight(data, visited, discovered, current, start, end); // Ensure all elements have been highlighted correctly
+                closed_set.add(current);
 
-                if (current.equals(end)) {
-                    break; // Break if the path has been found
+                if (!has_valid_neighbors && !current.equals(start)) {
+                    Gdx.app.postRunnable(() -> current.setColour(Color.GRAY));
+                } else if (!current.equals(start) && !current.equals(end)) {
+                    Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE));
                 }
+
+                element_highlight(data, visited, discovered, current, start, end);
 
                 if (data.isTraversal_canceled()) {
                     data.setTraversal_in_progress(false);
-                    return; // Check for cancellation of traversal
+                    return;
                 }
-
-                Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE)); // Set the colour to orange to indicate that it has been visited but not fully explored
             }
 
-            List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
-            Node last_node = null;
-            for(Node n: path) {
-                if (n.equals(start)) {
-                    Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
-                } else if (n.equals(end)) {
-                    Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                } else {
-                    Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                }
+            if (path_found) {
+                List<Node> path = reconstruct_path(previous, start, end);
+                Node last_node = null;
+                for(Node n: path) {
+                    if (n.equals(start)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN));
+                    } else if (n.equals(end)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+                    } else {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                    }
 
-                if (last_node != null) {
-                    Node final_last_node = last_node;
-                    Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
-                }
+                    if (last_node != null) {
+                        Node final_last_node = last_node;
+                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY));
+                    }
 
-                last_node = n; // Update last node to update pointer for the next edge to be highlighted
+                    last_node = n;
+                }
+            } else {
+                Gdx.app.postRunnable(() -> {
+                    data.getError_popup_label().setText("No path found");
+                    data.getError_popup().setVisible(true);
+                });
             }
+
+            data.setTraversal_in_progress(false);
+            data.setTraversal_canceled(false);
         }).start();
-
-        data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
-        data.setTraversal_canceled(false);
     }
 
     public static void Bellman_Ford(Runtime_Data data) {
