@@ -148,7 +148,7 @@ public class Inputs {
     }
 
     private static void mouse_position_check(Runtime_Data data, int mouse_x, int mouse_y){
-        if (mouse_x > 250 || mouse_y > 260){
+        if (mouse_x > 250 || mouse_y > 295){
             data.getColour_hint_popup().setVisible(false);
             return;
         }
@@ -158,42 +158,48 @@ public class Inputs {
         }
 
         if (mouse_y < 50) {
+            data.getColour_hint_popup().setPosition(367, 86);
+            data.setColour_hint_label_background(Color.MAGENTA);
+            data.getColour_hint_label().setText(get_hint("negative cycle"));
+        }
+
+        if (mouse_y > 50 && mouse_y < 85) {
             data.getColour_hint_popup().setPosition(367,86);
             data.setColour_hint_label_background(Color.SKY);
             data.getColour_hint_label().setText(get_hint("shortest path"));
         }
 
-        if (mouse_y > 50 && mouse_y < 85) {
+        if (mouse_y > 85 && mouse_y < 120) {
             data.getColour_hint_popup().setPosition(355, 93);
             data.setColour_hint_label_background(Color.PURPLE);
             data.getColour_hint_label().setText(get_hint("fully explored"));
         }
 
-        if (mouse_y > 85 && mouse_y < 120) {
+        if (mouse_y > 120 && mouse_y < 155) {
             data.getColour_hint_popup().setPosition(373, 86);
             data.setColour_hint_label_background(Color.YELLOW);
             data.getColour_hint_label().setText(get_hint("discovered"));
         }
 
-        if (mouse_y > 120 && mouse_y < 155) {
+        if (mouse_y > 155 && mouse_y < 190) {
             data.getColour_hint_popup().setPosition(372, 93);
             data.setColour_hint_label_background(Color.CYAN);
             data.getColour_hint_label().setText(get_hint("current"));
         }
 
-        if (mouse_y > 155 && mouse_y < 190) {
+        if (mouse_y > 190 && mouse_y < 225) {
             data.getColour_hint_popup().setPosition(373,86);
             data.setColour_hint_label_background(Color.ORANGE);
             data.getColour_hint_label().setText(get_hint("visited"));
         }
 
-        if (mouse_y > 190 && mouse_y < 225) {
+        if (mouse_y > 225 && mouse_y < 260) {
             data.getColour_hint_popup().setPosition(373, 80);
             data.setColour_hint_label_background(Color.RED);
             data.getColour_hint_label().setText(get_hint("end"));
         }
 
-        if (mouse_y > 225 && mouse_y < 260) {
+        if (mouse_y > 260 && mouse_y < 295) {
             data.getColour_hint_popup().setPosition(373, 93);
             data.setColour_hint_label_background(Color.GREEN);
             data.getColour_hint_label().setText(get_hint("start"));
@@ -206,8 +212,8 @@ public class Inputs {
         if (data.getChange_edge_weight_popup().isVisible()) {
             offset_multiplier = 1.5f; // Bounds check for the change edge weight popup specifically
         }
-        if (pos_x > mouse_x + 100 * offset_multiplier || pos_x < mouse_x - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY;
-        if (pos_y > mouse_y + 100 * offset_multiplier || pos_y < mouse_y - 100 * offset_multiplier) return (int) Double.POSITIVE_INFINITY; // Skip checking the node if it is too far away from the clicked position
+        if (pos_x > mouse_x + 100 * offset_multiplier || pos_x < mouse_x - 100 * offset_multiplier) return Integer.MAX_VALUE;
+        if (pos_y > mouse_y + 100 * offset_multiplier || pos_y < mouse_y - 100 * offset_multiplier) return Integer.MAX_VALUE; // Skip checking the node if it is too far away from the clicked position
 
         float dx = mouse_x - pos_x;
         float dy = mouse_y - pos_y;
@@ -230,6 +236,7 @@ public class Inputs {
             case "Bidirectional Search":
                 Traversals.bidirectional(data);
                 clear_error_display(data);
+                break;
             case "Dijkstra's":
                 Traversals.dijkstra(data);
                 clear_error_display(data);
@@ -249,6 +256,9 @@ public class Inputs {
     private static String get_hint(String hint_type){
         String hint = "";
         switch (hint_type){
+            case "negative cycle":
+                hint = "This node forms a part of a\nnegative cycle that has been\ndetected by the traversal\nalgorithm";
+                break;
             case "shortest path":
                 hint = "This node forms a part of the\nshortest path discovered\nby one of the weighted\ntraversal algorithms";
                 break;

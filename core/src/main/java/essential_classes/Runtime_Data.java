@@ -79,7 +79,10 @@ public class Runtime_Data {
         return graph;
     }
 
-    public void setGraph(Graph graph) {
+    public void setGraph(Graph graph) throws Exception {
+        if (graph == null) {
+            throw new Exception("Graph cannot be null");
+        }
         this.graph = graph;
     }
 

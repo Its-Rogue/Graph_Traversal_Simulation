@@ -23,7 +23,13 @@ public class Generate_Graphs {
         int starting_x = 900;
         int starting_y = 300;
 
-        Graph.clear();
+        if (data.isTraversal_in_progress()) {
+            data.getError_popup_label().setText("Cannot generate graph while traversal is running");
+            data.getError_popup().setVisible(true);
+            return;
+        }
+
+        data.getGraph().clear();
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -59,7 +65,13 @@ public class Generate_Graphs {
     }
 
     public static void generate_random_graph(Runtime_Data data) {
-        Graph.clear(); // Clear the graph to allow for a new one to be generated
+        if (data.isTraversal_in_progress()) {
+            data.getError_popup_label().setText("Cannot generate graph while traversal is running");
+            data.getError_popup().setVisible(true);
+            return;
+        }
+
+        data.getGraph().clear(); // Clear the graph to allow for a new one to be generated
 
         final int columns = 20; // Constant values used throughout the function
         final int rows = 20;
@@ -138,8 +150,8 @@ public class Generate_Graphs {
             }
 
             if (!n.getNeighbours().contains(n1)) {
-                n.getNeighbours().add(n1); // Add each node as a neighbour to each other
-                n1.getNeighbours().add(n);
+                n.add_neighbour(n1); // Add each node as a neighbour to each other
+                n1.add_neighbour(n);
             }
         }
 
@@ -154,13 +166,11 @@ public class Generate_Graphs {
         List<Edge> edges = new ArrayList<>(); // Temporary container for new edges so they can be added to the graph
         for (Node n: generated_nodes) {
             for (Node neighbour: n.getNeighbours()) {
-                if (n.getNeighbours().contains(neighbour)) {
-                    int weight_base = Math.round((long) ((calculate_distance(n.getPosition().getX(), neighbour.getPosition().getX(), n.getPosition().getY(), neighbour.getPosition().getY()) / 100)));
-                    int weight = ThreadLocalRandom.current().nextInt(-2 * weight_base, 2 * weight_base);
-                    weight = Math.abs(weight); // Get absolute value of edge weight to prevent errors with Dijkstra's and A*
-                    edges.add(new Edge(n, neighbour, weight, "forward", Color.WHITE)); // Add forward and reverse edges between
-                    edges.add(new Edge(neighbour, n, weight, "reverse", Color.WHITE)); // Neighbouring nodes
-                }
+                int weight_base = Math.round((long) ((calculate_distance(n.getPosition().getX(), neighbour.getPosition().getX(), n.getPosition().getY(), neighbour.getPosition().getY()) / 100)));
+                int weight = ThreadLocalRandom.current().nextInt(-2 * weight_base, 2 * weight_base);
+                weight = Math.abs(weight); // Get absolute value of edge weight to prevent errors with Dijkstra's and A*
+                edges.add(new Edge(n, neighbour, weight, "forward", Color.WHITE)); // Add forward and reverse edges between
+                edges.add(new Edge(neighbour, n, weight, "reverse", Color.WHITE)); // Neighbouring nodes
             }
         }
 
@@ -222,7 +232,16 @@ public class Generate_Graphs {
         nodes.removeIf(n -> !chunk_to_keep.contains(n)); // Cull the nodes not in the largest chunk
 
         for (Node n: nodes) {
-            n.getNeighbours().removeIf(n1 -> !chunk_to_keep.contains(n1)); // Clean the neighbours of the remaining nodes
+            List<Node> nodes_to_remove = new ArrayList<>();
+            for (Node n1: n.getNeighbours()) {
+                if (!chunk_to_keep.contains(n1)) {
+                    nodes_to_remove.add(n1);
+                }
+            }
+
+            for (Node n1: nodes_to_remove) {
+                n.remove_neighbour(n1);
+            }
         }
     }
 }

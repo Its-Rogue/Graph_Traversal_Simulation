@@ -2,6 +2,8 @@ package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
@@ -29,7 +31,7 @@ public class Node {
     }
 
     public List<Node> getNeighbours() {
-        return neighbours;
+        return new ArrayList<>(neighbours);
     }
 
     public void add_neighbour(Node neighbour) {
