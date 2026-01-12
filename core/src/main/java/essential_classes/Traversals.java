@@ -40,16 +40,6 @@ public class Traversals{
             stack.add(start);
             discovered.add(start);
 
-            if (data.isTraversal_canceled()){
-                data.setTraversal_in_progress(false);
-                return; // Return if the user cancels the traversal by pressing the reset traversal button
-            }
-
-            if (data.getTraversal_speed() != traversal_speed_cache.get()) {
-                operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
-                traversal_speed_cache.set(data.getTraversal_speed());
-            }
-
             while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()){
                 Node current_node = stack.remove(stack.size() - 1);
                 ArrayList<Node> neighbours = new ArrayList<>(current_node.getNeighbours());
@@ -59,6 +49,16 @@ public class Traversals{
                         current_node.setColour(Color.CYAN); // Highlight the current node if it is not start / end
                     }
                 });
+
+                if (data.isTraversal_canceled()){
+                    data.setTraversal_in_progress(false);
+                    return; // Return if the user cancels the traversal by pressing the reset traversal button
+                }
+
+                if (data.getTraversal_speed() != traversal_speed_cache.get()) {
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
+                    traversal_speed_cache.set(data.getTraversal_speed());
+                }
 
                 for (Node neighbour: neighbours){
                     if (data.isTraversal_canceled()){
@@ -136,7 +136,7 @@ public class Traversals{
                 }
 
                 if (data.getTraversal_speed() != traversal_speed_cache.get()) {
-                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
+                    operation_speed.set((long) (operation_speed_base / data.getTraversal_speed())); // Update operation speed if it has been altered by the user using the slider
                     traversal_speed_cache.set(data.getTraversal_speed());
                 }
 
@@ -198,7 +198,7 @@ public class Traversals{
         Node forward_start = data.getGraph().get_node_from_id(data.getStart_node());
         Node reverse_start = data.getGraph().get_node_from_id(data.getEnd_node());
 
-        ArrayList<Node> forward_queue = new ArrayList<>();
+        ArrayList<Node> forward_queue = new ArrayList<>(); // Initialise queues, discovered and visited for forward / reverse directions
         ArrayList<Node> reverse_queue = new ArrayList<>();
         Set<Node> forward_discovered = new HashSet<>();
         Set<Node> reverse_discovered = new HashSet<>();
@@ -208,7 +208,7 @@ public class Traversals{
 
         new Thread(() -> {
             Gdx.app.postRunnable(() -> {
-                forward_start.setColour(Color.GREEN);
+                forward_start.setColour(Color.GREEN); // Highlight start nodes their respective colours
                 reverse_start.setColour(Color.RED);
             });
 
@@ -225,11 +225,11 @@ public class Traversals{
 
                 if (data.getTraversal_speed() != traversal_speed_cache.get()) {
                     operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
-                    traversal_speed_cache.set(data.getTraversal_speed());
+                    traversal_speed_cache.set(data.getTraversal_speed()); // Update traversal speed if the user has changed it
                 }
 
-                if (!forward_queue.isEmpty() && !found[0]) {
-                    Node forward_current_node = forward_queue.remove(0);
+                if (!forward_queue.isEmpty() && !found[0]) { // Forward search
+                    Node forward_current_node = forward_queue.remove(0); // Same logic as a breadth first search
 
                     Gdx.app.postRunnable(() -> {
                         if (forward_current_node != forward_start && forward_current_node != reverse_start){
@@ -273,11 +273,11 @@ public class Traversals{
                 }
 
                 if (found[0]) {
-                    break;
+                    break; // Do not process reverse search if a continuous path has been found
                 }
 
-                if (!reverse_queue.isEmpty()) {
-                    Node reverse_current_node = reverse_queue.remove(0);
+                if (!reverse_queue.isEmpty()) { // Reverse search
+                    Node reverse_current_node = reverse_queue.remove(0); // Same logic as a breadth first search
 
                     Gdx.app.postRunnable(() -> {
                         if (reverse_current_node != reverse_start && reverse_current_node != forward_start){
@@ -321,7 +321,7 @@ public class Traversals{
                 }
 
                 if (found[0]) {
-                    break;
+                    break; // Break if continuous path has been found
                 }
             }
 
@@ -643,7 +643,7 @@ public class Traversals{
                     return;
                 }
 
-                for (Node n: data.getGraph().get_nodes()) {
+                for (Node n: data.getGraph().get_nodes()) { // Check all nodes and neighbours in a graph
                     if (distances.get(n) == Integer.MAX_VALUE) {
                         continue;
                     }
@@ -661,9 +661,9 @@ public class Traversals{
                 }
             }
 
-            Node cycle_start = null;
+            Node negative_cycle_start = null;
             outer:
-            for (Node n: data.getGraph().get_nodes()) {
+            for (Node n: data.getGraph().get_nodes()) { // Loop through nodes 1 more time to check for any negative loops by comparing to previously calculated distance
                 if (distances.get(n) == Integer.MAX_VALUE) {
                     continue;
                 }
@@ -672,16 +672,16 @@ public class Traversals{
                     Node neighbour = e.getTarget();
                     int weight = e.getWeight();
 
-                    if (distances.get(n) + weight < distances.get(neighbour)) {
+                    if (distances.get(n) + weight < distances.get(neighbour)) { // Check new weight against old, if its less identify a negative cycle
                         negative_cycle_detected.set(true);
-                        cycle_start = neighbour;
+                        negative_cycle_start = neighbour;
                         break outer;
                     }
                 }
             }
 
             if (negative_cycle_detected.get()) {
-                Node current = cycle_start;
+                Node current = negative_cycle_start;
 
                 for (int i = 0; i < num_nodes; i++) {
                     current = previous.get(current);
@@ -689,47 +689,37 @@ public class Traversals{
                 }
 
                 if (current != null) {
-                    Node cycle_node = current;
+                    Node cycle_node = current; // Collect all nodes that form part of the negative loop
                     do {
                         cycle_nodes.add(current);
                         current = previous.get(current);
                     } while (current != null && !current.equals(cycle_node) && cycle_nodes.size() < num_nodes);
                 }
 
-                Gdx.app.postRunnable(() -> {
-                    for (int i = 0; i < cycle_nodes.size(); i++) {
-                        Node node = cycle_nodes.get(i);
-                        if (!node.equals(start) && !node.equals(end)) {
-                            node.setColour(Color.MAGENTA);
-                        }
-
-                        if (i > 0) {
-                            Node prev = cycle_nodes.get(i - 1);
-                            highlight_edge(data, prev, node, Color.MAGENTA);
-                        }
+                for (int i= 0; i < cycle_nodes.size(); i++) {
+                    Node n = cycle_nodes.get(i);
+                    if (!n.equals(start) && !n.equals(end)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.MAGENTA)); // Highlight nodes that form negative loop MAGENTA
                     }
 
-                    if (cycle_nodes.size() > 1) {
-                        highlight_edge(data, cycle_nodes.get(cycle_nodes.size() - 1),
-                            cycle_nodes.get(0), Color.MAGENTA);
+                    if (i > 0) {
+                        Node prev = cycle_nodes.get(i - 1);
+                        Gdx.app.postRunnable(() -> highlight_edge(data, n, prev, Color.MAGENTA)); // Highlight edge between nodes MAGENTA
                     }
+                }
 
-                    data.getError_popup_label().setText("Negative cycle detected!");
-                    data.getError_popup().setVisible(true);
-                });
-
+                data.getError_popup_label().setText("Negative cycle detected!");
+                data.getError_popup().setVisible(true);
             } else {
-                List<Node> path = reconstruct_path(previous, start, end);
+                List<Node> path = reconstruct_path(previous, start, end); // Reconstruct determined path between nodes
 
                 if (path.isEmpty() || path.size() == 1) {
-                    Gdx.app.postRunnable(() -> {
-                        data.getError_popup_label().setText("No path found");
-                        data.getError_popup().setVisible(true);
-                    });
+                    data.getError_popup_label().setText("No path found"); // Ensure a path has actually been found
+                    data.getError_popup().setVisible(true);
                 } else {
                     Node last_node = null;
                     for(Node n: path) {
-                        if (n.equals(start)) {
+                        if (n.equals(start)) { // Set colours accordingly
                             Gdx.app.postRunnable(() -> n.setColour(Color.GREEN));
                         } else if (n.equals(end)) {
                             Gdx.app.postRunnable(() -> n.setColour(Color.RED));
@@ -739,7 +729,7 @@ public class Traversals{
 
                         if (last_node != null) {
                             Node final_last_node = last_node;
-                            Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY));
+                            Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight the edges of the path
                         }
 
                         last_node = n;

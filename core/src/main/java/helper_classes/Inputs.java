@@ -257,10 +257,10 @@ public class Inputs {
         String hint = "";
         switch (hint_type){
             case "negative cycle":
-                hint = "This node forms a part of a\nnegative cycle that has been\ndetected by the traversal\nalgorithm";
+                hint = "This node forms a part of a\nnegative cycle that has been\ndetected by the traversal\nalgorithm.";
                 break;
             case "shortest path":
-                hint = "This node forms a part of the\nshortest path discovered\nby one of the weighted\ntraversal algorithms";
+                hint = "This node forms a part of the\nshortest path discovered\nby one of the weighted\ntraversal algorithms.";
                 break;
             case "fully explored":
                 hint = "This node, as well as all its\nneighbours, have been a\ncurrent node.";

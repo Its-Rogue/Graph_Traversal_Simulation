@@ -2,7 +2,6 @@ package structural_classes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
 import java.util.ArrayList;
 import java.util.List;
 
