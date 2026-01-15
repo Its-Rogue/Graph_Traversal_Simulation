@@ -61,6 +61,8 @@ public class Save_Handling {
             Files.writeString(save_file.toPath(), sb.toString()); // Write the string to the save file
 
         } catch (Exception e) {
+            data.getError_popup_label().setText("Failed to save layout");
+            data.getError_popup().setVisible(true);
             System.err.println("Failed to save layout file: " + e.getMessage()); // Catch any errors that may occur
         }
     }
@@ -81,7 +83,7 @@ public class Save_Handling {
         }
 
         try (Scanner sc = new Scanner(selected_file)) {
-            Graph.clear(); // Clear the graph to allow for a new one to be loaded
+            data.getGraph().clear(); // Clear the graph to allow for a new one to be loaded
             Graph temp_graph = new Graph(); // Create a temp graph that will then update the graph in Runtime_Data
             String header_line;
 

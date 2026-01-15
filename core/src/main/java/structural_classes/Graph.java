@@ -10,9 +10,9 @@ import java.util.Set;
 import java.util.Collections;
 
 public class Graph {
-    private static Map<Node, List<Edge>> adj_list;
-    private static int next_node_ID = 0;
-    private static Priority_Queue free_IDs;
+    private final Map<Node, List<Edge>> adj_list;
+    private int next_node_ID = 0;
+    private final Priority_Queue free_IDs;
 
     public Graph() {
         adj_list = new HashMap<>();
@@ -162,7 +162,7 @@ public class Graph {
     }
 
     // Clear the adj list and reset next node id and free ids to start over
-    public static void clear() {
+    public void clear() {
         adj_list.clear();
         free_IDs.clear();
         next_node_ID = 0;

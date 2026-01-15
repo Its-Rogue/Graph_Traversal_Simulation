@@ -39,9 +39,11 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `Right Click` to select 2 different nodes and create an edge between them
 
-`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm <sup>3</sup> be presently selected
+`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm <sup>3</sup> be selected. Once the desired weight has been inputted, press enter to confirm it
 
 `Right Click` then `Middle Click` or press `Backspace` to delete an edge
+
+`SPACE` to start the traversal, if valid conditions for one to start exist
 
 `ESCAPE` to quit the program
 

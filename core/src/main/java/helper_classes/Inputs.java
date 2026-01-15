@@ -34,6 +34,7 @@ public class Inputs {
         right_click(mouse_x, mouse_y, data); // Right click detection and code for edge creation
         middle_click(mouse_x, mouse_y, data); // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         enter_key_input(data); // Check each frame to see if the enter key has been pressed while the change edge weight popup is visible
+        space_key_input(data);
         mouse_position_check(data, mouse_x, mouse_y); // Check each frame to see if the mouse is in the bottom left corner of the screen, where the colour key is
     }
 
@@ -131,6 +132,7 @@ public class Inputs {
         if (!data.getChange_edge_weight_popup().isVisible()) {
             return; // Do not run if edge weight is not being changed
         }
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             data.getEdge_to_edit().setWeight(data.getNew_edge_weight()); // Set forward edge to have the new weight
             for (Node node: data.getEdge_to_edit().getSource().getNeighbours()) {
@@ -144,6 +146,36 @@ public class Inputs {
             }
             data.getChange_edge_weight_popup().setVisible(false);
             data.getChange_edge_weight_input().setText(""); // Reset inputted text and hide the input field / popup
+        }
+    }
+
+    // Code for starting the traversal if the conditions are valid, based on keyboard press rather than pressing a button
+    private static void space_key_input(Runtime_Data data) {
+        if (!data.isValid_setup()) {
+            return; // Do not start traversal if the parameters and data the user has entered are invalid
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            if (data.isTraversal_in_progress()) {
+                data.getError_popup().setVisible(true); // Make sure the user can only run 1 traversal at a time
+                data.getError_popup_label().setText("Traversal is already running");
+                return;
+            }
+
+            for (Node node: data.getGraph().get_nodes()) { // Ensure the nodes are all white in the graph
+                if (node.getColour() != Color.WHITE) {
+                    node.setColour(Color.WHITE); // Reset all nodes' colour if they aren't white (default colour)
+                }
+
+                for (Edge edge: data.getGraph().get_edges(node)) {
+                    if (edge.getColour() != Color.WHITE) {
+                        edge.setColour(Color.WHITE); // Reset all edges' colour if they aren't white (default colour)
+                    }
+                }
+            }
+
+            data.setTraversal_canceled(false); // Reset status to make sure the traversal doesn't instantly stop
+            start_traversal(data); // Start traversal
         }
     }
 
@@ -287,7 +319,6 @@ public class Inputs {
     // Clear any error messages that the user may have caused upon the completion / termination of a traversal
     private static void clear_error_display(Runtime_Data data) {
         data.getError_popup_label().setText("");
-        data.getError_popup_label().setVisible(false);
         data.getError_popup().setVisible(false);
     }
 }

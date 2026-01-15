@@ -3,7 +3,6 @@ package helper_classes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
-import structural_classes.Graph;
 import structural_classes.Node;
 import essential_classes.Runtime_Data;
 
@@ -22,7 +21,7 @@ public class UI {
     }
 
     public static void reset_button_function(Runtime_Data data) {
-        Graph.clear(); // Clear the adj list of the graph
+        data.getGraph().clear(); // Clear the adj list of the graph
         data.setStart_node(0); // Reset chosen start and end node
         data.setEnd_node(0);
         data.setTraversal_canceled(false); // Reset status flags for authorising traversal start
@@ -50,23 +49,31 @@ public class UI {
     }
 
     public static void step_traversal_button_function(Runtime_Data data) {
-        System.out.println("Test");
+        if (data.isStep_button_pressed()) {
+            data.getError_popup().setVisible(true);
+            data.getError_popup_label().setText("Already stepping traversal");
+            return;
+        }
+
+        data.setStep_button_pressed(true);
     }
 
     public static void reset_traversal_button_function(Runtime_Data data) {
         data.setTraversal_canceled(true); // Stop the current traversal from running
         data.setTraversal_in_progress(false); // Allow a new traversal to be run
+        data.getError_popup_label().setText("");
+        data.getError_popup().setVisible(false);
         reset_colours(data); // Reset colours of nodes in graph
     }
 
     public static void reset_colours(Runtime_Data data) {
         for (Node node: data.getGraph().get_nodes()) {
             if (node.getColour() != Color.WHITE) {
-                node.setColour(Color.WHITE); // Reset all nodes' colour if they aren't white
+                node.setColour(Color.WHITE); // Reset all nodes' colour if they aren't white (default colour)
             }
             for (Edge edge: data.getGraph().get_edges(node)) {
                 if (edge.getColour() != Color.WHITE) {
-                    edge.setColour(Color.WHITE); // Reset all edges' colour if they aren't white
+                    edge.setColour(Color.WHITE); // Reset all edges' colour if they aren't white (default colour)
                 }
             }
         }
@@ -143,7 +150,6 @@ public class UI {
             data.setValid_setup(true); // Clear errors if valid
         } catch (Exception e) {
             data.getError_popup_label().setText("Invalid edge weight");
-            data.getError_popup_label().setVisible(true);
             data.setValid_setup(false);
         }
     }

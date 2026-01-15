@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Priority_Queue {
     private final ArrayList<Integer> heap;
-    private final Map<Integer, Integer> priorities; // New: store priorities separately
+    private final Map<Integer, Integer> priorities;
 
     public Priority_Queue() {
         heap = new ArrayList<>();

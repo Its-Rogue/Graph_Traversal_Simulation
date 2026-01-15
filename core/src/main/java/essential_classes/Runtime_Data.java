@@ -13,6 +13,7 @@ import structural_classes.Edge;
 import structural_classes.Graph;
 
 public class Runtime_Data {
+    // Initialise variables
     private final Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
 
     private Graph graph = new Graph();
@@ -55,6 +56,7 @@ public class Runtime_Data {
     private String selected_traversal = "Depth-First Search";
     private String selected_traversal_progress = "Automatic";
 
+    // Getters and setters for variables
     public int getEnd_node() {
         return end_node;
     }

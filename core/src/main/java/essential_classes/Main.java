@@ -60,8 +60,8 @@ public class Main extends ApplicationAdapter {
     }
 
     public void create_GUI() {
-        GUI = new Stage();
-        table = new Table();
+        GUI = new Stage(); // Overarching element that contains everything and acts every frame with all elements being synchronous
+        table = new Table(); // Sub-element that allows for certain actors to be toggled / located in different positions without affecting the other actors
 
         // Initialise the containers for the variants of GUI element
         table.setFillParent(true);
