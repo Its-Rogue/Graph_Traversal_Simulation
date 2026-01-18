@@ -41,6 +41,8 @@ public class Runtime_Data {
     private final Label change_edge_weight_label = new Label("Press ENTER to confirm change", skin);
     private final Label colour_hint_label = new Label("", skin);
     private final Label step_traversal_label = new Label("Step traversal", skin);
+    private final Label current_start_node_label = new Label("Start Node: ", skin);
+    private final Label current_end_node_label = new Label("End node: ", skin);
 
     private int start_node, end_node;
     private int new_edge_weight;
@@ -246,5 +248,13 @@ public class Runtime_Data {
 
     public Button getStep_traversal_button() {
         return step_traversal_button;
+    }
+
+    public Label getCurrent_start_node_label() {
+        return current_start_node_label;
+    }
+
+    public Label getCurrent_end_node_label() {
+        return current_end_node_label;
     }
 }

@@ -14,16 +14,19 @@ public class Priority_Queue {
         priorities = new HashMap<>();
     }
 
+    // Add a value to the pq when no specific priority has been given
     public void add(int value) {
         add(value, value);
     }
 
+    // Add a value to the pq and bubble up to maintain heap priority
     public void add(int value, int priority) {
         heap.add(value);
         priorities.put(value, priority);
         bubble_up(heap.size() - 1);
     }
 
+    // Remove and return minimum value from pq
     public int poll() {
         if (heap.isEmpty()) {
             throw new NoSuchElementException("Queue is empty");
@@ -42,13 +45,6 @@ public class Priority_Queue {
         return min;
     }
 
-    public int peek() {
-        if (heap.isEmpty()) {
-            throw new NoSuchElementException("Queue is empty");
-        }
-        return heap.get(0);
-    }
-
     public boolean isEmpty() {
         return heap.isEmpty();
     }
@@ -58,6 +54,7 @@ public class Priority_Queue {
         priorities.clear();
     }
 
+    // Remove specific value from the pq and re-heap
     public boolean remove(int value) {
         int index = find_index(value);
         if (index == -1) {
@@ -74,7 +71,7 @@ public class Priority_Queue {
         heap.set(index, last_element);
         priorities.remove(value);
 
-        bubble_up(index);
+        bubble_up(index); // Re-heap / restore heap to proper form
         bubble_down_from(index);
 
         return true;
@@ -89,6 +86,7 @@ public class Priority_Queue {
         return -1;
     }
 
+    // Bubble down to maintain min-heap priority, used for priority queue
     private void bubble_down_from(int index) {
         int current = index;
         int size = heap.size();
@@ -112,6 +110,7 @@ public class Priority_Queue {
         }
     }
 
+    // Bubble up to maintain min-heap priority, used for priority queue
     private void bubble_up(int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
@@ -121,10 +120,12 @@ public class Priority_Queue {
         }
     }
 
+    // Bubble down from root of the heap
     private void bubble_down() {
         bubble_down_from(0);
     }
 
+    // Swap 2 elements in the heap based on their values
     private void swap(int i, int j) {
         int temp = heap.get(i);
         heap.set(i, heap.get(j));

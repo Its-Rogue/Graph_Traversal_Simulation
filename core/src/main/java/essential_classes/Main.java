@@ -41,7 +41,6 @@ public class Main extends ApplicationAdapter {
     TextButton generate_random_graph_button;
     TextButton generate_grid_button;
 
-    Label fps_counter;
     Label node_counter;
     Label edge_counter;
 
@@ -89,7 +88,6 @@ public class Main extends ApplicationAdapter {
         data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
 
-        fps_counter = new Label("FPS: ", data.getSkin());
         node_counter = new Label("Nodes: ", data.getSkin());
         edge_counter = new Label("Edges: ", data.getSkin());
         data.getError_popup_label().setColor(1,0,0,1); // Set colour to red
@@ -222,7 +220,6 @@ public class Main extends ApplicationAdapter {
 
         // Add the various actors to the tables
         table.add(quit_button).row();
-        table.add(fps_counter).pad(5).row();
         table.add(node_counter).pad(5).row();
         table.add(edge_counter).pad(5).row();
         table.add(save_current_layout_button).pad(5).row();
@@ -235,7 +232,9 @@ public class Main extends ApplicationAdapter {
         table.add(data.getTraversal_options()).pad(5).row();
         table.add(data.getTraversal_progress_options()).pad(5).row();
         table.add(data.getStart_node_input()).pad(5).row();
+        table.add(data.getCurrent_start_node_label()).row();
         table.add(data.getEnd_node_input()).pad(5).row();
+        table.add(data.getCurrent_end_node_label()).row();
         table.add(start_traversal_button).pad(5).row();
         table.add(reset_traversal_button).pad(5).row();
         table.add(data.getStep_traversal_label()).pad(5).row();
@@ -293,8 +292,8 @@ public class Main extends ApplicationAdapter {
         sr.rect(250,0,10,1440); // Margin for UI
 
         if (data.Should_step()) { // Background for button to step the traversal
-            sr.rect(62, 787, 100, 50);
-            sr.rect(63, 788, 98, 48, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY);
+            sr.rect(62, 812, 100, 50);
+            sr.rect(63, 813, 98, 48, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY);
         }
 
         if (data.getChange_edge_weight_popup().isVisible()) { // Add a rectangle behind the popup to increase the legibility of the text hint
@@ -343,7 +342,6 @@ public class Main extends ApplicationAdapter {
 
     // GUI render
     public void draw_GUI() {
-        fps_counter.setText("FPS: " + Gdx.graphics.getFramesPerSecond()); // FPS counter
         node_counter.setText("Nodes: " + data.getGraph().get_nodes().size()); // Number of nodes in scene
         edge_counter.setText("Edges: " + data.getGraph().get_total_edges()); // Number of edges in scene
         Gdx.input.setInputProcessor(GUI); // Set the input processor to the GUI, to check for mouse clicks on the buttons

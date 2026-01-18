@@ -29,6 +29,7 @@ public class Traversals{
         ArrayList<Node> stack = new ArrayList<>();
         ArrayList<Node> discovered = new ArrayList<>();
         ArrayList<Node> visited = new ArrayList<>(); // Specifically for traversal colour updating, not needed for algorithm
+        Map<Node, Node> previous = new HashMap<>();
         final boolean[] found ={false};
 
         new Thread(() ->{
@@ -39,6 +40,7 @@ public class Traversals{
 
             stack.add(start);
             discovered.add(start);
+            previous.put(start, null);
 
             while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()){
                 Node current_node = stack.remove(stack.size() - 1);
@@ -75,6 +77,7 @@ public class Traversals{
                     if (!discovered.contains(neighbour) && !data.isTraversal_canceled()){
                         stack.add(neighbour); // Add neighbour to stack if not already discovered
                         discovered.add(neighbour);
+                        previous.put(neighbour, current_node);
 
                         if (data.isTraversal_canceled()){
                             return; // Return if the user cancels the traversal by pressing the reset traversal button
@@ -112,6 +115,31 @@ public class Traversals{
                     break;
                 }
             }
+
+            if (found[0]) {
+                List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
+                Node last_node = null;
+                for(Node n: path) {
+                    if (n.equals(start)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
+                    } else if (n.equals(end)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+                    } else {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                    }
+
+                    if (last_node != null) {
+                        Node final_last_node = last_node;
+                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
+                    }
+
+                    last_node = n; // Update last node to update pointer for the next edge to be highlighted
+                }
+            } else {
+                data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
+                data.getError_popup().setVisible(true);
+            }
+
             data.setTraversal_in_progress(false);  // Allow a new traversal to be run after this one has completed
             data.setTraversal_canceled(false);
         }).start();
@@ -128,10 +156,10 @@ public class Traversals{
         ArrayList<Node> queue = new ArrayList<>(); // Initialise the various lists
         ArrayList<Node> discovered = new ArrayList<>();
         ArrayList<Node> visited = new ArrayList<>();
+        Map<Node, Node> previous = new HashMap<>();
         final boolean[] found ={false};
 
         new Thread(() ->{ // New local render thread to allow for nodes to change colours
-
             Gdx.app.postRunnable(() ->{
                 start.setColour(Color.GREEN); // Highlight the chosen start and end node
                 end.setColour(Color.RED);
@@ -139,6 +167,7 @@ public class Traversals{
 
             queue.add(start); // Add the first node to the discovered and queue
             discovered.add(start);
+            previous.put(start, null);
 
             while (!queue.isEmpty() && !found[0] && !data.isTraversal_canceled()){ // Loop through until found or no more nodes in graph
                 if (data.isTraversal_canceled()){
@@ -174,6 +203,7 @@ public class Traversals{
                     if (!discovered.contains(neighbour) && !data.isTraversal_canceled()){
                         discovered.add(neighbour); // Add the neighbour to the queue if not already discovered
                         queue.add(neighbour);
+                        previous.put(neighbour, current_node);
 
                         if (data.isTraversal_canceled()){
                             return; // Return if the user cancels the traversal by pressing the reset traversal button
@@ -211,6 +241,31 @@ public class Traversals{
                     break;
                 }
             }
+
+            if (found[0]) {
+                List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
+                Node last_node = null;
+                for(Node n: path) {
+                    if (n.equals(start)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
+                    } else if (n.equals(end)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+                    } else {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                    }
+
+                    if (last_node != null) {
+                        Node final_last_node = last_node;
+                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
+                    }
+
+                    last_node = n; // Update last node to update pointer for the next edge to be highlighted
+                }
+            } else {
+                data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
+                data.getError_popup().setVisible(true);
+            }
+
             data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
             data.setTraversal_canceled(false);
         }).start(); // Ensure the thread is switched to, instead of main render thread
@@ -230,7 +285,10 @@ public class Traversals{
         Set<Node> reverse_discovered = new HashSet<>();
         ArrayList<Node> forward_visited = new ArrayList<>();
         ArrayList<Node> reverse_visited = new ArrayList<>();
+        Map<Node, Node> forward_previous = new HashMap<>();
+        Map<Node, Node> reverse_previous = new HashMap<>();
         final boolean[] found = {false};
+        final Node[] meeting_node = {null};
 
         new Thread(() -> {
             Gdx.app.postRunnable(() -> {
@@ -242,6 +300,8 @@ public class Traversals{
             reverse_queue.add(reverse_start);
             forward_discovered.add(forward_start);
             reverse_discovered.add(reverse_start);
+            forward_previous.put(forward_start, null);
+            reverse_previous.put(reverse_start, null);
 
             while (!forward_queue.isEmpty() && !reverse_queue.isEmpty() && !found[0] && !data.isTraversal_canceled()){
                 if (data.isTraversal_canceled()){
@@ -278,6 +338,7 @@ public class Traversals{
                         if (!forward_discovered.contains(neighbour)){
                             forward_discovered.add(neighbour);
                             forward_queue.add(neighbour);
+                            forward_previous.put(neighbour, forward_current_node);
 
                             if (data.isTraversal_canceled()){
                                 return; // Return if the user cancels the traversal by pressing the reset traversal button
@@ -292,6 +353,7 @@ public class Traversals{
 
                             if (reverse_discovered.contains(neighbour)){
                                 found[0] = true;
+                                meeting_node[0] = neighbour;
                                 break;
                             }
                         }
@@ -345,6 +407,7 @@ public class Traversals{
                         if (!reverse_discovered.contains(neighbour)){
                             reverse_discovered.add(neighbour);
                             reverse_queue.add(neighbour);
+                            reverse_previous.put(neighbour, reverse_current_node);
 
                             if (data.isTraversal_canceled()){
                                 return; // Return if the user cancels the traversal by pressing the reset traversal button
@@ -359,6 +422,7 @@ public class Traversals{
 
                             if (forward_discovered.contains(neighbour)){
                                 found[0] = true;
+                                meeting_node[0] = neighbour;
                                 break;
                             }
                         }
@@ -384,12 +448,42 @@ public class Traversals{
                 }
             }
 
-            if (!found[0]) {
-                Gdx.app.postRunnable(() -> {
-                    data.getError_popup_label().setText("No path found");
-                    data.getError_popup().setVisible(true);
-                });
+            if (found[0]) {
+                List<Node> path = new ArrayList<>();
+                Node current = meeting_node[0];
+                while (current != null) {
+                    path.add(0, current);
+                    current = forward_previous.get(current);
+                }
+
+                current = reverse_previous.get(meeting_node[0]);
+                while (current != null) {
+                    path.add(current);
+                    current = reverse_previous.get(current);
+                }
+
+                Node last_node = null;
+                for(Node n: path) {
+                    if (n.equals(forward_start)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
+                    } else if (n.equals(reverse_start)) {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+                    } else {
+                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+                    }
+
+                    if (last_node != null) {
+                        Node final_last_node = last_node;
+                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
+                    }
+
+                    last_node = n; // Update last node to update pointer for the next edge to be highlighted
+                }
+            } else {
+                data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
+                data.getError_popup().setVisible(true);
             }
+
             data.setTraversal_in_progress(false);
             data.setTraversal_canceled(false);
         }).start();
