@@ -64,6 +64,10 @@ public class Traversals{
                         return; // Stop traversal if the user has pressed the reset traversal button
                     }
 
+                    if (data.getGraph().get_node_from_id(neighbour.getId()) == null) {
+                        continue;
+                    }
+
                     if (data.Should_sleep()) {
                         sleep(operation_speed.get());
                     }
@@ -96,6 +100,10 @@ public class Traversals{
 
                 if (data.isTraversal_canceled()){
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
+                }
+
+                if (!current_node.equals(start) && !current_node.equals(end)) {
+                    Gdx.app.postRunnable(() -> current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                 }
 
                 element_highlight(data, visited, discovered, current_node, start, end);
@@ -155,6 +163,10 @@ public class Traversals{
                         return; // Check for cancellation of traversal
                     }
 
+                    if (data.getGraph().get_node_from_id(neighbour.getId()) == null) {
+                        continue;
+                    }
+
                     if (data.Should_sleep()) {
                         sleep(operation_speed.get());
                     }
@@ -187,6 +199,10 @@ public class Traversals{
 
                 if (data.isTraversal_canceled()){
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
+                }
+
+                if (!current_node.equals(start) && !current_node.equals(end)) {
+                    Gdx.app.postRunnable(() -> current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                 }
 
                 element_highlight(data, visited, discovered, current_node, start, end);
@@ -251,6 +267,10 @@ public class Traversals{
                             return;
                         }
 
+                        if (data.getGraph().get_node_from_id(neighbour.getId()) == null) {
+                            continue;
+                        }
+
                         if (data.Should_sleep()) {
                             sleep(operation_speed.get());
                         }
@@ -285,6 +305,10 @@ public class Traversals{
                         return; // Return if the user cancels the traversal by pressing the reset traversal button
                     }
 
+                    if (!forward_current_node.equals(forward_start) && !forward_current_node.equals(reverse_start)) {
+                        Gdx.app.postRunnable(() -> forward_current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
+                    }
+
                     element_highlight(data, forward_visited, new ArrayList<>(forward_discovered), forward_current_node, forward_start, reverse_start);
                 }
 
@@ -308,6 +332,10 @@ public class Traversals{
                     for (Node neighbour : reverse_current_node.getNeighbours()){
                         if (data.isTraversal_canceled()){
                             return;
+                        }
+
+                        if (data.getGraph().get_node_from_id(neighbour.getId()) == null) {
+                            continue;
                         }
 
                         if (data.Should_sleep()) {
@@ -342,6 +370,10 @@ public class Traversals{
 
                     if (data.isTraversal_canceled()){
                         return; // Return if the user cancels the traversal by pressing the reset traversal button
+                    }
+
+                    if (!reverse_current_node.equals(reverse_start) && !reverse_current_node.equals(forward_start)) {
+                        Gdx.app.postRunnable(() -> reverse_current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                     }
 
                     element_highlight(data, reverse_visited, new ArrayList<>(reverse_discovered), reverse_current_node, reverse_start, forward_start);
@@ -464,6 +496,10 @@ public class Traversals{
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
 
+                if (current != start && current != end) {
+                    Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE)); // Set the current node to orange to mark it as visited at the end of the loop
+                }
+
                 ArrayList<Node> visited_list = new ArrayList<>(visited); // Convert set to a list for re-colouring of nodes in graph
                 element_highlight(data, visited_list, discovered, current, start, end); // Reusing the previously used logic
 
@@ -474,8 +510,6 @@ public class Traversals{
                 if (data.isTraversal_canceled()) {
                     return; // Check for cancellation of traversal
                 }
-
-                Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE)); // Set the current node to orange to mark it as visited at the end of the loop
             }
 
             List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
@@ -788,7 +822,7 @@ public class Traversals{
             if (node != start && node != end && !data.isTraversal_canceled()){
                 boolean all_neighbours_visited = true;
                 for (Node neighbour: node.getNeighbours()){
-                    if (!visited.contains(neighbour)){
+                    if (!visited.contains(neighbour) && discovered.contains(neighbour)){
                         all_neighbours_visited = false; // Check to see if each neighbour of every visited node has also been visited
                         break;
                     }
@@ -800,10 +834,6 @@ public class Traversals{
                         for (Node neighbour: node.getNeighbours()){
                             Gdx.app.postRunnable(() -> highlight_edge(data, node, neighbour, Color.PURPLE));
                         }
-                    }
-                } else{
-                    if (node == current_node){ // Else, highlight the reverse node orange if it has been visited
-                        Gdx.app.postRunnable(() -> node.setColour(Color.ORANGE));           // but its neighbours haven't
                     }
                 }
             }

@@ -111,7 +111,7 @@ public class Graph {
         }
 
         for (Node n: node.getNeighbours()) {
-            n.getNeighbours().remove(node);
+            n.remove_neighbour(node);
         }
 
         adj_list.remove(node);
