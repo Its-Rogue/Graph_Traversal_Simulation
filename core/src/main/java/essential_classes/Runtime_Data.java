@@ -44,7 +44,8 @@ public class Runtime_Data {
     private final Label current_start_node_label = new Label("Start Node: ", skin);
     private final Label current_end_node_label = new Label("End node: ", skin);
 
-    private int start_node, end_node;
+    private int start_node = 1000;
+    private int end_node = 1001;
     private int new_edge_weight;
     private float traversal_speed = 1.0f;
 

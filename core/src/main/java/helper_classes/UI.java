@@ -49,7 +49,13 @@ public class UI {
     }
 
     public static void step_traversal_button_function(Runtime_Data data) {
-        if (data.isStep_button_pressed()) {
+        if (!data.isTraversal_in_progress()) { // Check to see if any traversal is currently running to be stepped
+            data.getError_popup_label().setText("No traversal to step");
+            data.getError_popup().setVisible(true);
+            return;
+        }
+
+        if (data.isStep_button_pressed()) { // Only allow 1 step per stepping frame
             data.getError_popup().setVisible(true);
             data.getError_popup_label().setText("Already stepping traversal");
             return;
@@ -63,17 +69,23 @@ public class UI {
         data.setTraversal_in_progress(false); // Allow a new traversal to be run
         data.getError_popup_label().setText("");
         data.getError_popup().setVisible(false);
-        reset_colours(data); // Reset colours of nodes in graph
+
+        try {
+            Thread.sleep(100);
+            reset_colours(data); // Reset colours of nodes in graph
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void reset_colours(Runtime_Data data) {
         for (Node node: data.getGraph().get_nodes()) {
             if (node.getColour() != Color.WHITE) {
-                node.setColour(Color.WHITE); // Reset all nodes' colour if they aren't white (default colour)
+                Gdx.app.postRunnable(() -> node.setColour(Color.WHITE)); // Reset all nodes' colour if they aren't white (default colour)
             }
             for (Edge edge: data.getGraph().get_edges(node)) {
                 if (edge.getColour() != Color.WHITE) {
-                    edge.setColour(Color.WHITE); // Reset all edges' colour if they aren't white (default colour)
+                    Gdx.app.postRunnable(() -> edge.setColour(Color.WHITE)); // Reset all edges' colour if they aren't white (default colour)
                 }
             }
         }
@@ -103,8 +115,16 @@ public class UI {
                 data.getCurrent_start_node_label().setText("Start node: INVALID");
                 return;
             }
+
             if (data.getGraph().get_node_from_id(user_start_node_id) == null) {
                 data.getError_popup_label().setText("Desired start node does not exist"); // Make sure node exists
+                data.setValid_setup(false);
+                data.getCurrent_start_node_label().setText("Start node: INVALID");
+                return;
+            }
+
+            if (user_start_node_id > 99 || user_start_node_id < 0) {
+                data.getError_popup_label().setText("Desired start node outside valid range"); // Make sure start node in valid range
                 data.setValid_setup(false);
                 data.getCurrent_start_node_label().setText("Start node: INVALID");
                 return;
@@ -132,8 +152,16 @@ public class UI {
                 data.getCurrent_end_node_label().setText("End node: INVALID");
                 return;
             }
+
             if (data.getGraph().get_node_from_id(user_end_node_id) == null) {
                 data.getError_popup_label().setText("Desired end node does not exist"); // Make sure node exists
+                data.setValid_setup(false);
+                data.getCurrent_end_node_label().setText("End node: INVALID");
+                return;
+            }
+
+            if (user_end_node_id > 99 || user_end_node_id < 0) {
+                data.getError_popup_label().setText("Desired end node outside valid range"); // Make sure end node in valid range
                 data.setValid_setup(false);
                 data.getCurrent_end_node_label().setText("End node: INVALID");
                 return;
@@ -167,6 +195,7 @@ public class UI {
         if (data.getSelected_traversal().equals("Bellman-Ford")) {
             data.getChange_edge_weight_input().setTextFieldFilter(((text_field, c) -> Character.isDigit(c) || Character.toString(c).equals("-")));
         } else {
+            check_edge_weights(data); // Make sure all the weights are >= 0 for all traversals that aren't Bellman-Ford
             data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
         }
     }
@@ -199,6 +228,16 @@ public class UI {
             data.getError_popup().setY(-660);
         } else {
             data.getError_popup().setY(-600);
+        }
+    }
+
+    private static void check_edge_weights(Runtime_Data data) {
+        for (Node n: data.getGraph().get_nodes()) {
+            for (Edge e: data.getGraph().get_edges(n)) {
+                if (e.getWeight() < 0) {
+                    e.setWeight(Math.abs(e.getWeight())); // Get the absolute value (positive) of the edge weight if it is negative
+                }
+            }
         }
     }
 }

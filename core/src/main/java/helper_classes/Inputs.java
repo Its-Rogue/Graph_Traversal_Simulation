@@ -34,7 +34,7 @@ public class Inputs {
         right_click(mouse_x, mouse_y, data); // Right click detection and code for edge creation
         middle_click(mouse_x, mouse_y, data); // Middle click / Backspace (for when the user does not have MMB, such as on a laptop touchpad) detection and code for node and edge deletion
         enter_key_input(data); // Check each frame to see if the enter key has been pressed while the change edge weight popup is visible
-        space_key_input(data);
+        space_key_input(data); // Check each frame to see if the space bar has been pressed to start or progresses a stepped traversal
         mouse_position_check(data, mouse_x, mouse_y); // Check each frame to see if the mouse is in the bottom left corner of the screen, where the colour key is
     }
 
@@ -157,8 +157,17 @@ public class Inputs {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             if (data.isTraversal_in_progress()) {
-                data.getError_popup().setVisible(true); // Make sure the user can only run 1 traversal at a time
-                data.getError_popup_label().setText("Traversal is already running");
+                if (data.Should_step()) {
+                    if (data.isStep_button_pressed()) { // Only allow 1 step per stepping frame
+                        data.getError_popup().setVisible(true);
+                        data.getError_popup_label().setText("Already stepping traversal");
+                        return;
+                    }
+                    data.setStep_button_pressed(true);
+                } else {
+                    data.getError_popup().setVisible(true); // Make sure the user can only run 1 traversal at a time
+                    data.getError_popup_label().setText("Traversal is already running");
+                }
                 return;
             }
 
@@ -179,8 +188,8 @@ public class Inputs {
         }
     }
 
-    private static void mouse_position_check(Runtime_Data data, int mouse_x, int mouse_y){
-        if (mouse_x > 250 || mouse_y > 295){
+    private static void mouse_position_check(Runtime_Data data, int mouse_x, int mouse_y) {
+        if (mouse_x > 250 || mouse_y > 335) {
             data.getColour_hint_popup().setVisible(false);
             return;
         }
@@ -189,49 +198,64 @@ public class Inputs {
             data.getColour_hint_popup().setVisible(true);
         }
 
+        // Negative Cycle (Magenta)
         if (mouse_y < 50) {
             data.getColour_hint_popup().setPosition(369, 86);
             data.setColour_hint_label_background(Color.MAGENTA);
             data.getColour_hint_label().setText(get_hint("negative cycle"));
         }
 
+        // Shortest path (Sky)
         if (mouse_y > 50 && mouse_y < 85) {
             data.getColour_hint_popup().setPosition(367,86);
             data.setColour_hint_label_background(Color.SKY);
             data.getColour_hint_label().setText(get_hint("shortest path"));
         }
 
+        // Fully explored (Purple)
         if (mouse_y > 85 && mouse_y < 120) {
             data.getColour_hint_popup().setPosition(355, 93);
             data.setColour_hint_label_background(Color.PURPLE);
             data.getColour_hint_label().setText(get_hint("fully explored"));
         }
 
+        // Visited (Orange)
         if (mouse_y > 120 && mouse_y < 155) {
+            data.getColour_hint_popup().setPosition(373, 86);
+            data.setColour_hint_label_background(Color.ORANGE);
+            data.getColour_hint_label().setText(get_hint("visited"));
+        }
+
+        // Discovered (Yellow)
+        if (mouse_y > 155 && mouse_y < 190) {
             data.getColour_hint_popup().setPosition(373, 86);
             data.setColour_hint_label_background(Color.YELLOW);
             data.getColour_hint_label().setText(get_hint("discovered"));
         }
 
-        if (mouse_y > 155 && mouse_y < 190) {
-            data.getColour_hint_popup().setPosition(372, 93);
+        // Current neighbour (Gray)
+        if (mouse_y > 190 && mouse_y < 225) {
+            data.getColour_hint_popup().setPosition(366, 93);
+            data.setColour_hint_label_background(Color.GRAY);
+            data.getColour_hint_label().setText(get_hint("current neighbour"));
+        }
+
+        // Current (Cyan)
+        if (mouse_y > 225 && mouse_y < 260) {
+            data.getColour_hint_popup().setPosition(370,93);
             data.setColour_hint_label_background(Color.CYAN);
             data.getColour_hint_label().setText(get_hint("current"));
         }
 
-        if (mouse_y > 190 && mouse_y < 225) {
-            data.getColour_hint_popup().setPosition(373,86);
-            data.setColour_hint_label_background(Color.ORANGE);
-            data.getColour_hint_label().setText(get_hint("visited"));
-        }
-
-        if (mouse_y > 225 && mouse_y < 260) {
+        // End (Red)
+        if (mouse_y > 260 && mouse_y < 295) {
             data.getColour_hint_popup().setPosition(373, 80);
             data.setColour_hint_label_background(Color.RED);
             data.getColour_hint_label().setText(get_hint("end"));
         }
 
-        if (mouse_y > 260 && mouse_y < 295) {
+        // Start (Green)
+        if (mouse_y > 295 && mouse_y < 335) {
             data.getColour_hint_popup().setPosition(373, 93);
             data.setColour_hint_label_background(Color.GREEN);
             data.getColour_hint_label().setText(get_hint("start"));
@@ -254,40 +278,47 @@ public class Inputs {
 
     // Switch case the chosen traversal option
     public static void start_traversal(Runtime_Data data) {
-        data.getError_popup_label().setText("");
-        data.getError_popup().setVisible(false);
-        switch (data.getSelected_traversal()) {
-            case "Depth-First Search":
-                Traversals.dfs(data);
-                clear_error_display(data);
-                break;
-            case "Breadth-First Search":
-                Traversals.bfs(data);
-                clear_error_display(data);
-                break;
-            case "Bidirectional Search":
-                Traversals.bidirectional(data);
-                clear_error_display(data);
-                break;
-            case "Dijkstra's":
-                Traversals.dijkstra(data);
-                clear_error_display(data);
-                break;
-            case "A*":
-                Traversals.A_star(data);
-                clear_error_display(data);
-                break;
-            case "Bellman-Ford":
-                Traversals.Bellman_Ford(data);
-                clear_error_display(data);
-                break;
+        boolean valid_setup = determine_setup_validity(data);
+
+        if (valid_setup) {
+            data.getError_popup_label().setText("");
+            data.getError_popup().setVisible(false);
+            switch (data.getSelected_traversal()) {
+                case "Depth-First Search":
+                    Traversals.dfs(data);
+                    clear_error_display(data);
+                    break;
+                case "Breadth-First Search":
+                    Traversals.bfs(data);
+                    clear_error_display(data);
+                    break;
+                case "Bidirectional Search":
+                    Traversals.bidirectional(data);
+                    clear_error_display(data);
+                    break;
+                case "Dijkstra's":
+                    Traversals.dijkstra(data);
+                    clear_error_display(data);
+                    break;
+                case "A*":
+                    Traversals.A_star(data);
+                    clear_error_display(data);
+                    break;
+                case "Bellman-Ford":
+                    Traversals.Bellman_Ford(data);
+                    clear_error_display(data);
+                    break;
+            }
+        } else {
+            data.getError_popup_label().setText("Invalid setup: check inputted\nconditions");
+            data.getError_popup().setVisible(true);
         }
     }
 
     // Switch case the different hints for the mouse over portion of the colour key
-    private static String get_hint(String hint_type){
+    private static String get_hint(String hint_type) {
         String hint = "";
-        switch (hint_type){
+        switch (hint_type) {
             case "negative cycle":
                 hint = "This node forms a part of a\nnegative cycle that has been\ndetected by the traversal\nalgorithm.";
                 break;
@@ -300,8 +331,11 @@ public class Inputs {
             case "discovered":
                 hint = "This node is the neighbour of a\nnode that has been a current\nnode, but has not been a\ncurrent node itself.";
                 break;
+            case "current neighbour":
+                hint = "This node is the neighbour of\nthe current node being\nexamined by the traversal.";
+                break;
             case "current":
-                hint = "This is the node the chosen\ntraversal algorithm currently\n has selected and is examining.";
+                hint = "This is the node the chosen\ntraversal algorithm currently\nhas selected and is examining.";
                 break;
             case "visited":
                 hint = "This node has been the current\nnode previously, but all its\nneighbours haven't been\nthe current node yet.";
@@ -320,5 +354,24 @@ public class Inputs {
     private static void clear_error_display(Runtime_Data data) {
         data.getError_popup_label().setText("");
         data.getError_popup().setVisible(false);
+    }
+
+    // Do a final check of critical conditions to ensure the simulation does not crash with a null error, or multiple algorithms try to run at the same time
+    private static boolean determine_setup_validity(Runtime_Data data) {
+        if (data.getStart_node() > 99 || data.getStart_node() < 0) {
+            return false;
+        } else if (data.getEnd_node() > 99 || data.getEnd_node() < 0) {
+            return false;
+        }
+
+        if (data.getStart_node() == data.getEnd_node()) {
+            return false;
+        }
+
+        if (data.isTraversal_in_progress()) {
+            return false;
+        }
+
+        return true;
     }
 }

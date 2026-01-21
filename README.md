@@ -37,13 +37,13 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `Middle Click` to delete a node
 
-`Right Click` to select 2 different nodes and create an edge between them
+`Right Click` to select 2 different nodes and create an edge between them, should one not already exist
 
-`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm <sup>3</sup> be currently selected. Once the desired weight has been inputted, press enter to confirm it
+`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm <sup>3</sup> be currently selected. Once the desired weight has been inputted, press `Enter` to confirm it
 
-`Right Click` then `Middle Click` or press `Backspace` to delete an edge
+`Right Click` on one node then `Middle Click` or press `Backspace` on another to delete an edge between 2 nodes
 
-`SPACE` to start the traversal, if valid conditions for one to start exist
+`SPACE` to start the traversal, if valid conditions for one to start exist, or step through the traversal if the "Stepped" traversal progress option is chosen
 
 `ESCAPE` to quit the program
 
@@ -52,9 +52,9 @@ If an error is made in any of the options, a suitable error message will be disp
 
 This program has been created as a project for my A-Level Computer Science NEA. As such, it may not visually be appealing, however this means that it is much more technically advanced in its algorithms and the overall codebase. The colour choices are explained via a key in the bottom left of the screen, which you can mouse over to get a more in depth tooltip.
 
-For the UI I have used a [skin](https://github.com/czyzby/gdx-skins/tree/master/shade) created by [Raymond "Raeleus" Buckley](http://www.badlogicgames.com/forum/viewtopic.php?f=22&t=21568), which can be freely used under the CC BY licence.
+For the UI I have used a scene2D UI [skin](https://github.com/czyzby/gdx-skins/tree/master/shade) created by [Raymond "Raeleus" Buckley](http://www.badlogicgames.com/forum/viewtopic.php?f=22&t=21568), which can be freely used under the CC BY licence.
 
 
 1:  The traversals can either run automatically with a delay between each step, be stepped manually or will process with no delay.</br>
 2:  In the case of the bidirectional search, the end node is the secondary or reverse start node.</br>
-3:  The suitable algorithms aforementioned are Dijkstra's, A*, and Bellman-Ford.
+3:  The suitable algorithms aforementioned are Dijkstra's, A*, and Bellman-Ford, where Bellman-Ford can also take inputs of negative integers.

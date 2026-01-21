@@ -2,16 +2,22 @@ package structural_classes;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Priority_Queue {
-    private final ArrayList<Integer> heap;
-    private final Map<Integer, Integer> priorities;
+    private static class Entry {
+        int value;
+        int priority;
+
+        Entry(int value, int priority) {
+            this.value = value;
+            this.priority = priority;
+        }
+    }
+
+    private final ArrayList<Entry> heap;
 
     public Priority_Queue() {
         heap = new ArrayList<>();
-        priorities = new HashMap<>();
     }
 
     // Add a value to the pq when no specific priority has been given
@@ -21,8 +27,7 @@ public class Priority_Queue {
 
     // Add a value to the pq and bubble up to maintain heap priority
     public void add(int value, int priority) {
-        heap.add(value);
-        priorities.put(value, priority);
+        heap.add(new Entry(value, priority));
         bubble_up(heap.size() - 1);
     }
 
@@ -32,10 +37,8 @@ public class Priority_Queue {
             throw new NoSuchElementException("Queue is empty");
         }
 
-        int min = heap.get(0);
-        int last = heap.remove(heap.size() - 1);
-
-        priorities.remove(min);
+        int min = heap.get(0).value;
+        Entry last = heap.remove(heap.size() - 1);
 
         if (!heap.isEmpty()) {
             heap.set(0, last);
@@ -51,7 +54,6 @@ public class Priority_Queue {
 
     public void clear() {
         heap.clear();
-        priorities.clear();
     }
 
     // Remove specific value from the pq and re-heap
@@ -63,13 +65,11 @@ public class Priority_Queue {
 
         if (index == heap.size() - 1) {
             heap.remove(index);
-            priorities.remove(value);
             return true;
         }
 
-        int last_element = heap.remove(heap.size() - 1);
+        Entry last_element = heap.remove(heap.size() - 1);
         heap.set(index, last_element);
-        priorities.remove(value);
 
         bubble_up(index); // Re-heap / restore heap to proper form
         bubble_down_from(index);
@@ -79,7 +79,7 @@ public class Priority_Queue {
 
     private int find_index(int value) {
         for (int i = 0; i < heap.size(); i++) {
-            if (heap.get(i) == value) {
+            if (heap.get(i).value == value) {
                 return i;
             }
         }
@@ -96,10 +96,10 @@ public class Priority_Queue {
             int right = 2 * current + 2;
             int smallest = current;
 
-            if (left < size && priorities.get(heap.get(left)) < priorities.get(heap.get(smallest))) {
+            if (left < size && heap.get(left).priority < heap.get(smallest).priority) {
                 smallest = left;
             }
-            if (right < size && priorities.get(heap.get(right)) < priorities.get(heap.get(smallest))) {
+            if (right < size && heap.get(right).priority < heap.get(smallest).priority) {
                 smallest = right;
             }
             if (smallest == current) {
@@ -114,7 +114,7 @@ public class Priority_Queue {
     private void bubble_up(int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
-            if (priorities.get(heap.get(index)) >= priorities.get(heap.get(parent))) break;
+            if (heap.get(index).priority >= heap.get(parent).priority) break;
             swap(index, parent);
             index = parent;
         }
@@ -127,7 +127,7 @@ public class Priority_Queue {
 
     // Swap 2 elements in the heap based on their values
     private void swap(int i, int j) {
-        int temp = heap.get(i);
+        Entry temp = heap.get(i);
         heap.set(i, heap.get(j));
         heap.set(j, temp);
     }

@@ -32,8 +32,8 @@ public class Traversals{
         Map<Node, Node> previous = new HashMap<>();
         final boolean[] found ={false};
 
-        new Thread(() ->{
-            Gdx.app.postRunnable(() ->{
+        new Thread(() -> {
+            Gdx.app.postRunnable(() -> {
                 start.setColour(Color.GREEN); // Highlight the chosen start and end node
                 end.setColour(Color.RED);
             });
@@ -42,27 +42,25 @@ public class Traversals{
             discovered.add(start);
             previous.put(start, null);
 
-            while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()){
-                Node current_node = stack.remove(stack.size() - 1);
-                ArrayList<Node> neighbours = new ArrayList<>(current_node.getNeighbours());
-
-                if (data.isTraversal_canceled()){
+            while (!stack.isEmpty() && !found[0] && !data.isTraversal_canceled()) {
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
-
-                Gdx.app.postRunnable(() ->{
-                    if (current_node != start && current_node != end){
-                        current_node.setColour(Color.CYAN); // Highlight the current node if it is not start / end
-                    }
-                });
 
                 if (data.getTraversal_speed() != traversal_speed_cache.get()) {
                     operation_speed.set((long) (operation_speed_base / data.getTraversal_speed()));
                     traversal_speed_cache.set(data.getTraversal_speed());
                 }
 
-                for (Node neighbour: neighbours){
-                    if (data.isTraversal_canceled()){
+                Node current_node = stack.remove(stack.size() - 1);
+                Gdx.app.postRunnable(() -> current_node.setColour(Color.CYAN));
+
+                if (data.Should_step()) {
+                    wait_for_step(data); // Wait until the user presses the step button
+                }
+
+                for (Node neighbour: current_node.getNeighbours()) {
+                    if (data.isTraversal_canceled()) {
                         return; // Stop traversal if the user has pressed the reset traversal button
                     }
 
@@ -70,38 +68,63 @@ public class Traversals{
                         continue;
                     }
 
+                    Gdx.app.postRunnable(() -> {
+                        highlight_edge(data, current_node, neighbour, Color.GRAY);
+                        if (neighbour != start && neighbour != end) {
+                            neighbour.setColour(Color.GRAY); // Highlight neighbour grey to help visualise steps
+                        }
+                    });
+
                     if (data.Should_sleep()) {
-                        sleep(operation_speed.get());
+                        sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                    } else if (data.Should_step()) {
+                        wait_for_step(data); // Wait until the user presses the step button
                     }
 
-                    if (!discovered.contains(neighbour) && !data.isTraversal_canceled()){
+                    if (!discovered.contains(neighbour) && !data.isTraversal_canceled()) {
                         stack.add(neighbour); // Add neighbour to stack if not already discovered
                         discovered.add(neighbour);
                         previous.put(neighbour, current_node);
 
-                        if (data.isTraversal_canceled()){
+                        if (data.isTraversal_canceled()) {
                             return; // Return if the user cancels the traversal by pressing the reset traversal button
                         }
 
-                        Gdx.app.postRunnable(() ->{
+                        Gdx.app.postRunnable(() -> {
                             highlight_edge(data, current_node, neighbour, Color.YELLOW);
-                            if(neighbour != start && neighbour != end){
+                            if (neighbour != start && neighbour != end) {
                                 neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
                             }
                         });
 
-                        if (neighbour.equals(end)){ // Path between start and end node found
+                        if (neighbour.equals(end)) { // Path between start and end node found
                             found[0] = true;
                             break;
                         }
+                    } else if (!visited.contains(neighbour)) {
+                        Gdx.app.postRunnable(() -> {
+                            highlight_edge(data, current_node, neighbour, Color.YELLOW);
+                            if (neighbour != start && neighbour != end) {
+                                neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                            }
+                        });
+                    }
+
+                    if (visited.contains(neighbour)) {
+                        Gdx.app.postRunnable(() -> {
+                            if (neighbour != start && neighbour != end) {
+                                neighbour.setColour(Color.ORANGE);
+                            }
+                            highlight_edge(data, current_node, neighbour, Color.ORANGE);
+                        });
                     }
                 }
 
-                if (!visited.contains(current_node) && !data.isTraversal_canceled()){
+                if (!visited.contains(current_node) && !data.isTraversal_canceled()) {
                     visited.add(current_node); // Help track whether all the neighbours to a node have been visited
                 }
 
-                if (data.isTraversal_canceled()){
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
 
@@ -109,7 +132,7 @@ public class Traversals{
                     Gdx.app.postRunnable(() -> current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                 }
 
-                element_highlight(data, visited, discovered, current_node, start, end);
+                element_highlight(data, visited, discovered, start, end);
 
                 if (found[0]) {
                     break;
@@ -145,7 +168,7 @@ public class Traversals{
         }).start();
     }
 
-    public static void bfs(Runtime_Data data){
+    public static void bfs(Runtime_Data data) {
         data.setTraversal_in_progress(true);
         AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
         AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
@@ -159,8 +182,8 @@ public class Traversals{
         Map<Node, Node> previous = new HashMap<>();
         final boolean[] found ={false};
 
-        new Thread(() ->{ // New local render thread to allow for nodes to change colours
-            Gdx.app.postRunnable(() ->{
+        new Thread(() -> { // New local render thread to allow for nodes to change colours
+            Gdx.app.postRunnable(() -> {
                 start.setColour(Color.GREEN); // Highlight the chosen start and end node
                 end.setColour(Color.RED);
             });
@@ -169,26 +192,25 @@ public class Traversals{
             discovered.add(start);
             previous.put(start, null);
 
-            while (!queue.isEmpty() && !found[0] && !data.isTraversal_canceled()){ // Loop through until found or no more nodes in graph
-                if (data.isTraversal_canceled()){
+            while (!queue.isEmpty() && !found[0] && !data.isTraversal_canceled()) { // Loop through until found or no more nodes in graph
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
-
-                Node current_node = queue.remove(0); // Remove the node at the front of the queue
 
                 if (data.getTraversal_speed() != traversal_speed_cache.get()) {
                     operation_speed.set((long) (operation_speed_base / data.getTraversal_speed())); // Update operation speed if it has been altered by the user using the slider
                     traversal_speed_cache.set(data.getTraversal_speed());
                 }
 
-                Gdx.app.postRunnable(() ->{
-                    if (current_node != start && current_node != end){
-                        current_node.setColour(Color.CYAN); // Highlight the current node if it is not start / end
-                    }
-                });
+                Node current_node = queue.remove(0); // Pop the node at the front of the queue
+                Gdx.app.postRunnable(() -> current_node.setColour(Color.CYAN));
 
-                for (Node neighbour: current_node.getNeighbours()){ // Check each neighbour of the current node
-                    if (data.isTraversal_canceled()){
+                if (data.Should_step()) {
+                    wait_for_step(data); // Wait until the user presses the step button
+                }
+
+                for (Node neighbour: current_node.getNeighbours()) { // Check each neighbour of the current node
+                    if (data.isTraversal_canceled()) {
                         return; // Check for cancellation of traversal
                     }
 
@@ -196,38 +218,63 @@ public class Traversals{
                         continue;
                     }
 
+                    Gdx.app.postRunnable(() -> {
+                        highlight_edge(data, current_node, neighbour, Color.GRAY);
+                        if (neighbour != start && neighbour != end) {
+                            neighbour.setColour(Color.GRAY); // Highlight neighbour grey to help visualise steps
+                        }
+                    });
+
                     if (data.Should_sleep()) {
-                        sleep(operation_speed.get());
+                        sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                    } else if (data.Should_step()) {
+                        wait_for_step(data); // Wait until the user presses the step button
                     }
 
-                    if (!discovered.contains(neighbour) && !data.isTraversal_canceled()){
+                    if (!discovered.contains(neighbour) && !data.isTraversal_canceled()) {
                         discovered.add(neighbour); // Add the neighbour to the queue if not already discovered
                         queue.add(neighbour);
                         previous.put(neighbour, current_node);
 
-                        if (data.isTraversal_canceled()){
+                        if (data.isTraversal_canceled()) {
                             return; // Return if the user cancels the traversal by pressing the reset traversal button
                         }
 
-                        Gdx.app.postRunnable(() ->{
+                        Gdx.app.postRunnable(() -> {
                             highlight_edge(data, current_node, neighbour, Color.YELLOW);
-                            if(neighbour != start && neighbour != end){
+                            if (neighbour != start && neighbour != end) {
                                 neighbour.setColour(Color.YELLOW);
                             }
                         });
 
-                        if (neighbour.equals(end)){
+                        if (neighbour.equals(end)) {
                             found[0] = true; // Update to true if neighbour is the desired end node
                             break;
                         }
+                    } else if (!visited.contains(neighbour)) {
+                        Gdx.app.postRunnable(() ->{
+                            highlight_edge(data, current_node, neighbour, Color.YELLOW);
+                            if (neighbour != start && neighbour != end) {
+                                neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                            }
+                        });
+                    }
+
+                    if (visited.contains(neighbour)) {
+                        Gdx.app.postRunnable(() -> {
+                            if (neighbour != start && neighbour != end) {
+                                neighbour.setColour(Color.ORANGE);
+                            }
+                            highlight_edge(data, current_node, neighbour, Color.ORANGE);
+                        });
                     }
                 }
 
-                if (!visited.contains(current_node) && !data.isTraversal_canceled()){
+                if (!visited.contains(current_node) && !data.isTraversal_canceled()) {
                     visited.add(current_node); // Add to visited list
                 }
 
-                if (data.isTraversal_canceled()){
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
 
@@ -235,7 +282,7 @@ public class Traversals{
                     Gdx.app.postRunnable(() -> current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                 }
 
-                element_highlight(data, visited, discovered, current_node, start, end);
+                element_highlight(data, visited, discovered, start, end);
 
                 if (found[0]) {
                     break;
@@ -271,7 +318,7 @@ public class Traversals{
         }).start(); // Ensure the thread is switched to, instead of main render thread
     }
 
-    public static void bidirectional(Runtime_Data data){
+    public static void bidirectional(Runtime_Data data) {
         data.setTraversal_in_progress(true);
         AtomicLong operation_speed = new AtomicLong((long) (operation_speed_base / data.getTraversal_speed()));
         AtomicReference<Float> traversal_speed_cache = new AtomicReference<>(data.getTraversal_speed());
@@ -303,8 +350,8 @@ public class Traversals{
             forward_previous.put(forward_start, null);
             reverse_previous.put(reverse_start, null);
 
-            while (!forward_queue.isEmpty() && !reverse_queue.isEmpty() && !found[0] && !data.isTraversal_canceled()){
-                if (data.isTraversal_canceled()){
+            while (!forward_queue.isEmpty() && !reverse_queue.isEmpty() && !found[0] && !data.isTraversal_canceled()) {
+                if (data.isTraversal_canceled()) {
                     return;
                 }
 
@@ -314,16 +361,19 @@ public class Traversals{
                 }
 
                 if (!forward_queue.isEmpty() && !found[0]) { // Forward search
-                    Node forward_current_node = forward_queue.remove(0); // Same logic as a breadth first search
+                    if (data.isTraversal_canceled()) {
+                        return;
+                    }
 
-                    Gdx.app.postRunnable(() -> {
-                        if (forward_current_node != forward_start && forward_current_node != reverse_start){
-                            forward_current_node.setColour(Color.CYAN);
-                        }
-                    });
+                    Node forward_current_node = forward_queue.remove(0); // Same logic as a breadth first search
+                    Gdx.app.postRunnable(() -> forward_current_node.setColour(Color.CYAN));
+
+                    if (data.Should_step()) {
+                        wait_for_step(data); // Wait until the user presses the step button
+                    }
 
                     for (Node neighbour : forward_current_node.getNeighbours()){
-                        if (data.isTraversal_canceled()){
+                        if (data.isTraversal_canceled()) {
                             return;
                         }
 
@@ -331,39 +381,64 @@ public class Traversals{
                             continue;
                         }
 
+                        Gdx.app.postRunnable(() -> {
+                            highlight_edge(data, forward_current_node, neighbour, Color.GRAY);
+                            if (neighbour != forward_start && neighbour != reverse_start) {
+                                neighbour.setColour(Color.GRAY); // Highlight neighbour grey to help visualise steps
+                            }
+                        });
+
                         if (data.Should_sleep()) {
-                            sleep(operation_speed.get());
+                            sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                        } else if (data.Should_step()) {
+                            wait_for_step(data); // Wait until the user presses the step button
                         }
 
-                        if (!forward_discovered.contains(neighbour)){
+                        if (!forward_discovered.contains(neighbour)) {
                             forward_discovered.add(neighbour);
                             forward_queue.add(neighbour);
                             forward_previous.put(neighbour, forward_current_node);
 
-                            if (data.isTraversal_canceled()){
+                            if (data.isTraversal_canceled()) {
                                 return; // Return if the user cancels the traversal by pressing the reset traversal button
                             }
 
                             Gdx.app.postRunnable(() -> {
                                 highlight_edge(data, forward_current_node, neighbour, Color.YELLOW);
-                                if(neighbour != forward_start && neighbour != reverse_start){
+                                if (neighbour != forward_start && neighbour != reverse_start) {
                                     neighbour.setColour(Color.YELLOW);
                                 }
                             });
 
-                            if (reverse_discovered.contains(neighbour)){
+                            if (reverse_discovered.contains(neighbour)) {
                                 found[0] = true;
                                 meeting_node[0] = neighbour;
                                 break;
                             }
+                        } else if (!forward_visited.contains(neighbour)) {
+                            Gdx.app.postRunnable(() -> {
+                                highlight_edge(data, forward_current_node, neighbour, Color.YELLOW);
+                                if (neighbour != forward_start && neighbour != reverse_start) {
+                                    neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                                }
+                            });
+                        }
+
+                        if (forward_visited.contains(neighbour)) {
+                            Gdx.app.postRunnable(() -> {
+                                if (neighbour != forward_start && neighbour != reverse_start) {
+                                    neighbour.setColour(Color.ORANGE);
+                                }
+                                highlight_edge(data, forward_current_node, neighbour, Color.ORANGE);
+                            });
                         }
                     }
 
-                    if (!forward_visited.contains(forward_current_node)){
+                    if (!forward_visited.contains(forward_current_node)) {
                         forward_visited.add(forward_current_node);
                     }
 
-                    if (data.isTraversal_canceled()){
+                    if (data.isTraversal_canceled()) {
                         return; // Return if the user cancels the traversal by pressing the reset traversal button
                     }
 
@@ -371,7 +446,7 @@ public class Traversals{
                         Gdx.app.postRunnable(() -> forward_current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                     }
 
-                    element_highlight(data, forward_visited, new ArrayList<>(forward_discovered), forward_current_node, forward_start, reverse_start);
+                    element_highlight(data, forward_visited, new ArrayList<>(forward_discovered), forward_start, reverse_start);
                 }
 
                 if (found[0]) {
@@ -379,19 +454,18 @@ public class Traversals{
                 }
 
                 if (!reverse_queue.isEmpty()) { // Reverse search
-                    Node reverse_current_node = reverse_queue.remove(0); // Same logic as a breadth first search
-
-                    if (data.isTraversal_canceled()){
+                    if (data.isTraversal_canceled()) {
                         return;
                     }
 
-                    Gdx.app.postRunnable(() -> {
-                        if (reverse_current_node != reverse_start && reverse_current_node != forward_start){
-                            reverse_current_node.setColour(Color.CYAN);
-                        }
-                    });
+                    Node reverse_current_node = reverse_queue.remove(0); // Same logic as a breadth first search
+                    Gdx.app.postRunnable(() -> reverse_current_node.setColour(Color.CYAN));
 
-                    for (Node neighbour : reverse_current_node.getNeighbours()){
+                    if (data.Should_step()) {
+                        wait_for_step(data); // Wait until the user presses the step button
+                    }
+
+                    for (Node neighbour : reverse_current_node.getNeighbours()) {
                         if (data.isTraversal_canceled()){
                             return;
                         }
@@ -400,39 +474,64 @@ public class Traversals{
                             continue;
                         }
 
+                        Gdx.app.postRunnable(() -> {
+                            highlight_edge(data, reverse_current_node, neighbour, Color.GRAY);
+                            if (neighbour != forward_start && neighbour != reverse_start) {
+                                neighbour.setColour(Color.GRAY); // Highlight neighbour grey to help visualise steps
+                            }
+                        });
+
                         if (data.Should_sleep()) {
-                            sleep(operation_speed.get());
+                            sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                        } else if (data.Should_step()) {
+                            wait_for_step(data); // Wait until the user presses the step button
                         }
 
-                        if (!reverse_discovered.contains(neighbour)){
+                        if (!reverse_discovered.contains(neighbour)) {
                             reverse_discovered.add(neighbour);
                             reverse_queue.add(neighbour);
                             reverse_previous.put(neighbour, reverse_current_node);
 
-                            if (data.isTraversal_canceled()){
+                            if (data.isTraversal_canceled()) {
                                 return; // Return if the user cancels the traversal by pressing the reset traversal button
                             }
 
                             Gdx.app.postRunnable(() -> {
                                 highlight_edge(data, reverse_current_node, neighbour, Color.YELLOW);
-                                if(neighbour != reverse_start && neighbour != forward_start){
+                                if (neighbour != forward_start && neighbour != reverse_start) {
                                     neighbour.setColour(Color.YELLOW);
                                 }
                             });
 
-                            if (forward_discovered.contains(neighbour)){
+                            if (forward_discovered.contains(neighbour)) {
                                 found[0] = true;
                                 meeting_node[0] = neighbour;
                                 break;
                             }
+                        } else if (!reverse_visited.contains(neighbour)) {
+                            Gdx.app.postRunnable(() -> {
+                                highlight_edge(data, reverse_current_node, neighbour, Color.YELLOW);
+                                if (neighbour != forward_start && neighbour != reverse_start) {
+                                    neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                                }
+                            });
+                        }
+
+                        if (reverse_visited.contains(neighbour)) {
+                            Gdx.app.postRunnable(() -> {
+                                if (neighbour != forward_start && neighbour != reverse_start) {
+                                    neighbour.setColour(Color.ORANGE);
+                                }
+                                highlight_edge(data, reverse_current_node, neighbour, Color.ORANGE);
+                            });
                         }
                     }
 
-                    if (!reverse_visited.contains(reverse_current_node)){
+                    if (!reverse_visited.contains(reverse_current_node)) {
                         reverse_visited.add(reverse_current_node);
                     }
 
-                    if (data.isTraversal_canceled()){
+                    if (data.isTraversal_canceled()) {
                         return; // Return if the user cancels the traversal by pressing the reset traversal button
                     }
 
@@ -440,7 +539,7 @@ public class Traversals{
                         Gdx.app.postRunnable(() -> reverse_current_node.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                     }
 
-                    element_highlight(data, reverse_visited, new ArrayList<>(reverse_discovered), reverse_current_node, reverse_start, forward_start);
+                    element_highlight(data, reverse_visited, new ArrayList<>(reverse_discovered), forward_start, reverse_start);
                 }
 
                 if (found[0]) {
@@ -532,29 +631,36 @@ public class Traversals{
                     traversal_speed_cache.set(data.getTraversal_speed());
                 }
 
-
                 Node current = data.getGraph().get_node_from_id(pq.poll());
 
                 if (visited.contains(current)) {
                     continue; // Skip if the node has been targeted before
                 }
 
-                if (data.isTraversal_canceled()){
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
 
-                if (current != start && current != end) {
-                    Gdx.app.postRunnable(() -> current.setColour(Color.CYAN)); // Set the current node to be cyan
-                }
+                Gdx.app.postRunnable(() -> current.setColour(Color.CYAN)); // Set the current node to be cyan
 
                 visited.add(current);
 
                 if (data.Should_sleep()) {
-                    sleep(operation_speed.get()); // Sleep the determinate amount of time
+                    sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                } else if (data.Should_step()) {
+                    wait_for_step(data); // Wait until the user presses the step button
                 }
 
                 for (Edge e: data.getGraph().get_edges(current)) {
                     Node neighbour = e.getTarget(); // Get neighbour from edges of current node
+                    if (data.isTraversal_canceled()){
+                        return; // Return if the user cancels the traversal by pressing the reset traversal button
+                    }
+
+                    if (data.getGraph().get_node_from_id(neighbour.getId()) == null) {
+                        continue;
+                    }
+
                     if (visited.contains(neighbour)) {
                         continue;
                     }
@@ -562,13 +668,26 @@ public class Traversals{
                         discovered.add(neighbour);
                     }
 
-                    if (data.isTraversal_canceled()){
-                        return; // Return if the user cancels the traversal by pressing the reset traversal button
+                    Gdx.app.postRunnable(() -> {
+                        highlight_edge(data, current, neighbour, Color.GRAY);
+                        if (neighbour != start && neighbour != end) {
+                            neighbour.setColour(Color.GRAY); // Highlight neighbour grey to help visualise steps
+                        }
+                    });
+
+                    if (data.Should_sleep()) {
+                        sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                    } else if (data.Should_step()) {
+                        wait_for_step(data); // Wait until the user presses the step button
                     }
 
-                    if (!start.equals(neighbour) && !end.equals(neighbour)) {
-                        Gdx.app.postRunnable(() -> neighbour.setColour(Color.YELLOW)); // Set colour to yellow if not visited already
-                    }
+                    Gdx.app.postRunnable(() -> {
+                        highlight_edge(data, current, neighbour, Color.YELLOW);
+                        if (neighbour != start && neighbour != end) {
+                            neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                        }
+                    });
+
                     int alt = distances.get(current) + e.getWeight(); // Calculate new distance cost
 
                     if (alt < distances.get(neighbour)) { // Check to see if the new cost is cheaper than the old cost
@@ -577,16 +696,12 @@ public class Traversals{
                         pq.add(neighbour.getId(), alt); // Update accordingly if true
                     }
 
-                    if (data.Should_sleep()) {
-                        sleep(operation_speed.get());
-                    }
-
                     if (data.isTraversal_canceled()) {
                         return; // Check for cancellation of traversal
                     }
                 }
 
-                if (data.isTraversal_canceled()){
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
 
@@ -595,7 +710,7 @@ public class Traversals{
                 }
 
                 ArrayList<Node> visited_list = new ArrayList<>(visited); // Convert set to a list for re-colouring of nodes in graph
-                element_highlight(data, visited_list, discovered, current, start, end); // Reusing the previously used logic
+                element_highlight(data, visited_list, discovered, start, end); // Reusing the previously used logic
 
                 if (current.equals(end)) {
                     break;
@@ -658,7 +773,7 @@ public class Traversals{
         pq.add(start.getId(), (int) f_score.get(start).doubleValue());
 
         new Thread(() -> {
-            if (data.isTraversal_canceled()){
+            if (data.isTraversal_canceled()) {
                 return; // Return if the user cancels the traversal by pressing the reset traversal button
             }
 
@@ -685,20 +800,20 @@ public class Traversals{
                     continue; // Skip if the node has already been visited
                 }
 
-                if (data.isTraversal_canceled()){
+                if (data.isTraversal_canceled()) {
                     return; // Return if the user cancels the traversal by pressing the reset traversal button
                 }
 
-                if (current != start && current != end) {
-                    Gdx.app.postRunnable(() -> current.setColour(Color.CYAN)); // Highlight current node cyan (based from colour key)
-                }
+                Gdx.app.postRunnable(() -> current.setColour(Color.CYAN)); // Highlight current node cyan (based from colour key)
 
                 if (!visited.contains(current)) {
                     visited.add(current); // Add to helper arraylist
                 }
 
                 if (data.Should_sleep()) {
-                    sleep(operation_speed.get()); // Sleep based on user's traversal progress option
+                    sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                } else if (data.Should_step()) {
+                    wait_for_step(data); // Wait until the user presses the step button
                 }
 
                 if (current.equals(end)) {
@@ -713,12 +828,29 @@ public class Traversals{
 
                     Node neighbour = e.getTarget(); // Get neighbour from edges of current node
 
-                    if (closed_set.contains(neighbour)) {
-                        continue; // Skip if neighbour has already been visited
+                    Gdx.app.postRunnable(() -> {
+                        highlight_edge(data, current, neighbour, Color.GRAY);
+                        if (neighbour != start && neighbour != end) {
+                            neighbour.setColour(Color.GRAY); // Highlight neighbour grey to help visualise steps
+                        }
+                    });
+
+                    if (data.Should_sleep()) {
+                        sleep(operation_speed.get()); // Sleep cached amount of time for the current step
+                    } else if (data.Should_step()) {
+                        wait_for_step(data); // Wait until the user presses the step button
                     }
 
-                    if (!visited.contains(neighbour) && !discovered.contains(neighbour) && !start.equals(neighbour) && !end.equals(neighbour)) {
-                        Gdx.app.postRunnable(() -> neighbour.setColour(Color.YELLOW)); // Highlight node yellow if it matches above condition
+                    if (closed_set.contains(neighbour)) {
+                        if (visited.contains(neighbour)) {
+                            Gdx.app.postRunnable(() -> {
+                                if (neighbour != start && neighbour != end) {
+                                    neighbour.setColour(Color.ORANGE);
+                                }
+                                highlight_edge(data, current, neighbour, Color.ORANGE);
+                            });
+                        }
+                        continue; // Skip if neighbour has already been visited
                     }
 
                     int intermediate_g_score = g_score.get(current) + e.getWeight(); // Calculate g_score (old g_score + edge weight)
@@ -726,6 +858,13 @@ public class Traversals{
                     if (!discovered.contains(neighbour)) {
                         discovered.add(neighbour); // Add neighbour to helper arraylist
                     }
+
+                    Gdx.app.postRunnable(() -> {
+                        highlight_edge(data, current, neighbour, Color.YELLOW);
+                        if (neighbour != start && neighbour != end) {
+                            neighbour.setColour(Color.YELLOW); // Set neighbour to yellow
+                        }
+                    });
 
                     if (intermediate_g_score < g_score.get(neighbour)) { // Update maps if new g_score is less than current g_score for neighbour
                         previous.put(neighbour, current);
@@ -746,12 +885,17 @@ public class Traversals{
                     Gdx.app.postRunnable(() -> current.setColour(Color.ORANGE)); // Highlight current orange to mark end of processing
                 }
 
-                element_highlight(data, visited, discovered, current, start, end); // Call to overarching highlight function to update all nodes' colours
+                element_highlight(data, visited, discovered, start, end); // Call to overarching highlight function to update all nodes' colours
             }
 
             if (path_found) {
                 List<Node> path = reconstruct_path(previous, start, end); // Generate path based on the previous node of each node between end and start
                 Node last_node = null;
+                int total_cost = g_score.get(end);
+
+                data.getError_popup().setVisible(true);
+                data.getError_popup_label().setText("Path found with cost: " + total_cost);
+
                 for(Node n: path) {
                     if (n.equals(start)) {
                         Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Highlight nodes correctly based on colour key
@@ -798,7 +942,7 @@ public class Traversals{
         distances.put(start, 0); // Add start node with 0 to distances
 
         new Thread(() -> {
-            if (data.isTraversal_canceled()){
+            if (data.isTraversal_canceled()) {
                 return; // Return if the user cancels the traversal by pressing the reset traversal button
             }
 
@@ -911,31 +1055,37 @@ public class Traversals{
         }).start();
     }
 
-    private static void element_highlight(Runtime_Data data, ArrayList<Node> visited, ArrayList<Node> discovered, Node current_node, Node start, Node end){
-        for (Node node: visited){
-            if (node != start && node != end && !data.isTraversal_canceled()){
+    private static void element_highlight(Runtime_Data data, ArrayList<Node> visited, ArrayList<Node> discovered, Node start, Node end) {
+        for (Node n: visited) {
+            if (n != start && n != end && !data.isTraversal_canceled()) {
                 boolean all_neighbours_visited = true;
-                for (Node neighbour: node.getNeighbours()){
-                    if (!visited.contains(neighbour) && discovered.contains(neighbour)){
+                for (Node neighbour: n.getNeighbours()) {
+                    if (!visited.contains(neighbour) && discovered.contains(neighbour)) {
                         all_neighbours_visited = false; // Check to see if each neighbour of every visited node has also been visited
                         break;
                     }
                 }
 
-                if (all_neighbours_visited){ // Highlight edge and reverse node purple if all neighbours visited
-                    Gdx.app.postRunnable(() -> node.setColour(Color.PURPLE));
-                    if (visited.contains(node) && discovered.contains(node)){
-                        for (Node neighbour: node.getNeighbours()){
-                            Gdx.app.postRunnable(() -> highlight_edge(data, node, neighbour, Color.PURPLE));
+                if (all_neighbours_visited) { // Highlight edge and reverse node purple if all neighbours visited
+                    Gdx.app.postRunnable(() -> n.setColour(Color.PURPLE));
+                    if (visited.contains(n) && discovered.contains(n)){
+                        for (Node neighbour: n.getNeighbours()){
+                            Gdx.app.postRunnable(() -> highlight_edge(data, n, neighbour, Color.PURPLE));
                         }
                     }
                 }
             }
         }
+
+        // Ensure start and end nodes are properly coloured
+        Gdx.app.postRunnable(() -> {
+            start.setColour(Color.GREEN);
+            end.setColour(Color.RED);
+        });
     }
 
     // Euclidean distance calculation for the A* heuristic
-    private static double euclidean_heuristic(int source_x, int source_y, int target_x, int target_y){
+    private static double euclidean_heuristic(int source_x, int source_y, int target_x, int target_y) {
         int dx = target_x - source_x;
         int dy = target_y - source_y;
         return Math.sqrt(dx * dx + dy * dy);
@@ -957,16 +1107,16 @@ public class Traversals{
         return path;
     }
 
-    private static void highlight_edge(Runtime_Data data, Node node, Node neighbour, Color colour){
+    private static void highlight_edge(Runtime_Data data, Node node, Node neighbour, Color colour) {
         List<Edge> edge = data.getGraph().get_edges(node);
-        for (Edge e: edge){ // Get forward edge and set its colour to the inputted colour
+        for (Edge e: edge) { // Get forward edge and set its colour to the inputted colour
             if (e.getTarget().equals(neighbour)){
                 e.setColour(colour);
                 break;
             }
         }
         edge = data.getGraph().get_edges(neighbour);
-        for (Edge e: edge){ // Get reverse edge and sets its colour to the inputted colour
+        for (Edge e: edge) { // Get reverse edge and sets its colour to the inputted colour
             if (e.getTarget().equals(node)){
                 e.setColour(colour);
                 break;
@@ -974,10 +1124,17 @@ public class Traversals{
         }
     }
 
-    private static void sleep(long operation_speed){
+    private static void wait_for_step(Runtime_Data data) {
+        data.setStep_button_pressed(false);
+        while (!data.isStep_button_pressed() && !data.isTraversal_canceled()) {
+            sleep(50); // Avoid halting the render threads unnecessarily while waiting for an input of the button being pressed
+        }
+    }
+
+    private static void sleep(long operation_speed) {
         try{
             Thread.sleep(operation_speed); // Wait the set time between each step so the user can follow what is happening
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             System.out.println("Sleep time of " +  operation_speed + "ms failed or was interrupted");
         }
     }

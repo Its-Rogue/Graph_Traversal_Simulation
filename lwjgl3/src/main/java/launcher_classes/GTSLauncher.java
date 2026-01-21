@@ -22,7 +22,7 @@ public class GTSLauncher {
         configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate); // Lock refresh rate to that of the monitor
         configuration.useVsync(false);
         configuration.setFullscreenMode(primary_mode); // Set window to size of primary monitor, in full screen mode
-        configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
+        configuration.setWindowIcon("GTS Logo 16px.png", "GTS Logo 32px.png", "GTS Logo 64px.png", "GTS Logo 128px.png");
         return configuration;
     }
 }

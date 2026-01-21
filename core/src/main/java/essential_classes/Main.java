@@ -58,7 +58,7 @@ public class Main extends ApplicationAdapter {
         create_GUI();
     }
 
-    public void create_GUI() {
+    private void create_GUI() {
         GUI = new Stage(); // Overarching element that contains everything and acts every frame with all elements being synchronous
         table = new Table(); // Sub-element that allows for certain actors to be toggled / located in different positions without affecting the other actors
 
@@ -241,7 +241,7 @@ public class Main extends ApplicationAdapter {
         table.add(data.getStep_traversal_button());
 
         // Error message label
-        data.getError_popup().add(data.getError_popup_label());
+        data.getError_popup().add(data.getError_popup_label()).pad(5);
 
         // Change edge weight label
         data.getChange_edge_weight_popup().add(data.getChange_edge_weight_input()).row();
@@ -286,14 +286,14 @@ public class Main extends ApplicationAdapter {
     }
 
     // Shape render loop
-    public void shape_render() {
+    private void shape_render() {
         colour_key_render(); // Render the coloured squares in the bottom left for the key
         sr.setColor(Color.WHITE);
         sr.rect(250,0,10,1440); // Margin for UI
 
         if (data.Should_step()) { // Background for button to step the traversal
-            sr.rect(62, 812, 100, 50);
-            sr.rect(63, 813, 98, 48, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY);
+            sr.rect(62, 782, 100, 50);
+            sr.rect(63, 783, 98, 48, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY, Color.DARK_GRAY);
         }
 
         if (data.getChange_edge_weight_popup().isVisible()) { // Add a rectangle behind the popup to increase the legibility of the text hint
@@ -305,7 +305,7 @@ public class Main extends ApplicationAdapter {
     }
 
     // Edge render loop
-    public void edge_render() {
+    private void edge_render() {
         for (Node node: data.getGraph().get_nodes()) { // Loop over each node in the graph
             for (Edge edge: data.getGraph().get_edges(node)) { // Loop over each edge that a node has
                 if (edge.getSource().getId() < edge.getTarget().getId()) { // Check if the id is less than the one of the target node
@@ -316,22 +316,23 @@ public class Main extends ApplicationAdapter {
     }
 
     // Node render loop
-    public void node_render() {
+    private void node_render() {
         for (Node node: data.getGraph().get_nodes()) { // Loop over each node in the graph
             node.render(sr); // Draw each node after all its edges have been drawn
         }
     }
 
-    public void colour_key_render() {
+    private void colour_key_render() {
         sr.rect(10, 25, 25, 25, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA, Color.MAGENTA); // Negative cycle node / edge
         sr.rect(10, 60, 25, 25, Color.SKY, Color.SKY, Color.SKY, Color.SKY);                 // Shortest path node / edge
         sr.rect(10,95, 25, 25, Color.PURPLE, Color.PURPLE, Color.PURPLE, Color.PURPLE);      // Fully explored node / edge
-        sr.rect(10,130, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);      // Discovered node / edge
-        sr.rect(10,165, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);             // Current node / edge
-        sr.rect(10,200, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE);     // Visited node / edge
-        sr.rect(10,235, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);                 // End node / edge
-        sr.rect(10,270, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);         // Start node / edge
-        sr.rect(10,298, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);          // Header underlining
+        sr.rect(10,130, 25, 25, Color.ORANGE, Color.ORANGE, Color.ORANGE, Color.ORANGE);     // Visited node / edge
+        sr.rect(10, 165, 25, 25, Color.YELLOW, Color.YELLOW, Color.YELLOW, Color.YELLOW);    // Discovered node / edge
+        sr.rect(10,200, 25, 25, Color.GRAY, Color.GRAY, Color.GRAY, Color.GRAY);             // Current neighbour node / edge
+        sr.rect(10,235, 25, 25, Color.CYAN, Color.CYAN, Color.CYAN, Color.CYAN);             // Current node / edge
+        sr.rect(10,270, 25, 25, Color.RED, Color.RED, Color.RED, Color.RED);                 // End node / edge
+        sr.rect(10,305, 25, 25, Color.GREEN, Color.GREEN, Color.GREEN, Color.GREEN);         // Start node / edge
+        sr.rect(10,333, 70, 2, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE);          // Header underlining
 
         if (data.getColour_hint_popup().isVisible()) {
             Color colour = data.getColour_hint_label_background();
@@ -341,7 +342,7 @@ public class Main extends ApplicationAdapter {
     }
 
     // GUI render
-    public void draw_GUI() {
+    private void draw_GUI() {
         node_counter.setText("Nodes: " + data.getGraph().get_nodes().size()); // Number of nodes in scene
         edge_counter.setText("Edges: " + data.getGraph().get_total_edges()); // Number of edges in scene
         Gdx.input.setInputProcessor(GUI); // Set the input processor to the GUI, to check for mouse clicks on the buttons
@@ -350,22 +351,23 @@ public class Main extends ApplicationAdapter {
     }
 
     // Edge weight & colour key render loop
-    public void render_text() {
+    private void render_text() {
         // Colour key code
         font.setColor(Color.WHITE);
-        font.draw(batch, "Colour Key", 10, 314);            // Header
-        font.draw(batch, "Start node", 40, 289);            // Green
-        font.draw(batch, "End node", 40, 254);              // Red
-        font.draw(batch, "Visited node", 40, 219);          // Orange
-        font.draw(batch, "Current node", 40, 184);          // Cyan
-        font.draw(batch, "Discovered node", 40, 149);       // Yellow
-        font.draw(batch, "Fully explored node", 40, 114);   // Purple
-        font.draw(batch, "Shortest path node", 40, 79);     // Sky
-        font.draw(batch, "Negative cycle node", 40, 44);    // Magenta
+        font.draw(batch, "Colour Key", 10, 349);             // Header
+        font.draw(batch, "Start node", 40, 324);             // Green
+        font.draw(batch, "End node", 40, 289);               // Red
+        font.draw(batch, "Current node", 40, 254);           // Cyan
+        font.draw(batch, "Current neighbour node", 40, 219); // Gray
+        font.draw(batch, "Discovered node", 40, 184);        // Yellow
+        font.draw(batch, "Visited node", 40, 149);           // Orange
+        font.draw(batch, "Fully explored node", 40, 114);    // Purple
+        font.draw(batch, "Shortest path node", 40, 79);      // Sky
+        font.draw(batch, "Negative cycle node", 40, 44);     // Magenta
 
         // Edge weight code
         for (Node node: data.getGraph().get_nodes()) {
-            if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED) {
+            if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED || node.getColour() == Color.GRAY) {
                 font.setColor(Color.WHITE); // Increase legibility when rendered darker colours
             } else {
                 font.setColor(Color.BLACK);
@@ -392,7 +394,7 @@ public class Main extends ApplicationAdapter {
     }
 
     // Calculate the various offsets for the edge weight text to improve legibility
-    public float[] calculate_offsets(Edge edge) {
+    private float[] calculate_offsets(Edge edge) {
         float offset_x = 0,  offset_y = 0;
 
         if (edge.getSource().getPosition().getX() == edge.getTarget().getPosition().getX()) {
@@ -425,7 +427,7 @@ public class Main extends ApplicationAdapter {
     }
 
     // Other uncategorisable calculations that need to happen every frame
-    public void calculations() {
+    private void calculations() {
         frame_delta = Gdx.graphics.getDeltaTime(); // Calculate the time between the last frame and the current one
     }
 
