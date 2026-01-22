@@ -57,15 +57,15 @@ public class Priority_Queue {
     }
 
     // Remove specific value from the pq and re-heap
-    public boolean remove(int value) {
+    public void remove(int value) {
         int index = find_index(value);
         if (index == -1) {
-            return false;
+            return;
         }
 
         if (index == heap.size() - 1) {
             heap.remove(index);
-            return true;
+            return;
         }
 
         Entry last_element = heap.remove(heap.size() - 1);
@@ -73,8 +73,6 @@ public class Priority_Queue {
 
         bubble_up(index); // Re-heap / restore heap to proper form
         bubble_down_from(index);
-
-        return true;
     }
 
     private int find_index(int value) {

@@ -1,8 +1,8 @@
 # Graph Traversal Simulation
 
-This is a Graph Traversal Simulator, that uses LibGDX as a framework for visualising the graph.
+This is a Graph Traversal Simulator, that uses [LibGDX](https://libgdx.com/) as a framework for visualising the graph.
 
-The simulator allows for the creation of a custom graph with weighted edges, and a series of different traversal algorithms. These include: 
+The simulator allows for the creation of a custom graph with weighted or unweighted edges, and a series of different traversal algorithms. These include: 
 - Depth First Search
 - Breadth First Search
 - Bidirectional Search
@@ -47,6 +47,13 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `ESCAPE` to quit the program
 
+##  Download
+
+To download this project, open a PowerShell window in your desired directory and input the following command: <br>
+
+```
+git clone https://github.com/Its-Rogue/Graph_Traversal_Simulation
+```
 
 ## Notes
 

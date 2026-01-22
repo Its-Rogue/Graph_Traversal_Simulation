@@ -193,9 +193,13 @@ public class UI {
     public static void traversal_options_function(Runtime_Data data) {
         data.setSelected_traversal(data.getTraversal_options().getSelected()); // Update selected traversal based on option from drop down menu
         if (data.getSelected_traversal().equals("Bellman-Ford")) {
+            data.getTraversal_progress_options().setVisible(false);
             data.getChange_edge_weight_input().setTextFieldFilter(((text_field, c) -> Character.isDigit(c) || Character.toString(c).equals("-")));
         } else {
             check_edge_weights(data); // Make sure all the weights are >= 0 for all traversals that aren't Bellman-Ford
+            if (!data.getTraversal_progress_options().isVisible()) {
+                data.getTraversal_progress_options().setVisible(true);
+            }
             data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
         }
     }

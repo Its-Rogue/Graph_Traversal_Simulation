@@ -723,6 +723,13 @@ public class Traversals{
 
             List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
             Node last_node = null;
+            int total_cost = distances.get(end);
+
+            if (total_cost != Integer.MAX_VALUE) {
+                data.getError_popup_label().setText("Path found with cost " + total_cost);
+                data.getError_popup().setVisible(true);
+            }
+
             for(Node n: path) {
                 if (n.equals(start)) {
                     Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
@@ -1031,6 +1038,13 @@ public class Traversals{
                     data.getError_popup().setVisible(true);
                 } else {
                     Node last_node = null; // Cache to allow for edge highlighting of determined path
+                    int total_cost = distances.get(end);
+
+                    if (total_cost != Integer.MAX_VALUE) {
+                        data.getError_popup_label().setText("Path found with cost " + total_cost);
+                        data.getError_popup().setVisible(false);
+                    }
+
                     for(Node n: path) {
                         if (n.equals(start)) { // Set colours accordingly
                             Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Highlight nodes accordingly
