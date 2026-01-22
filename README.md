@@ -49,7 +49,7 @@ If an error is made in any of the options, a suitable error message will be disp
 
 ##  Download
 
-To download this project, open a PowerShell window in your desired directory and input the following command: <br>
+To download this project, open a Command Prompt window in your desired directory and input the following command: <br>
 
 ```
 git clone https://github.com/Its-Rogue/Graph_Traversal_Simulation
