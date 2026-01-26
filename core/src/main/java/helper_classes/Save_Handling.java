@@ -43,7 +43,10 @@ public class Save_Handling {
                 for (Node neighbour: node.getNeighbours()) { // Get id of each neighbour to the current node and append it to the neighbour_ids string builder
                     neighbour_ids.append(neighbour.getId()).append(",");
                 }
-                neighbour_ids.deleteCharAt(neighbour_ids.length()-1); // Remove the trailing comma from the neighbour_ids string builder
+
+                if (!neighbour_ids.isEmpty()) {
+                    neighbour_ids.deleteCharAt(neighbour_ids.length()-1); // Remove the trailing comma from the neighbour_ids string builder
+                }
 
                 sb.append(node.getId()).append(",").append(node.getPosition().getX()).append(",").append(node.getPosition().getY()).append(",").append(neighbour_ids).append("\n"); // Append the ID, X pos, Y pos, neighbour ids and a newline per node
             }
@@ -74,10 +77,23 @@ public class Save_Handling {
 
         Gdx.graphics.setWindowedMode(Gdx.graphics.getWidth(),Gdx.graphics.getHeight()); // Set the display mode to windowed to allow the popup to show on the screen above the simulator
         File selected_file = choose_saved_layout_file(); // Choose the file
+
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            System.err.println("Failed to sleep: " + e);
+        }
+
         Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode()); // Set the display mode to fullscreen to allow for better user experience
 
-        if (selected_file == null || !selected_file.getName().split("\\.")[1].equals("txt")) { // Make sure a file has been chosen, and that the file is of the correct type
-            data.getError_popup_label().setText("Invalid file type or none selected");
+        if (selected_file == null) { // Ensure a file has been selected
+            data.getError_popup_label().setText("No file selected");
+            data.getError_popup().setVisible(true);
+            return;
+        }
+
+        if (!selected_file.getName().toLowerCase().endsWith(".txt")) { // Ensure that the file is of the expected type (txt)
+            data.getError_popup_label().setText("Invalid file type");
             data.getError_popup().setVisible(true);
             return;
         }
@@ -128,13 +144,15 @@ public class Save_Handling {
                     if (neighbour != null) {
                         node.add_neighbour(neighbour);
                     }
-                    temp_graph.add_node(node); // Add the fully informed node to the temporary graph
                 }
+                temp_graph.add_node(node); // Add the fully informed node to the temporary graph
             }
 
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 if (line.isEmpty()) { // Skip a line if it is empty, such as the gap between the nodes and edges
+                    continue;
+                } else if (line.equals("Edges")) { // Skip the header
                     continue;
                 } else if (line.equals("~~~")) { // Break when the end of the file is reached, indicated by the ~~~ line
                     break;
@@ -172,8 +190,9 @@ public class Save_Handling {
         JFileChooser chooser = new JFileChooser(); // Create a file chooser entity
         chooser.setCurrentDirectory(folder_file); // Set the default directory to the default save directory
         chooser.setFileFilter(new FileNameExtensionFilter("Txt Files","txt")); // Set the default filter to show text files by default
+        chooser.setDialogTitle("Load a saved layout");
 
-        int result = chooser.showSaveDialog(null); // Show the chooser popup
+        int result = chooser.showOpenDialog(null); // Show the chooser popup
         if (result == JFileChooser.APPROVE_OPTION) {
             return chooser.getSelectedFile(); // Return the selected file if one is chosen
         }

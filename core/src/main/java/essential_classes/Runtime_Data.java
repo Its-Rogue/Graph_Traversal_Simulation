@@ -44,6 +44,7 @@ public class Runtime_Data {
     private final Label current_start_node_label = new Label("Start Node: ", skin);
     private final Label current_end_node_label = new Label("End node: ", skin);
 
+    private int max_nodes = 100;
     private int start_node = 1000;
     private int end_node = 1001;
     private int new_edge_weight;
@@ -257,5 +258,9 @@ public class Runtime_Data {
 
     public Label getCurrent_end_node_label() {
         return current_end_node_label;
+    }
+
+    public int getMax_nodes() {
+        return max_nodes;
     }
 }

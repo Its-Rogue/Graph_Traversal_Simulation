@@ -26,6 +26,7 @@ public class UI {
         data.setEnd_node(0);
         data.setTraversal_canceled(false); // Reset status flags for authorising traversal start
         data.setTraversal_in_progress(false);
+        Inputs.clear_selected_node(); // Clear to keep consistent functionality
     }
 
     public static void start_traversal_button_function(Runtime_Data data) {
@@ -80,13 +81,9 @@ public class UI {
 
     public static void reset_colours(Runtime_Data data) {
         for (Node node: data.getGraph().get_nodes()) {
-            if (node.getColour() != Color.WHITE) {
-                Gdx.app.postRunnable(() -> node.setColour(Color.WHITE)); // Reset all nodes' colour if they aren't white (default colour)
-            }
+            node.setColour(Color.WHITE); // Reset all nodes and edges to be white
             for (Edge edge: data.getGraph().get_edges(node)) {
-                if (edge.getColour() != Color.WHITE) {
-                    Gdx.app.postRunnable(() -> edge.setColour(Color.WHITE)); // Reset all edges' colour if they aren't white (default colour)
-                }
+                edge.setColour(Color.WHITE);
             }
         }
     }
@@ -184,7 +181,7 @@ public class UI {
             data.setNew_edge_weight(Integer.parseInt(data.getChange_edge_weight_input().getText())); // Update the edge weight each time the user inputs a new character
             data.getError_popup_label().setText("");
             data.setValid_setup(true); // Clear errors if valid
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             data.getError_popup_label().setText("Invalid edge weight");
             data.setValid_setup(false);
         }

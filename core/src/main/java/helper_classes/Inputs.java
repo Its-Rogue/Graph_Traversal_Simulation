@@ -172,7 +172,7 @@ public class Inputs {
             }
 
             for (Node node: data.getGraph().get_nodes()) { // Ensure the nodes are all white in the graph
-                if (node.getColour() != Color.WHITE) {
+                if (!node.getColour().equals(Color.WHITE)) {
                     node.setColour(Color.WHITE); // Reset all nodes' colour if they aren't white (default colour)
                 }
 
@@ -312,6 +312,13 @@ public class Inputs {
         } else {
             data.getError_popup_label().setText("Invalid setup: check inputted\nconditions");
             data.getError_popup().setVisible(true);
+        }
+    }
+
+    public static void clear_selected_node() {
+        if (first_node_selected != null) { // Clear the selected node when the graph is reset
+            first_node_selected.setColour(Color.WHITE);
+            first_node_selected = null;
         }
     }
 

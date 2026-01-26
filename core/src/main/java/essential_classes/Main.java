@@ -308,8 +308,8 @@ public class Main extends ApplicationAdapter {
     private void edge_render() {
         for (Node node: data.getGraph().get_nodes()) { // Loop over each node in the graph
             for (Edge edge: data.getGraph().get_edges(node)) { // Loop over each edge that a node has
-                if (edge.getSource().getId() < edge.getTarget().getId()) { // Check if the id is less than the one of the target node
-                    edge.render(sr); // Draw the edge one time, rather than for both directions of the bidirectional edge
+                if (edge.getDirection().equals("forward")) { // Only render the forward direction edges
+                    edge.render(sr);
                 }
             }
         }
@@ -438,5 +438,6 @@ public class Main extends ApplicationAdapter {
         GUI.dispose(); // Dispose of the GUI stage to free up resources
         font.dispose(); // Dispose of the font to free up resources
         batch.dispose(); // Dispose of the batch to free up resources
+        data.getSkin().dispose(); // Dispose of the scene2D skin to free up resources
     }
 }

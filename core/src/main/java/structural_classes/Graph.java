@@ -31,7 +31,7 @@ public class Graph {
             id = next_node_ID++;
         }
 
-        if (adj_list.size() < 100) {
+        if (adj_list.size() < data.getMax_nodes()) {
             vec2 position  = new vec2(x_pos, y_pos);
             Node node = new Node(node_radius, id, position, new ArrayList<>(), Color.WHITE);
             adj_list.put(node, new ArrayList<>());
@@ -81,6 +81,10 @@ public class Graph {
     }
 
     public void add_edge(Edge edge) {
+        if (edge == null || edge.getSource() == null || edge.getTarget() == null) {
+            return; // Ensure a valid edge is about to be processed
+        }
+
         Node source = edge.getSource(); // Get the node structure for the source and target
         Node target = edge.getTarget();
 

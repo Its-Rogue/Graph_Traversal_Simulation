@@ -162,9 +162,15 @@ public class Generate_Graphs {
             data.getGraph().add_node(n); // Add nodes to graph
         }
 
+        Set<String> processed_pairs = new HashSet<>();
         List<Edge> edges = new ArrayList<>(); // Temporary container for new edges so they can be added to the graph
         for (Node n: generated_nodes) {
             for (Node neighbour: n.getNeighbours()) {
+                String pair_key = Math.min(n.getId(), neighbour.getId()) + "-" + Math.max(n.getId(), neighbour.getId()); // Create unique id for node pair
+                if (processed_pairs.contains(pair_key)) { // Do not create edge if pair already processed
+                    continue;
+                } processed_pairs.add(pair_key);
+
                 int weight_base = Math.round((long) ((calculate_distance(n.getPosition().getX(), neighbour.getPosition().getX(), n.getPosition().getY(), neighbour.getPosition().getY()) / 100)));
                 int weight = ThreadLocalRandom.current().nextInt(-2 * weight_base, 2 * weight_base);
                 weight = Math.abs(weight); // Get absolute value of edge weight to prevent errors with Dijkstra's and A*
