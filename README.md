@@ -2,7 +2,7 @@
 
 This is a Graph Traversal Simulator, that uses [LibGDX](https://libgdx.com/) as a framework for visualising the graph.
 
-The simulator allows for the creation of a custom graph with weighted or unweighted edges, and a series of different traversal algorithms. These include: 
+The simulator allows for the creation of a custom graph with weighted or unweighted edges, and a series of different traversal algorithms. These include:
 - Depth First Search
 - Breadth First Search
 - Bidirectional Search
@@ -18,7 +18,7 @@ On the left hand side of the screen, using Scene2D, there is a variety of elemen
 - Load a previously saved layout of nodes and edges
 - Load a preset grid layout of nodes and edges, where all the edges have a weight of 1
 - Create a randomly laid out graph, where the edges between the nodes are sensibly created, like roads between cities
-- Reset the current layout of nodes and edges 
+- Reset the current layout of nodes and edges
 - Alter the speed at which the traversals occur
 - Change the type of traversal algorithm used
 - Change how the traversal occurs <sup>1</sup>
