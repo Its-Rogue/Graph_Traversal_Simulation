@@ -71,13 +71,13 @@ public class Main extends ApplicationAdapter {
 
         // Initialise all the different elements for the UI
         quit_button = new TextButton("Quit", data.getSkin());
-        save_current_layout_button = new TextButton("Save current layout", data.getSkin());
-        load_saved_layout_button = new TextButton("Load saved layout", data.getSkin());
+        save_current_layout_button = new TextButton("Save Current Layout", data.getSkin());
+        load_saved_layout_button = new TextButton("Load Saved Layout", data.getSkin());
+        generate_random_graph_button = new TextButton("Create a Random Graph", data.getSkin());
+        generate_grid_button = new TextButton("Create a Gridded Graph", data.getSkin());
         reset_button = new TextButton("Reset Graph", data.getSkin());
         start_traversal_button = new TextButton("Start Traversal", data.getSkin());
         reset_traversal_button = new TextButton("Reset Traversal", data.getSkin());
-        generate_random_graph_button = new TextButton("Create a random graph", data.getSkin());
-        generate_grid_button = new TextButton("Create a gridded graph", data.getSkin());
         data.getStep_traversal_button().setVisible(false);
 
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
@@ -94,7 +94,7 @@ public class Main extends ApplicationAdapter {
         data.getStep_traversal_label().setVisible(false);
 
         data.getTraversal_options().setItems("Depth-First Search", "Breadth-First Search", "Bidirectional Search", "Dijkstra's", "A*", "Bellman-Ford");
-        data.getTraversal_progress_options().setItems("Automatic", "Stepped", "No delay");
+        data.getTraversal_progress_options().setItems("Automatic", "Stepped", "No Delay");
 
         // Create the listeners for the UI button presses
 

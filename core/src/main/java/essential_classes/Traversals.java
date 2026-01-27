@@ -141,23 +141,7 @@ public class Traversals{
 
             if (found[0]) {
                 List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
-                Node last_node = null;
-                for(Node n: path) {
-                    if (n.equals(start)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
-                    } else if (n.equals(end)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                    } else {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                    }
-
-                    if (last_node != null) {
-                        Node final_last_node = last_node;
-                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
-                    }
-
-                    last_node = n; // Update last node to update pointer for the next edge to be highlighted
-                }
+                highlight_path(data, path, start, end);
             } else {
                 data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
                 data.getError_popup().setVisible(true);
@@ -291,23 +275,7 @@ public class Traversals{
 
             if (found[0]) {
                 List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
-                Node last_node = null;
-                for(Node n: path) {
-                    if (n.equals(start)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
-                    } else if (n.equals(end)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                    } else {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                    }
-
-                    if (last_node != null) {
-                        Node final_last_node = last_node;
-                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
-                    }
-
-                    last_node = n; // Update last node to update pointer for the next edge to be highlighted
-                }
+                highlight_path(data, path, start, end);
             } else {
                 data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
                 data.getError_popup().setVisible(true);
@@ -561,23 +529,7 @@ public class Traversals{
                     current = reverse_previous.get(current);
                 }
 
-                Node last_node = null;
-                for(Node n: path) {
-                    if (n.equals(forward_start)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
-                    } else if (n.equals(reverse_start)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                    } else {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                    }
-
-                    if (last_node != null) {
-                        Node final_last_node = last_node;
-                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
-                    }
-
-                    last_node = n; // Update last node to update pointer for the next edge to be highlighted
-                }
+                highlight_path(data, path, forward_start, reverse_start);
             } else {
                 data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
                 data.getError_popup().setVisible(true);
@@ -602,6 +554,8 @@ public class Traversals{
 
         Node start = data.getGraph().get_node_from_id(data.getStart_node());
         Node end = data.getGraph().get_node_from_id(data.getEnd_node());
+
+        AtomicReference<Boolean> path_found = new AtomicReference<>(false);
 
         for (Node n: data.getGraph().get_nodes()) {
             distances.put(n, Integer.MAX_VALUE); // Add all nodes to the maps
@@ -713,6 +667,7 @@ public class Traversals{
                 element_highlight(data, visited_list, discovered, start, end); // Reusing the previously used logic
 
                 if (current.equals(end)) {
+                    path_found.set(true);
                     break;
                 }
 
@@ -721,30 +676,19 @@ public class Traversals{
                 }
             }
 
-            List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
-            Node last_node = null;
-            int total_cost = distances.get(end);
+            if (path_found.get()) {
+                List<Node> path = reconstruct_path(previous, start, end); // Reconstruct the determined path between the 2 nodes
+                int total_cost = distances.get(end);
 
-            if (total_cost != Integer.MAX_VALUE) {
-                data.getError_popup_label().setText("Path found with cost " + total_cost);
+                if (total_cost != Integer.MAX_VALUE) {
+                    data.getError_popup_label().setText("Path found with cost " + total_cost);
+                    data.getError_popup().setVisible(true);
+                }
+
+                highlight_path(data, path, start, end);
+            } else {
+                data.getError_popup_label().setText("No path found");
                 data.getError_popup().setVisible(true);
-            }
-
-            for(Node n: path) {
-                if (n.equals(start)) {
-                    Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Keep start / end node green / red, and colour sky if not
-                } else if (n.equals(end)) {
-                    Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                } else {
-                    Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                }
-
-                if (last_node != null) {
-                    Node final_last_node = last_node;
-                    Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight edges between nodes of the path
-                }
-
-                last_node = n; // Update last node to update pointer for the next edge to be highlighted
             }
 
             data.setTraversal_in_progress(false); // Allow a new traversal to be run after this one has completed
@@ -897,28 +841,12 @@ public class Traversals{
 
             if (path_found) {
                 List<Node> path = reconstruct_path(previous, start, end); // Generate path based on the previous node of each node between end and start
-                Node last_node = null;
                 int total_cost = g_score.get(end);
 
                 data.getError_popup().setVisible(true);
                 data.getError_popup_label().setText("Path found with cost: " + total_cost);
 
-                for(Node n: path) {
-                    if (n.equals(start)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Highlight nodes correctly based on colour key
-                    } else if (n.equals(end)) {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                    } else {
-                        Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                    }
-
-                    if (last_node != null) {
-                        Node final_last_node = last_node;
-                        Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY));
-                    }
-
-                    last_node = n; // Cache last node for edge highlighting
-                }
+                highlight_path(data, path, start, end);
             } else {
                 data.getError_popup_label().setText("No path found"); // Alert user than no path has been found between start and end node
                 data.getError_popup().setVisible(true);
@@ -1037,7 +965,6 @@ public class Traversals{
                     data.getError_popup_label().setText("No path found"); // Ensure a path has actually been found
                     data.getError_popup().setVisible(true);
                 } else {
-                    Node last_node = null; // Cache to allow for edge highlighting of determined path
                     int total_cost = distances.get(end);
 
                     if (total_cost != Integer.MAX_VALUE) {
@@ -1045,22 +972,7 @@ public class Traversals{
                         data.getError_popup().setVisible(false);
                     }
 
-                    for(Node n: path) {
-                        if (n.equals(start)) { // Set colours accordingly
-                            Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Highlight nodes accordingly
-                        } else if (n.equals(end)) {
-                            Gdx.app.postRunnable(() -> n.setColour(Color.RED));
-                        } else {
-                            Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
-                        }
-
-                        if (last_node != null) {
-                            Node final_last_node = last_node;
-                            Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight the edges of the path
-                        }
-
-                        last_node = n; // Update cached last node to highlight the edge between the next node and this one
-                    }
+                    highlight_path(data, path, start, end);
                 }
             }
 
@@ -1096,6 +1008,27 @@ public class Traversals{
             start.setColour(Color.GREEN);
             end.setColour(Color.RED);
         });
+    }
+
+    private static void highlight_path(Runtime_Data data, List<Node> path, Node start, Node end) {
+        Node last_node = null; // Cache to allow for edge highlighting of determined path
+
+        for(Node n: path) {
+            if (n.equals(start)) { // Set colours accordingly
+                Gdx.app.postRunnable(() -> n.setColour(Color.GREEN)); // Highlight nodes accordingly
+            } else if (n.equals(end)) {
+                Gdx.app.postRunnable(() -> n.setColour(Color.RED));
+            } else {
+                Gdx.app.postRunnable(() -> n.setColour(Color.SKY));
+            }
+
+            if (last_node != null) {
+                Node final_last_node = last_node;
+                Gdx.app.postRunnable(() -> highlight_edge(data, n, final_last_node, Color.SKY)); // Highlight the edges of the path
+            }
+
+            last_node = n; // Update cached last node to highlight the edge between the next node and this one
+        }
     }
 
     // Euclidean distance calculation for the A* heuristic

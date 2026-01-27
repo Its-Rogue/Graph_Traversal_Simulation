@@ -375,10 +375,6 @@ public class Inputs {
             return false;
         }
 
-        if (data.isTraversal_in_progress()) {
-            return false;
-        }
-
-        return true;
+        return !data.isTraversal_in_progress();
     }
 }

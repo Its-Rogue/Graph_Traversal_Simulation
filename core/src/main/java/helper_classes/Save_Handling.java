@@ -148,14 +148,16 @@ public class Save_Handling {
                 temp_graph.add_node(node); // Add the fully informed node to the temporary graph
             }
 
+            label:
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
-                if (line.isEmpty()) { // Skip a line if it is empty, such as the gap between the nodes and edges
-                    continue;
-                } else if (line.equals("Edges")) { // Skip the header
-                    continue;
-                } else if (line.equals("~~~")) { // Break when the end of the file is reached, indicated by the ~~~ line
-                    break;
+                switch (line) {
+                    case "":  // Skip a line if it is empty, such as the gap between the nodes and edges
+                        continue;
+                    case "Edges":  // Skip the header
+                        continue;
+                    case "~~~":  // Break when the end of the file is reached, indicated by the ~~~ line
+                        break label;
                 }
 
                 String[] edge_data = line.split(","); // Split the read line into its components
