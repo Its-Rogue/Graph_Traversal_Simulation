@@ -98,7 +98,7 @@ public class UI {
 
     public static void traversal_speed_input_function(Runtime_Data data) {
         data.setTraversal_speed(data.getTraversal_speed_slider().getValue()); // Get divider value from slider
-        data.getTraversal_speed_label().setText(String.format("Traversal speed: %.1f", data.getTraversal_speed())); // Edit label below slider
+        data.getTraversal_speed_label().setText(String.format("Traversal Speed: %.1f", data.getTraversal_speed())); // Edit label below slider
     }
 
     public static void start_node_input_function(Runtime_Data data) {

@@ -112,7 +112,7 @@ public class Save_Handling {
             if (sc.hasNextLine()) {
                 header_line = sc.nextLine();
                 if (!header_line.equals("Nodes")) { // Check to see if the first line is the header Nodes to ensure the file layout is correct
-                    data.getError_popup_label().setText("Invalid text file");
+                    data.getError_popup_label().setText("Invalid file data");
                     data.getError_popup().setVisible(true);
                     return;
                 }
@@ -183,7 +183,10 @@ public class Save_Handling {
                         temp_graph.add_edge(reverse_edge);
                     }
                 } else {
-                    System.err.println("Invalid edge format in text file");
+                    data.getError_popup_label().setText("Invalid file data");
+                    data.getError_popup().setVisible(true);
+                    System.err.println("Invalid edge format in GTS file");
+                    return;
                 }
             }
 

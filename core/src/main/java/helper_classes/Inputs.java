@@ -330,7 +330,7 @@ public class Inputs {
                 hint = "This node forms a part of a\nnegative cycle that has been\ndetected by the traversal\nalgorithm.";
                 break;
             case "shortest path":
-                hint = "This node forms a part of the\nshortest path discovered\nby one of the\ntraversal algorithms.";
+                hint = "This node forms a part of the\nshortest path discovered\nby one of the traversal\nalgorithms.";
                 break;
             case "fully explored":
                 hint = "This node, as well as all its\nneighbours, have been a\ncurrent node.";

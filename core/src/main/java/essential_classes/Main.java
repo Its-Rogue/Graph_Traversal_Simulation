@@ -81,8 +81,8 @@ public class Main extends ApplicationAdapter {
         data.getStep_traversal_button().setVisible(false);
 
         data.getTraversal_speed_slider().setValue(data.getTraversal_speed());
-        data.getStart_node_input().setMessageText("Enter the start node");
-        data.getEnd_node_input().setMessageText("Enter the end node");
+        data.getStart_node_input().setMessageText("Enter the Start Node");
+        data.getEnd_node_input().setMessageText("Enter the End Node");
         data.getChange_edge_weight_input().setMessageText("Input new weight");
         data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
