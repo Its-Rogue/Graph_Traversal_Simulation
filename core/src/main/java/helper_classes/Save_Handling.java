@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Save_Handling {
-    private static final String save_path = System.getProperty("user.home") + "\\Documents\\Graph Traversal Simulator\\Saved Layouts\\";
+    private static final String save_path = System.getProperty("user.home") + File.separator + "Graph Traversal Simulator" + File.separator + "Saved Layouts" + File.separator;
     private static final File folder_file = new File(save_path);
 
     public static void save_current_layout(Runtime_Data data) {
@@ -31,7 +31,7 @@ public class Save_Handling {
 
             DateTimeFormatter time_format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
             String time  = LocalDateTime.now().format(time_format);
-            File save_file = new File(folder_file, "Saved Layout " + time + ".txt"); // Get the date and time, format it to time_format and append it to the name of the save file
+            File save_file = new File(folder_file, "Saved Layout " + time + ".GTS"); // Get the date and time, format it to time_format and append it to the name of the save file
 
             StringBuilder sb = new StringBuilder(); // Template to add the required elements to the file
             Graph graph = data.getGraph(); // Get the current layout from the graph in Runtime_Data
@@ -48,7 +48,13 @@ public class Save_Handling {
                     neighbour_ids.deleteCharAt(neighbour_ids.length()-1); // Remove the trailing comma from the neighbour_ids string builder
                 }
 
-                sb.append(node.getId()).append(",").append(node.getPosition().getX()).append(",").append(node.getPosition().getY()).append(",").append(neighbour_ids).append("\n"); // Append the ID, X pos, Y pos, neighbour ids and a newline per node
+                sb.append(node.getId()).append(",").append(node.getPosition().getX()).append(",").append(node.getPosition().getY()); // Always append the id and position of the node
+
+                if (!neighbour_ids.isEmpty()) {
+                    sb.append(",").append(neighbour_ids); // Only append list of neighbours if the node actually has any
+                }
+
+                sb.append("\n"); // Append new line character to allow for next node to be built and properly added to the file
             }
 
             sb.append("\nEdges\n"); // Add an edges header to separate the file, indicating when the split needs to occur between creating nodes and edges
@@ -79,7 +85,7 @@ public class Save_Handling {
         File selected_file = choose_saved_layout_file(); // Choose the file
 
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             System.err.println("Failed to sleep: " + e);
         }
@@ -92,7 +98,7 @@ public class Save_Handling {
             return;
         }
 
-        if (!selected_file.getName().toLowerCase().endsWith(".txt")) { // Ensure that the file is of the expected type (txt)
+        if (!selected_file.getName().toLowerCase().endsWith(".gts")) { // Ensure that the file is of the expected type (txt)
             data.getError_popup_label().setText("Invalid file type");
             data.getError_popup().setVisible(true);
             return;
@@ -182,6 +188,8 @@ public class Save_Handling {
             }
 
             data.setGraph(temp_graph); // Update the graph in Runtime_Data with the temporary one created at the beginning
+            data.getError_popup_label().setText("");
+            data.getError_popup().setVisible(false);
 
         } catch (Exception e) {
             System.err.println("Failed to load saved layout file: " + e.getMessage()); // Catch any exceptions that may occur
@@ -191,7 +199,7 @@ public class Save_Handling {
     private static File choose_saved_layout_file() {
         JFileChooser chooser = new JFileChooser(); // Create a file chooser entity
         chooser.setCurrentDirectory(folder_file); // Set the default directory to the default save directory
-        chooser.setFileFilter(new FileNameExtensionFilter("Txt Files","txt")); // Set the default filter to show text files by default
+        chooser.setFileFilter(new FileNameExtensionFilter("GTS Files","GTS")); // Set the default filter to show text files by default
         chooser.setDialogTitle("Load a saved layout");
 
         int result = chooser.showOpenDialog(null); // Show the chooser popup
