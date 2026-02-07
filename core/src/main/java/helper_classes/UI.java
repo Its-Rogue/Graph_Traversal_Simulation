@@ -217,7 +217,7 @@ public class UI {
                 data.getStep_traversal_button().setVisible(true);
                 data.getStep_traversal_label().setVisible(true);
                 break;
-            case "No delay":
+            case "No Delay":
                 data.setShould_step(false);
                 data.setShould_sleep(false);
                 data.getStep_traversal_button().setVisible(false);

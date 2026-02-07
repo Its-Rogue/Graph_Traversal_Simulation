@@ -969,7 +969,7 @@ public class Traversals{
 
                     if (total_cost != Integer.MAX_VALUE) {
                         data.getError_popup_label().setText("Path found with cost " + total_cost);
-                        data.getError_popup().setVisible(false);
+                        data.getError_popup().setVisible(true);
                     }
 
                     highlight_path(data, path, start, end);
