@@ -175,7 +175,7 @@ public class Graph {
         next_node_ID = 0;
     }
 
-    // Check to see if a traversaDl is already in progress to prevent the graph being altered,
+    // Check to see if a traversal is already in progress to prevent the graph being altered,
     // preventing null data being fed into traversal algorithms
     private static boolean traversal_in_progress_check(Runtime_Data data) {
         if (data.isTraversal_in_progress()) {
