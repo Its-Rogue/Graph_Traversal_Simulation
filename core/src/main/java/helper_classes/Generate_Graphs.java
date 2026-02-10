@@ -17,27 +17,33 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Generate_Graphs {
     public static void generate_grid(Runtime_Data data) {
-        int spacing_x = 110;
-        int spacing_y = 110;
-        int starting_x = 900;
-        int starting_y = 300;
-
         if (data.isTraversal_in_progress()) {
             data.getError_popup_label().setText("Cannot generate graph while traversal is running");
             data.getError_popup().setVisible(true);
             return;
         }
 
-        data.getGraph().clear();
+        data.getGraph().clear(); // Reset the graph to allow new data to be written to it
 
+        // Calculate the available area to draw the graph, and the spaces required to clearly display the nodes and edges
+        int left_margin = 270 + 2 * data.getNode_radius();
+        int scene_width = Gdx.graphics.getWidth() - left_margin - 2 * data.getNode_radius();
+        int scene_height = Gdx.graphics.getHeight() - 4 * data.getNode_radius();
+        int spacing = Math.min(scene_width / 11, scene_height / 11);
+        int grid_width = spacing * 9;
+        int grid_height = spacing * 9;
+        int starting_x = left_margin + (scene_width - grid_width) / 2;
+        int starting_y = 2 * data.getNode_radius() + (scene_height - grid_height) / 2;
+
+        // Create each of the nodes in the 10 * 10 grid
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                data.getGraph().add_node(data.getNode_radius(), starting_x + (spacing_x * j), starting_y + (spacing_y * i), data);
+                data.getGraph().add_node(data.getNode_radius(), starting_x + (spacing * j), starting_y + (spacing * i), data);
             }
         }
 
-        // Normal grid layout creation
-        for (int i = 0; i < 10; i++) { // loop over each node and add an edge with each of its neighbours
+        // Create the 2-4 edges between each node and it's adjacent nodes
+        for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 int id = i * 10 + j;
                 if (i > 0) {
