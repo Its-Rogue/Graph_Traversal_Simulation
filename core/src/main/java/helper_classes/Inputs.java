@@ -105,6 +105,16 @@ public class Inputs {
             }
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
                 if (distance_check(node.getPosition().getX(), node.getPosition().getY(), mouse_x, mouse_y, data) <= data.getNode_radius()) {
+                    if (data.getStart_node() == node.getId()) {
+                        data.setStart_node(1000);
+                        data.getStart_node_input().setText("");
+                        data.getCurrent_start_node_label().setText("Start Node: ");
+                    } else if (data.getEnd_node() == node.getId()) {
+                        data.setEnd_node(1001);
+                        data.getEnd_node_input().setText("");
+                        data.getCurrent_end_node_label().setText("End Node: ");
+                    }
+
                     if (first_node_selected != null) { // Checks to see if a node has already been selected
                         if (first_node_selected != node) { // Checks to see if the node selected again is different
                             data.getGraph().remove_edge(first_node_selected.getId(), node.getId(), data); // Remove edge if nodes are different

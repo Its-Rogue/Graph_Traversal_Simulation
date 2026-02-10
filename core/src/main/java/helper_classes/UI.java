@@ -18,6 +18,7 @@ public class UI {
 
     public static void load_saved_layout_button_function(Runtime_Data data) {
         Save_Handling.load_saved_layout(data); // Load a previously saved layout, opening a file browser window to select the file
+        clear_user_nodes(data);
     }
 
     public static void reset_button_function(Runtime_Data data) {
@@ -27,6 +28,7 @@ public class UI {
         data.setTraversal_canceled(false); // Reset status flags for authorising traversal start
         data.setTraversal_in_progress(false);
         Inputs.clear_selected_node(); // Clear to keep consistent functionality
+        clear_user_nodes(data);
     }
 
     public static void start_traversal_button_function(Runtime_Data data) {
@@ -70,6 +72,7 @@ public class UI {
         data.setTraversal_in_progress(false); // Allow a new traversal to be run
         data.getError_popup_label().setText("");
         data.getError_popup().setVisible(false);
+        clear_user_nodes(data);
 
         try {
             Thread.sleep(100);
@@ -90,10 +93,12 @@ public class UI {
 
     public static void generate_grid_button_function(Runtime_Data data) {
         Generate_Graphs.generate_grid(data); // Generate a predetermined 10 * 10 grid where the 2-4 nodes adjacent are neighbours
+        clear_user_nodes(data);
     }
 
     public static void generate_random_graph_button_function(Runtime_Data data) {
         Generate_Graphs.generate_random_graph(data); // Generate a random graph based on set regions and generate sensible edges between them
+        clear_user_nodes(data);
     }
 
     public static void traversal_speed_input_function(Runtime_Data data) {
@@ -202,6 +207,12 @@ public class UI {
     }
 
     public static void traversal_progress_options_function(Runtime_Data data) {
+        if (data.isTraversal_in_progress()) { // Do not allow the traversal option to be changed while a traversal is in progress
+            data.getTraversal_progress_options().setSelected(data.getSelected_traversal_progress());
+            data.getError_popup_label().setText("Cannot change progress option\nwhile a traversal is running");
+            data.getError_popup().setVisible(true);
+        }
+
         data.setSelected_traversal_progress(data.getTraversal_progress_options().getSelected()); // Update selected traversal progress based on option from drop down menu
 
         switch (data.getSelected_traversal_progress()) { // Switch case the different options and update booleans in data accordingly
@@ -230,6 +241,17 @@ public class UI {
         } else {
             data.getError_popup().setY(-600);
         }
+    }
+
+    private static void clear_user_nodes(Runtime_Data data) {
+        // Reset user's start nodes and end nodes
+        data.setStart_node(1000);
+        data.getStart_node_input().setText("");
+        data.getCurrent_start_node_label().setText("Start Node: ");
+
+        data.setEnd_node(1001);
+        data.getEnd_node_input().setText("");
+        data.getCurrent_end_node_label().setText("End Node: ");
     }
 
     private static void check_edge_weights(Runtime_Data data) {
