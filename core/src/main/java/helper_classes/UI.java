@@ -116,7 +116,7 @@ public class UI {
         } catch (NumberFormatException e) {
             Node n = data.getGraph().get_node_from_label(input);
             if (n == null) {
-                data.getError_popup_label().setText("Invalid start node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+                data.getError_popup_label().setText("No node found with ID or label:\n'" + input + "'"); // Catch invalid type error - prevent crashing
                 data.setValid_setup(false);
                 data.getCurrent_start_node_label().setText("Start node: INVALID");
                 return;
@@ -161,7 +161,7 @@ public class UI {
         } catch (NumberFormatException e) {
             Node n = data.getGraph().get_node_from_label(input);
             if (n == null) {
-                data.getError_popup_label().setText("Invalid end node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+                data.getError_popup_label().setText("No node found with ID or label:\n'" + input + "'"); // Catch invalid type error - prevent crashing
                 data.setValid_setup(false);
                 data.getCurrent_end_node_label().setText("End node: INVALID");
                 return;

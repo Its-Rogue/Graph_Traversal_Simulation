@@ -423,8 +423,8 @@ public class Main extends ApplicationAdapter {
         }
 
         if (named_labels) {
-            data.getStart_node_input().setTextFieldFilter(((textField, c) -> Character.toString(c).matches("^[a-zA-Z]")));
-            data.getEnd_node_input().setTextFieldFilter(((textField, c) -> Character.toString(c).matches("^[a-zA-Z]")));
+            data.getStart_node_input().setTextFieldFilter(((textField, c) -> Character.isDigit(c) || Character.toString(c).matches("^[a-zA-Z]")));
+            data.getEnd_node_input().setTextFieldFilter(((textField, c) -> Character.isDigit(c) || Character.toString(c).matches("^[a-zA-Z]")));
         } else {
             data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
             data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
