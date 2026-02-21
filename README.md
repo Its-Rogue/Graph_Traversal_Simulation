@@ -38,7 +38,7 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `Middle Click` or `Backspace` to delete a node
 
-`Right Click` to select a 
+`Right Click` to select a node
 - `Left Click` a position in the scene to move the selected node to that position
 - `Middle Click` or `Backspace` another node that shares an edge to delete the edge
 - `Right Click` the same node again to change its label
