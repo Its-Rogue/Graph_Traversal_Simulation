@@ -2,7 +2,6 @@ package helper_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import structural_classes.Edge;
 import structural_classes.Node;
 import essential_classes.Runtime_Data;
@@ -185,7 +184,7 @@ public class UI {
         }
 
         if (user_end_node_id > 99 || user_end_node_id < 0) {
-            data.getError_popup_label().setText("Desired end node outside valid range"); // Make sure end node in valid range
+            data.getError_popup_label().setText("Desired end node outside valid range"); // Make sure end node id is in the valid range
             data.setValid_setup(false);
             data.getCurrent_end_node_label().setText("End node: INVALID");
             return;
@@ -200,6 +199,14 @@ public class UI {
     public static void change_edge_weight_input_function(Runtime_Data data) {
         data.getError_popup().setVisible(true);
         try {
+            String new_weight = data.getChange_edge_weight_input().getText();
+
+            if (new_weight.length() >= 4) {
+                data.getError_popup_label().setText("New weight too high");
+                data.setValid_setup(false);
+                return;
+            }
+
             data.setNew_edge_weight(Integer.parseInt(data.getChange_edge_weight_input().getText())); // Update the edge weight each time the user inputs a new character
             data.getError_popup_label().setText("");
             data.setValid_setup(true); // Clear errors if valid
@@ -213,16 +220,19 @@ public class UI {
         data.getError_popup().setVisible(true);
         try {
             String new_label = data.getChange_node_label_input().getText();
+
             if (new_label.length() >= 6) {
                 data.getError_popup_label().setText("Node label too long");
                 data.setValid_setup(false);
                 return;
             }
+
             if (data.getGraph().label_already_exists(new_label, data.getNode_to_edit())) {
                 data.getError_popup_label().setText("Node label already in use");
                 data.setValid_setup(false);
                 return;
             }
+
             data.setNew_node_label(new_label);
             data.getError_popup_label().setText("");
             data.setValid_setup(true);

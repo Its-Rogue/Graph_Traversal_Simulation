@@ -168,6 +168,19 @@ public class Inputs {
             }
 
             if (data.getChange_node_label_popup().isVisible()) {
+                if (data.getGraph().label_already_exists(data.getNew_node_label(), data.getNode_to_edit())) {
+                    data.getError_popup_label().setText("Node label already in use"); // Prevent duplicate labels
+                    data.getError_popup().setVisible(true);
+                    return;
+                }
+
+                if (data.getNew_node_label() == null || data.getNew_node_label().trim().isEmpty()) {
+                    data.getError_popup_label().setText("Node label cannot be blank"); // Prevent blank labels
+                    data.getError_popup().setVisible(true);
+                    return;
+                }
+
+                // Assign new label to node, then reset first node selected
                 data.getNode_to_edit().setLabel(data.getNew_node_label());
                 data.getChange_node_label_popup().setVisible(false);
                 data.getChange_node_label_input().setText("");
