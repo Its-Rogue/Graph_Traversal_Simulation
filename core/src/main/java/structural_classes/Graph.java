@@ -33,7 +33,7 @@ public class Graph {
 
         if (adj_list.size() < data.getMax_nodes()) {
             vec2 position  = new vec2(x_pos, y_pos);
-            Node node = new Node(node_radius, id, position, new ArrayList<>(), Color.WHITE);
+            Node node = new Node(node_radius, id, position, new ArrayList<>(), Color.WHITE, " ");
             adj_list.put(node, new ArrayList<>());
         } else {
             data.getError_popup_label().setText("Maximum nodes reached");
@@ -147,6 +147,26 @@ public class Graph {
             }
         }
         return null;
+    }
+
+    // Checks the adj list and returns the node from its label
+    public Node get_node_from_label(String label) {
+        for (Node node : adj_list.keySet()) {
+            if (node.getLabel() != null && !node.getLabel().equals(" ") && node.getLabel().equalsIgnoreCase(label.trim())) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    // Ensures that no duplicate labels can be created
+    public boolean label_already_exists(String label, Node node_to_edit) {
+        for (Node node : adj_list.keySet()) {
+            if (node != node_to_edit && node.getLabel() != null && !node.getLabel().equals(" ") && node.getLabel().equalsIgnoreCase(label.trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Returns all nodes in the adj list

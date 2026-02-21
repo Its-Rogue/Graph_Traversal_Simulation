@@ -13,11 +13,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Save_Handling {
     private static final String save_path = System.getProperty("user.home") + File.separator + "Graph Traversal Simulator" + File.separator + "Saved Layouts" + File.separator;
@@ -49,6 +45,12 @@ public class Save_Handling {
                 }
 
                 sb.append(node.getId()).append(",").append(node.getPosition().getX()).append(",").append(node.getPosition().getY()); // Always append the id and position of the node
+
+                if (!Objects.equals(node.getLabel(), " ")) { // Append the node's label, or a blank identifier if it does not have a label
+                    sb.append(",").append(node.getLabel());
+                } else {
+                    sb.append(",").append(" ");
+                }
 
                 if (!neighbour_ids.isEmpty()) {
                     sb.append(",").append(neighbour_ids); // Only append list of neighbours if the node actually has any
@@ -131,13 +133,14 @@ public class Save_Handling {
                 String[] node_data = line.split(","); // Split the line into its components (id, position, neighbours) and assign the former 2 to variables
                 int id = Integer.parseInt(node_data[0]);
                 vec2 pos = new vec2(Integer.parseInt(node_data[1]), Integer.parseInt(node_data[2]));
+                String label = node_data[3];
 
-                Node node = new Node(data.getNode_radius(), id, pos, new ArrayList<>(), Color.WHITE); // Create a new node and add it to the containers
+                Node node = new Node(data.getNode_radius(), id, pos, new ArrayList<>(), Color.WHITE, label); // Create a new node and add it to the containers
                 created_nodes.add(node);
                 node_map.put(id, node);
 
                 List<Integer> neighbour_ids = new ArrayList<>(); // Add the neighbours to a list before adding them to the map second map container
-                for (int i = 3; i < node_data.length; i++) {
+                for (int i = 4; i < node_data.length; i++) {
                     neighbour_ids.add(Integer.parseInt(node_data[i]));
                 }
                 neighbour_map.put(id, neighbour_ids);

@@ -67,6 +67,7 @@ public class Main extends ApplicationAdapter {
         data.getError_popup().setFillParent(true);
         data.getError_popup().setVisible(false);
         data.getChange_edge_weight_popup().setVisible(false);
+        data.getChange_node_label_popup().setVisible(false);
         data.getColour_hint_popup().setVisible(false);
 
         // Initialise all the different elements for the UI
@@ -87,6 +88,7 @@ public class Main extends ApplicationAdapter {
         data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         data.getChange_edge_weight_input().setTextFieldFilter((text_field, c) -> Character.isDigit(c));
+        data.getChange_node_label_input().setTextFieldFilter(((textField, c) -> Character.toString(c).matches("^[a-zA-Z]")));
 
         node_counter = new Label("Nodes: ", data.getSkin());
         edge_counter = new Label("Edges: ", data.getSkin());
@@ -218,6 +220,14 @@ public class Main extends ApplicationAdapter {
             }
         });
 
+        // Text field input for changing the label of a node
+        data.getChange_node_label_input().addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                UI.change_node_label_input_function(data);
+            }
+        });
+
         // Add the various actors to the tables
         table.add(quit_button).row();
         table.add(node_counter).pad(5).row();
@@ -247,6 +257,10 @@ public class Main extends ApplicationAdapter {
         data.getChange_edge_weight_popup().add(data.getChange_edge_weight_input()).row();
         data.getChange_edge_weight_popup().add(data.getChange_edge_weight_label()).pad(2).row();
 
+        // Change node label label
+        data.getChange_node_label_popup().add(data.getChange_node_label_input()).row();
+        data.getChange_node_label_popup().add(data.getChange_node_label_label()).pad(2).row();
+
         // Colour key hint label
         data.getColour_hint_popup().add(data.getColour_hint_label()).row();
 
@@ -261,6 +275,7 @@ public class Main extends ApplicationAdapter {
         GUI.addActor(table);
         GUI.addActor(data.getError_popup());
         GUI.addActor(data.getChange_edge_weight_popup());
+        GUI.addActor(data.getChange_node_label_popup());
         GUI.addActor(data.getColour_hint_popup());
     }
 
@@ -301,6 +316,13 @@ public class Main extends ApplicationAdapter {
             sr.rect(data.getChange_edge_weight_popup().getX() - 127,data.getChange_edge_weight_popup().getY() - 24,252,52);
             sr.setColor(Color.BLACK); // Background shape
             sr.rect(data.getChange_edge_weight_popup().getX() - 126 ,data.getChange_edge_weight_popup().getY() - 23,250,50);
+        }
+
+        if (data.getChange_node_label_popup().isVisible()) {
+            sr.setColor(Color.RED);
+            sr.rect(data.getChange_node_label_popup().getX() - 127, data.getChange_node_label_popup().getY() - 24, 252, 52);
+            sr.setColor(Color.BLACK);
+            sr.rect(data.getChange_node_label_popup().getX() - 126, data.getChange_node_label_popup().getY() - 23, 250, 50);
         }
     }
 
@@ -365,7 +387,8 @@ public class Main extends ApplicationAdapter {
         font.draw(batch, "Shortest path node", 40, 79);      // Sky
         font.draw(batch, "Negative cycle node", 40, 44);     // Magenta
 
-        // Edge weight code
+        // Edge weight / Node label code
+        boolean named_labels = false;
         for (Node node: data.getGraph().get_nodes()) {
             if (node.getColour() == Color.PURPLE || node.getColour() == Color.RED || node.getColour() == Color.GRAY) {
                 font.setColor(Color.WHITE); // Increase legibility when rendered darker colours
@@ -373,9 +396,16 @@ public class Main extends ApplicationAdapter {
                 font.setColor(Color.BLACK);
             }
 
-            String text = Integer.toString(node.getId()); // Get node ID and cast to a string
-            layout.setText(font, text);
-            font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
+            if (node.getLabel().equals(" ")){
+                String text = Integer.toString(node.getId()); // Get node ID and cast to a string
+                layout.setText(font, text);
+                font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
+            } else {
+                String text = node.getLabel();
+                layout.setText(font ,text);
+                font.draw(batch, text, node.getPosition().getX() - layout.width / 2, node.getPosition().getY() + layout.height / 2);
+                named_labels = true;
+            }
 
             // Draw edge weights centered on edges, offset for legibility
             if (!(data.getSelected_traversal().equals("Breadth-First Search") || data.getSelected_traversal().equals("Depth-First Search") || data.getSelected_traversal().equals("Bidirectional Search"))) {
@@ -390,6 +420,14 @@ public class Main extends ApplicationAdapter {
                     font.draw(batch, Integer.toString(edge.getWeight()), (midpoint_x - layout.width / 2) + offsets[0], (midpoint_y + layout.height / 2) +  offsets[1]);
                 }
             }
+        }
+
+        if (named_labels) {
+            data.getStart_node_input().setTextFieldFilter(((textField, c) -> Character.toString(c).matches("^[a-zA-Z]")));
+            data.getEnd_node_input().setTextFieldFilter(((textField, c) -> Character.toString(c).matches("^[a-zA-Z]")));
+        } else {
+            data.getStart_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
+            data.getEnd_node_input().setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter() {});
         }
     }
 

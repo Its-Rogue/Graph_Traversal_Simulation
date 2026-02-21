@@ -125,7 +125,7 @@ public class Generate_Graphs {
                     continue; // Do not generate node if placement is invalid
                 }
 
-                generated_nodes.add(new Node(data.getNode_radius(), node_id++, new vec2(rand_x, rand_y), new ArrayList<>(), Color.WHITE));
+                generated_nodes.add(new Node(data.getNode_radius(), node_id++, new vec2(rand_x, rand_y), new ArrayList<>(), Color.WHITE, " "));
             }
         }
 

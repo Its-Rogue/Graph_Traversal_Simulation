@@ -7,17 +7,19 @@ import java.util.List;
 
 public class Node {
     private final int radius, id;
-    private final vec2 position;
+    private vec2 position;
     private final List<Node> neighbours;
     private Color colour;
+    private String label;
 
     // Constructor for the nodes
-    public Node(int radius, int id, vec2 position, List<Node> neighbours, Color colour) {
+    public Node(int radius, int id, vec2 position, List<Node> neighbours, Color colour, String label) {
         this.radius = radius;
         this.id = id;
         this.position = position;
         this.neighbours = neighbours;
         this.colour = colour;
+        this.label = label;
     }
 
     // Getters and setters for the nodes
@@ -28,6 +30,8 @@ public class Node {
     public vec2 getPosition() {
         return position;
     }
+
+    public void setPosition(vec2 position){this.position = position;}
 
     public List<Node> getNeighbours() {
         return new ArrayList<>(neighbours);
@@ -47,6 +51,14 @@ public class Node {
 
     public void setColour(Color color) {
         this.colour = color;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     // Render code for each node within the adj list in the graph

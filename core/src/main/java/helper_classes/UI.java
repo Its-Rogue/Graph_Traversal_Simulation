@@ -2,6 +2,7 @@ package helper_classes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import structural_classes.Edge;
 import structural_classes.Node;
 import essential_classes.Runtime_Data;
@@ -108,76 +109,92 @@ public class UI {
 
     public static void start_node_input_function(Runtime_Data data) {
         data.getError_popup().setVisible(true); // Ensure error label displays regardless of status
+        String input = data.getStart_node_input().getText();
+        int user_start_node_id;
+
         try {
-            int user_start_node_id = Integer.parseInt(data.getStart_node_input().getText()); // Ensure only integer values can be inputted
-
-            if (user_start_node_id == data.getEnd_node()) {
-                data.getError_popup_label().setText("Start node cannot be the same \nas the end node"); // Make sure inputted nodes are unique
-                data.setValid_setup(false);
-                data.getCurrent_start_node_label().setText("Start node: INVALID");
-                return;
-            }
-
-            if (data.getGraph().get_node_from_id(user_start_node_id) == null) {
-                data.getError_popup_label().setText("Desired start node does not exist"); // Make sure node exists
-                data.setValid_setup(false);
-                data.getCurrent_start_node_label().setText("Start node: INVALID");
-                return;
-            }
-
-            if (user_start_node_id > 99 || user_start_node_id < 0) {
-                data.getError_popup_label().setText("Desired start node outside valid range"); // Make sure start node in valid range
-                data.setValid_setup(false);
-                data.getCurrent_start_node_label().setText("Start node: INVALID");
-                return;
-            }
-
-            data.setStart_node(user_start_node_id);
-            data.getError_popup_label().setText(""); // Clear errors if valid
-            data.setValid_setup(true);
-            data.getCurrent_start_node_label().setText("Start node: " + user_start_node_id);
+            user_start_node_id = Integer.parseInt(input); // Ensure only integer values can be inputted
         } catch (NumberFormatException e) {
-            data.getError_popup_label().setText("Invalid start node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+            Node n = data.getGraph().get_node_from_label(input);
+            if (n == null) {
+                data.getError_popup_label().setText("Invalid start node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+                data.setValid_setup(false);
+                data.getCurrent_start_node_label().setText("Start node: INVALID");
+                return;
+            }
+            user_start_node_id = n.getId();
+        }
+
+        if (user_start_node_id == data.getEnd_node()) {
+            data.getError_popup_label().setText("Start node cannot be the same \nas the end node"); // Make sure inputted nodes are unique
             data.setValid_setup(false);
             data.getCurrent_start_node_label().setText("Start node: INVALID");
+            return;
         }
+
+        if (data.getGraph().get_node_from_id(user_start_node_id) == null) {
+            data.getError_popup_label().setText("Desired start node does not exist"); // Make sure node exists
+            data.setValid_setup(false);
+            data.getCurrent_start_node_label().setText("Start node: INVALID");
+            return;
+        }
+
+        if (user_start_node_id > 99 || user_start_node_id < 0) {
+            data.getError_popup_label().setText("Desired start node outside valid range"); // Make sure start node in valid range
+            data.setValid_setup(false);
+            data.getCurrent_start_node_label().setText("Start node: INVALID");
+            return;
+        }
+
+        data.setStart_node(user_start_node_id);
+        data.getError_popup_label().setText(""); // Clear errors if valid
+        data.setValid_setup(true);
+        data.getCurrent_start_node_label().setText("Start node: " + user_start_node_id);
     }
 
     public static void end_node_input_function(Runtime_Data data) {
         data.getError_popup().setVisible(true);
+        String input = data.getEnd_node_input().getText();
+        int user_end_node_id;
+
         try {
-            int user_end_node_id = Integer.parseInt(data.getEnd_node_input().getText()); // Ensure only integer values can be inputted
-
-            if (user_end_node_id == data.getStart_node()) {
-                data.getError_popup_label().setText("End node cannot be the same \nas the start node"); // Make sure inputted nodes are unique
-                data.setValid_setup(false);
-                data.getCurrent_end_node_label().setText("End node: INVALID");
-                return;
-            }
-
-            if (data.getGraph().get_node_from_id(user_end_node_id) == null) {
-                data.getError_popup_label().setText("Desired end node does not exist"); // Make sure node exists
-                data.setValid_setup(false);
-                data.getCurrent_end_node_label().setText("End node: INVALID");
-                return;
-            }
-
-            if (user_end_node_id > 99 || user_end_node_id < 0) {
-                data.getError_popup_label().setText("Desired end node outside valid range"); // Make sure end node in valid range
-                data.setValid_setup(false);
-                data.getCurrent_end_node_label().setText("End node: INVALID");
-                return;
-            }
-
-            data.setEnd_node(user_end_node_id);
-            data.getError_popup_label().setText(""); // Clear errors if valid
-            data.setValid_setup(true);
-            data.getCurrent_end_node_label().setText("End node: " + user_end_node_id);
+            user_end_node_id = Integer.parseInt(input); // Ensure only integer values can be inputted
         } catch (NumberFormatException e) {
-            data.getError_popup_label().setText("Invalid end node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+            Node n = data.getGraph().get_node_from_label(input);
+            if (n == null) {
+                data.getError_popup_label().setText("Invalid end node input:\ninput must be a integer"); // Catch invalid type error - prevent crashing
+                data.setValid_setup(false);
+                data.getCurrent_end_node_label().setText("End node: INVALID");
+                return;
+            }
+            user_end_node_id = n.getId();
+        }
+
+        if (user_end_node_id == data.getStart_node()) {
+            data.getError_popup_label().setText("End node cannot be the same \nas the start node"); // Make sure inputted nodes are unique
             data.setValid_setup(false);
             data.getCurrent_end_node_label().setText("End node: INVALID");
+            return;
         }
+
+        if (data.getGraph().get_node_from_id(user_end_node_id) == null) {
+            data.getError_popup_label().setText("Desired end node does not exist"); // Make sure node exists
+            data.setValid_setup(false);
+            data.getCurrent_end_node_label().setText("End node: INVALID");
+            return;
+        }
+
+        if (user_end_node_id > 99 || user_end_node_id < 0) {
+            data.getError_popup_label().setText("Desired end node outside valid range"); // Make sure end node in valid range
+            data.setValid_setup(false);
+            data.getCurrent_end_node_label().setText("End node: INVALID");
+            return;
+        }
+
+        data.setEnd_node(user_end_node_id);
+        data.getError_popup_label().setText(""); // Clear errors if valid
+        data.setValid_setup(true);
+        data.getCurrent_end_node_label().setText("End node: " + user_end_node_id);
     }
 
     public static void change_edge_weight_input_function(Runtime_Data data) {
@@ -188,6 +205,29 @@ public class UI {
             data.setValid_setup(true); // Clear errors if valid
         } catch (NumberFormatException e) {
             data.getError_popup_label().setText("Invalid edge weight");
+            data.setValid_setup(false);
+        }
+    }
+
+    public static void change_node_label_input_function(Runtime_Data data) {
+        data.getError_popup().setVisible(true);
+        try {
+            String new_label = data.getChange_node_label_input().getText();
+            if (new_label.length() >= 6) {
+                data.getError_popup_label().setText("Node label too long");
+                data.setValid_setup(false);
+                return;
+            }
+            if (data.getGraph().label_already_exists(new_label, data.getNode_to_edit())) {
+                data.getError_popup_label().setText("Node label already in use");
+                data.setValid_setup(false);
+                return;
+            }
+            data.setNew_node_label(new_label);
+            data.getError_popup_label().setText("");
+            data.setValid_setup(true);
+        } catch (Exception e) {
+            data.getError_popup_label().setText("Invalid node label");
             data.setValid_setup(false);
         }
     }

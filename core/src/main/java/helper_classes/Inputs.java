@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import structural_classes.Edge;
 import structural_classes.Node;
+import structural_classes.vec2;
 import essential_classes.Runtime_Data;
 import essential_classes.Traversals;
 
@@ -69,7 +70,13 @@ public class Inputs {
                 }
             }
 
-            data.getGraph().add_node(data.getNode_radius(), mouse_x, mouse_y, data); // Add a new node at the coordinates clicked at if in a valid location
+            if (first_node_selected != null) {
+                first_node_selected.setPosition(new vec2(mouse_x, mouse_y)); // Move node if one has been selected
+                first_node_selected.setColour(Color.WHITE);
+                first_node_selected = null;
+            } else {
+                data.getGraph().add_node(data.getNode_radius(), mouse_x, mouse_y, data); // Add a new node at the coordinates clicked at if in a valid location
+            }
         }
     }
 
@@ -85,6 +92,10 @@ public class Inputs {
                         data.getGraph().add_edge(first_node_selected.getId(), node.getId(), 1, data); // Creates the edge between the nodes
                         first_node_selected.setColour(Color.WHITE);
                         first_node_selected = null; // Clears the first node to be used again
+                    } else {
+                        data.getChange_node_label_popup().setVisible(true);
+                        data.getChange_node_label_popup().setPosition(node.getPosition().getX(), node.getPosition().getY());
+                        data.setNode_to_edit(node);
                     }
                     return; // Return so the loop is not run all the way through if the desired node is already found
                 }
@@ -100,7 +111,7 @@ public class Inputs {
     // Code for deleting a node / edge when middle-clicking
     private static void middle_click(int mouse_x, int mouse_y, Runtime_Data data) {
         if (Gdx.input.isButtonJustPressed(Input.Buttons.MIDDLE) || Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && data.getChange_edge_weight_popup().isVisible()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE) && (data.getChange_edge_weight_popup().isVisible() || data.getChange_node_label_popup().isVisible())) {
                 return; // Prevent accidental deletion of nodes while typing in new edge weight
             }
             for (Node node: data.getGraph().get_nodes()) { // Loop over each node
@@ -137,25 +148,32 @@ public class Inputs {
         }
     }
 
-    // Code for updating the edge's weight after it has been inputted
+    // Code for updating the edge's weight or node's label after it has been inputted
     private static void enter_key_input(Runtime_Data data) {
-        if (!data.getChange_edge_weight_popup().isVisible()) {
-            return; // Do not run if edge weight is not being changed
-        }
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            data.getEdge_to_edit().setWeight(data.getNew_edge_weight()); // Set forward edge to have the new weight
-            for (Node node: data.getEdge_to_edit().getSource().getNeighbours()) {
-                if (node == data.getEdge_to_edit().getTarget()) {
-                    for (Edge edge: data.getGraph().get_edges(node)) {
-                        if (edge.getTarget().equals(data.getEdge_to_edit().getSource())) {
-                            edge.setWeight(data.getNew_edge_weight()); // Find the reverse edge and set it to have the new weight as well
+            if (data.getChange_edge_weight_popup().isVisible()) {
+                data.getEdge_to_edit().setWeight(data.getNew_edge_weight()); // Set forward edge to have the new weight
+                for (Node node: data.getEdge_to_edit().getSource().getNeighbours()) {
+                    if (node == data.getEdge_to_edit().getTarget()) {
+                        for (Edge edge: data.getGraph().get_edges(node)) {
+                            if (edge.getTarget().equals(data.getEdge_to_edit().getSource())) {
+                                edge.setWeight(data.getNew_edge_weight()); // Find the reverse edge and set it to have the new weight as well
+                            }
                         }
                     }
                 }
+                data.getChange_edge_weight_popup().setVisible(false);
+                data.getChange_edge_weight_input().setText(""); // Reset inputted text and hide the input field / popup
+                return;
             }
-            data.getChange_edge_weight_popup().setVisible(false);
-            data.getChange_edge_weight_input().setText(""); // Reset inputted text and hide the input field / popup
+
+            if (data.getChange_node_label_popup().isVisible()) {
+                data.getNode_to_edit().setLabel(data.getNew_node_label());
+                data.getChange_node_label_popup().setVisible(false);
+                data.getChange_node_label_input().setText("");
+                first_node_selected.setColour(Color.WHITE);
+                first_node_selected = null;
+            }
         }
     }
 
@@ -275,7 +293,7 @@ public class Inputs {
     // Check if the node is close enough to the clicked position, then calculate the distance to the centre of the node
     private static int distance_check(int pos_x,  int pos_y, int mouse_x, int mouse_y, Runtime_Data data) {
         float offset_multiplier = 1;
-        if (data.getChange_edge_weight_popup().isVisible()) {
+        if (data.getChange_edge_weight_popup().isVisible() || data.getChange_node_label_popup().isVisible()) {
             offset_multiplier = 1.5f; // Bounds check for the change edge weight popup specifically
         }
         if (pos_x > mouse_x + 100 * offset_multiplier || pos_x < mouse_x - 100 * offset_multiplier) return Integer.MAX_VALUE;

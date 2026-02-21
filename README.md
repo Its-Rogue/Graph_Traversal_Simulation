@@ -36,17 +36,19 @@ If an error is made in any of the options, a suitable error message will be disp
 
 `Left Click` to create a node
 
-`Middle Click` to delete a node
+`Middle Click` or `Backspace` to delete a node
 
-`Right Click` to select 2 different nodes and create an edge between them, should one not already exist
+`Right Click` to select a 
+- `Left Click` a position in the scene to move the selected node to that position
+- `Middle Click` or `Backspace` another node that shares an edge to delete the edge
+- `Right Click` the same node again to change its label
+- `Right Click` another node to create an edge between the 2 nodes
+  - If an edge already exists between the 2 nodes, you will be able to change the edge's weight, provided the selected traversal supports edge weights<sup>3</sup>
 
-`Right Click` 2 nodes with an edge between them to edit its weight, should a suitable traversal algorithm <sup>3</sup> be currently selected. Once the desired weight has been inputted, press `Enter` to confirm it
 
-`Right Click` on one node then `Middle Click` or press `Backspace` on another to delete an edge between 2 nodes
+`Space` to start the selected traversal, if valid conditions for one to start exist, or step through the traversal if the "Stepped" traversal progress option is chosen
 
-`SPACE` to start the traversal, if valid conditions for one to start exist, or step through the traversal if the "Stepped" traversal progress option is chosen
-
-`ESCAPE` to quit the program
+`Escape` to quit the program
 
 ##  Download
 
@@ -58,7 +60,7 @@ git clone https://github.com/Its-Rogue/Graph_Traversal_Simulation
 
 ## Notes
 
-This program has been created as a project for my A-Level Computer Science NEA. As such, it may not visually be appealing, however this means that it is much more technically advanced in its algorithms and the overall codebase. The colour choices are explained via a key in the bottom left of the screen, which you can mouse over to get a more in depth tooltip.
+This program has been created as a project for my A-Level Computer Science NEA. As such, it is more algorithmically focussed rather than visually, however the colour choices are chosen to be as contrasting from one another as possible. These colour choices are explained via a key in the bottom left of the screen, which you can mouse over to get a more in depth hint.
 
 For the UI I have used a scene2D UI [skin](https://github.com/czyzby/gdx-skins/tree/master/shade) created by [Raymond "Raeleus" Buckley](http://www.badlogicgames.com/forum/viewtopic.php?f=22&t=21568), which can be freely used under the CC BY licence.
 

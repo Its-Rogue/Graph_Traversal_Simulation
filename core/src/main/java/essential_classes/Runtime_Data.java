@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import structural_classes.Edge;
 import structural_classes.Graph;
+import structural_classes.Node;
 
 public class Runtime_Data {
     // Initialise variables
@@ -18,16 +19,19 @@ public class Runtime_Data {
 
     private Graph graph = new Graph();
     private Edge edge_to_edit;
+    private Node node_to_edit;
 
     private Color colour_hint_label_background = Color.WHITE;
 
     private final Table error_popup = new Table();
     private final Table change_edge_weight_popup = new Table();
+    private final Table change_node_label_popup = new Table();
     private final Table colour_hint_popup = new Table();
 
     private final TextField start_node_input = new TextField("", skin);
     private final TextField end_node_input = new TextField("", skin);
     private final TextField change_edge_weight_input = new TextField("", skin);
+    private final TextField change_node_label_input = new TextField("", skin);
 
     private final Button step_traversal_button = new Button(skin, "right");
 
@@ -39,6 +43,7 @@ public class Runtime_Data {
     private final Label error_popup_label = new Label("", skin);
     private final Label traversal_speed_label = new Label(String.format("Traversal Speed: %.1f", 1.0f), skin);
     private final Label change_edge_weight_label = new Label("Press ENTER to confirm change.", skin);
+    private final Label change_node_label_label = new Label("Press ENTER to confirm change.", skin);
     private final Label colour_hint_label = new Label("", skin);
     private final Label step_traversal_label = new Label("Step Traversal", skin);
     private final Label current_start_node_label = new Label("Start Node: ", skin);
@@ -59,6 +64,7 @@ public class Runtime_Data {
 
     private String selected_traversal = "Depth-First Search";
     private String selected_traversal_progress = "Automatic";
+    private String new_node_label;
 
     // Getters and setters for variables
     public int getEnd_node() {
@@ -262,5 +268,33 @@ public class Runtime_Data {
 
     public int getMax_nodes() {
         return max_nodes;
+    }
+
+    public TextField getChange_node_label_input() {
+        return change_node_label_input;
+    }
+
+    public Label getChange_node_label_label() {
+        return change_node_label_label;
+    }
+
+    public Table getChange_node_label_popup() {
+        return change_node_label_popup;
+    }
+
+    public String getNew_node_label() {
+        return new_node_label;
+    }
+
+    public void setNew_node_label(String new_node_label) {
+        this.new_node_label = new_node_label;
+    }
+
+    public Node getNode_to_edit() {
+        return node_to_edit;
+    }
+
+    public void setNode_to_edit(Node node_to_edit) {
+        this.node_to_edit = node_to_edit;
     }
 }
